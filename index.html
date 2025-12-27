@@ -24,7 +24,8 @@
 <body>
   <h2>Fast2Care — מיון אווירי + פתיחת 4 הקרובים ב-Google Maps</h2>
   <div class="muted">
-    המטרה: לראות מהר ETA אמיתי של גוגל ע"י פתיחה אוטומטית של 4 היעדים הקרובים ביותר (אווירית).
+    ממיין לפי מרחק אווירי ואז בלחיצה אחת פותח 4 יעדים ב-Google Maps כדי לראות ETA מהר.
+    פתיחה לגוגל נעשית עם <b>שם בית החולים</b> (ולא רק נ״צ), ובפורמט “וובי” כדי להפחית קפיצה לאפליקציה.
   </div>
 
   <div class="card">
@@ -38,6 +39,8 @@
     <div id="addr" class="muted" style="margin-top:8px"></div>
     <div class="muted" style="margin-top:6px">
       אם כרום חוסם Pop-ups: תפריט ⋮ → Settings → Site settings → Pop-ups and redirects → Allow (לאתר שלך).
+      <br/>
+      אם עדיין נפתח באפליקציה: Settings → Apps → Maps → Open by default → Open supported links → Don’t allow.
     </div>
   </div>
 
@@ -101,13 +104,23 @@ function haversineKm(a, b) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-/** קישורי ניווט לגוגל מפס / וויז */
-function googleMapsDirUrl(destLat, destLng) {
-  const base = "https://www.google.com/maps/dir/?api=1";
-  const destination = `&destination=${encodeURIComponent(destLat + "," + destLng)}&travelmode=driving`;
-  const origin = myPos ? `&origin=${encodeURIComponent(myPos.lat + "," + myPos.lng)}` : "";
-  return base + destination + origin;
+/**
+ * ✅ Google Maps URL "וובי" שמנסה להפחית מעבר לאפליקציה
+ * ✅ משתמש בשם בית החולים כיעד (daddr) כדי שתראה שם ולא רק נ״צ
+ *
+ * הערה: אם באנדרואיד מוגדר App Links ל-Maps, לפעמים עדיין יעבור לאפליקציה.
+ * במקרה כזה צריך לבטל "Open supported links" באפליקציית Maps.
+ */
+function googleMapsDirUrl(destLat, destLng, destName) {
+  const base = "https://www.google.com/maps";
+  const origin = myPos ? `${myPos.lat},${myPos.lng}` : "";
+  const saddr = encodeURIComponent(origin);
+  // יעד: קודם שם (נוח לזיהוי), ואם אין שם אז נ״צ
+  const daddr = encodeURIComponent(destName || (destLat + "," + destLng));
+  return `${base}?output=classic&dirflg=d&saddr=${saddr}&daddr=${daddr}`;
 }
+
+/** Waze deep link (עדיין ייתכן שייפתח באפליקציה וזה בסדר) */
 function wazeUrl(destLat, destLng) {
   return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
 }
@@ -166,7 +179,11 @@ function render() {
       const id = btn.getAttribute("data-id");
       const h = sorted.find(x => x.id === id);
       if (!h) return;
-      const url = act === "gmaps" ? googleMapsDirUrl(h.lat, h.lng) : wazeUrl(h.lat, h.lng);
+
+      const url = (act === "gmaps")
+        ? googleMapsDirUrl(h.lat, h.lng, h.name)
+        : wazeUrl(h.lat, h.lng);
+
       window.open(url, "_blank");
     });
   });
@@ -206,22 +223,34 @@ async function locateAndSort() {
   }
 }
 
-function openTop4Gmaps() {
+function openTopNGmaps() {
   if (!sorted.length) return;
-
   const top = sorted.slice(0, OPEN_TOP_N);
 
-  // חשוב: פתיחת כמה טאבים חייבת להיות מתוך קליק
-  // דיליי קטן מפחית חסימת popups
+  // ניסיון לפתוח כמה כרטיסיות.
+  // אם popups חסומים, ייפתח רק חלק.
+  let opened = 0;
+
   top.forEach((h, i) => {
-    const url = googleMapsDirUrl(h.lat, h.lng);
-    setTimeout(() => window.open(url, "_blank"), i * 250);
+    const url = googleMapsDirUrl(h.lat, h.lng, h.name);
+    setTimeout(() => {
+      const w = window.open(url, "_blank");
+      if (w) opened++;
+
+      if (i === top.length - 1) {
+        setTimeout(() => {
+          if (opened < top.length) {
+            alert("הדפדפן חסם חלק מהכרטיסיות. אפשר לאפשר Pop-ups לאתר כדי שייפתחו כולן.");
+          }
+        }, 250);
+      }
+    }, i * 250);
   });
 }
 
 /** events */
 el("btnLocate").addEventListener("click", locateAndSort);
-el("btnOpenTop4").addEventListener("click", openTop4Gmaps);
+el("btnOpenTop4").addEventListener("click", openTopNGmaps);
 el("search").addEventListener("input", render);
 
 /** init: מנסה לאתר אוטומטית בטעינה */
