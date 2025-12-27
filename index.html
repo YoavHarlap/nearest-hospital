@@ -3,98 +3,110 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fast2Care — בחירת בית חולים לפי זמן נסיעה (ללא API)</title>
+  <title>Fast2Care — בחירת בית חולים לפי זמן נסיעה (חינמי)</title>
   <style>
-    body { font-family: system-ui, Arial; margin: 16px; line-height: 1.4; }
+    body { font-family: system-ui, Arial; margin: 16px; line-height: 1.35; }
     .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
     input, button { padding: 10px; font-size: 16px; }
     button { cursor: pointer; }
-    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-    th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
-    th { background: #f6f6f6; }
+    .card { border: 1px solid #ddd; border-radius: 12px; padding: 12px; margin-top: 12px; }
     .muted { color: #555; }
-    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 12px; }
     .ok { color: #0a7; }
     .bad { color: #c00; }
+    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+    th, td { border: 1px solid #eee; padding: 8px; vertical-align: top; }
+    th { background: #f7f7f7; }
     .small { font-size: 13px; }
+    .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; }
+    .chosen { border-color: #0a7; }
+    .big { font-size: 16px; padding: 12px 12px; }
+    .btnPrimary { font-weight: 700; }
+    .stack { display:flex; flex-direction:column; gap:6px; }
   </style>
 </head>
 <body>
-  <h2>Fast2Care — בחירת בית חולים לפי זמן נסיעה</h2>
+  <h2>Fast2Care — בחירת בית חולים לפי זמן נסיעה (בלי API)</h2>
   <div class="muted">
-    גרסה חינמית בלי API: הדף פותח Google Maps/Waze עם היעד, ואתה מסתכל על זמן הנסיעה ובוחר.
+    אין חישוב זמנים אוטומטי (כי זה דורש API). במקום זה: פותחים “מסלול” בגוגל מפס לכל יעד,
+    רואים זמן, וחוזרים לבחור הכי מהיר.
   </div>
 
   <div class="card">
     <h3>המיקום שלי</h3>
     <div class="row">
-      <button id="btnLocate">מצא אותי (GPS)</button>
+      <button id="btnLocate" class="big btnPrimary">מצא אותי (GPS)</button>
       <span id="locStatus" class="muted">עוד לא אותר מיקום.</span>
     </div>
-    <div class="muted small" style="margin-top:8px">
-      כדי ש-GPS יעבוד צריך לפתוח את הדף דרך HTTPS (למשל GitHub Pages), לא מתוך קובץ מקומי.
+    <div class="muted small" style="margin-top:6px">
+      GPS עובד רק ב-HTTPS (למשל GitHub Pages). אם חסמת הרשאות מיקום — צריך לאשר בכרום.
     </div>
   </div>
 
   <div class="card">
-    <h3>בתי חולים</h3>
+    <div class="row" style="justify-content:space-between">
+      <h3 style="margin:0">בתי חולים</h3>
+      <span id="count" class="pill"></span>
+    </div>
 
+    <div class="row" style="margin-top:10px">
+      <input id="search" placeholder="חיפוש לפי שם..." style="flex:1; min-width:180px" />
+      <button id="btnClearChoice">נקה בחירה</button>
+    </div>
+
+    <div class="card" style="margin-top:10px">
+      <b>נפתחו לאחרונה</b>
+      <div id="recent" class="muted small" style="margin-top:6px">אין עדיין.</div>
+    </div>
+
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th style="width:38%">שם</th>
+          <th style="width:22%">פעולה מהירה</th>
+          <th style="width:18%">סימון</th>
+          <th style="width:22%">ניהול</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>הוספה / עריכה רשימה</h3>
     <div class="row">
       <input id="name" placeholder="שם" style="flex:1; min-width: 140px;" />
       <input id="lat" placeholder="Lat" inputmode="decimal" style="width: 120px;" />
       <input id="lng" placeholder="Lng" inputmode="decimal" style="width: 120px;" />
       <button id="btnAdd">הוסף</button>
     </div>
-
-    <div class="muted small" style="margin-top:8px">
-      טיפ: במפות גוגל תעשה לחיצה ארוכה על מקום → יופיע Lat/Lng להעתקה.
-      הרשימה נשמרת אוטומטית במכשיר (LocalStorage).
-    </div>
-
-    <table id="tbl">
-      <thead>
-        <tr>
-          <th>שם</th>
-          <th>Lat,Lng</th>
-          <th>קיצורים</th>
-          <th>פעולות</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-
-    <div class="row" style="margin-top:12px">
+    <div class="row" style="margin-top:10px">
       <button id="btnReset">איפוס לרשימת ברירת מחדל</button>
-      <button id="btnExport">ייצוא רשימה (JSON)</button>
-      <button id="btnImport">ייבוא רשימה (JSON)</button>
+      <button id="btnExport">ייצוא JSON</button>
+      <button id="btnImport">ייבוא JSON</button>
     </div>
-
-    <textarea id="jsonBox" placeholder="כאן יופיע JSON לייצוא / תדביק כאן לייבוא"
-              style="width:100%; margin-top:10px; min-height:120px; padding:10px; font-size:14px;"></textarea>
-  </div>
-
-  <div class="card">
-    <h3>איך משתמשים בפועל</h3>
-    <ol>
-      <li>לחץ <b>מצא אותי (GPS)</b></li>
-      <li>ליד כל בית חולים לחץ <b>Google Maps</b> (או <b>Waze</b>)</li>
-      <li>תסתכל על זמן הנסיעה שמופיע באפליקציה ובחר הכי מהיר</li>
-    </ol>
+    <textarea id="jsonBox" placeholder="ייצוא/ייבוא JSON כאן"
+              style="width:100%; margin-top:10px; min-height:110px; padding:10px; font-size:14px;"></textarea>
   </div>
 
 <script>
-/** ======== הגדרות ושמירה ======== */
-const LS_KEY = "fast2care_hospitals_v1";
+/** ======== שמירה ======== */
+const LS_KEY = "fast2care_hospitals_v2";
+const LS_CHOICE = "fast2care_choice_v1";
+const LS_RECENT = "fast2care_recent_v1";
 
-/** ברירת מחדל לדוגמה — תחליף/תוסיף לשלך */
+/** דיפולט לדוגמה — תחליף ל-15 בתי חולים שלך */
 const DEFAULT_HOSPITALS = [
   { id: crypto.randomUUID(), name: "איכילוב (דוגמה)", lat: 32.0781, lng: 34.7898 },
   { id: crypto.randomUUID(), name: "שיבא תל השומר (דוגמה)", lat: 32.0460, lng: 34.8447 },
+  { id: crypto.randomUUID(), name: "בלינסון (דוגמה)", lat: 32.0910, lng: 34.8814 },
+  { id: crypto.randomUUID(), name: "וולפסון (דוגמה)", lat: 32.0168, lng: 34.7580 },
   { id: crypto.randomUUID(), name: "רמב\"ם חיפה (דוגמה)", lat: 32.8371, lng: 35.0506 },
 ];
 
 let hospitals = loadHospitals();
 let myPos = null; // {lat,lng}
+let chosenId = loadChoice();
+let recent = loadRecent(); // array of {id, name, ts}
 
 const el = (id) => document.getElementById(id);
 
@@ -108,9 +120,16 @@ function loadHospitals() {
     return DEFAULT_HOSPITALS;
   }
 }
-function saveHospitals() {
-  localStorage.setItem(LS_KEY, JSON.stringify(hospitals));
+function saveHospitals() { localStorage.setItem(LS_KEY, JSON.stringify(hospitals)); }
+
+function loadChoice() { return localStorage.getItem(LS_CHOICE) || ""; }
+function saveChoice(id) { localStorage.setItem(LS_CHOICE, id || ""); }
+
+function loadRecent() {
+  try { return JSON.parse(localStorage.getItem(LS_RECENT) || "[]"); }
+  catch { return []; }
 }
+function saveRecent() { localStorage.setItem(LS_RECENT, JSON.stringify(recent)); }
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
@@ -126,39 +145,71 @@ function setStatus(msg, ok=true) {
 
 /** ======== קישורי ניווט ======== */
 function googleMapsDirUrl(destLat, destLng) {
-  // פותח מסך "מסלול" עם יעד. אם יש מיקום נוכחי, גוגל תשתמש בו כברירת מחדל.
-  // אפשר גם להוסיף origin אם יש לנו myPos.
   const base = "https://www.google.com/maps/dir/?api=1";
   const destination = `&destination=${encodeURIComponent(destLat + "," + destLng)}&travelmode=driving`;
   const origin = myPos ? `&origin=${encodeURIComponent(myPos.lat + "," + myPos.lng)}` : "";
   return base + destination + origin;
 }
-
 function wazeUrl(destLat, destLng) {
-  // פותח Waze לניווט ליעד
   return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
 }
 
-/** ======== רינדור טבלה ======== */
+/** ======== Recently opened ======== */
+function pushRecent(h) {
+  const now = Date.now();
+  recent = recent.filter(x => x.id !== h.id);
+  recent.unshift({ id: h.id, name: h.name, ts: now });
+  recent = recent.slice(0, 3);
+  saveRecent();
+  renderRecent();
+}
+
+function renderRecent() {
+  if (!recent.length) {
+    el("recent").textContent = "אין עדיין.";
+    return;
+  }
+  el("recent").innerHTML = recent.map(r => {
+    const dt = new Date(r.ts);
+    const t = dt.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
+    return `• ${escapeHtml(r.name)} <span class="muted">(${t})</span>`;
+  }).join("<br/>");
+}
+
+/** ======== טבלה ======== */
 function renderTable() {
+  const q = el("search").value.trim().toLowerCase();
+  const list = hospitals.filter(h => !q || h.name.toLowerCase().includes(q));
+
+  el("count").textContent = `${list.length} מתוך ${hospitals.length}`;
+
   const tbody = el("tbl").querySelector("tbody");
   tbody.innerHTML = "";
 
-  hospitals.forEach(h => {
+  list.forEach(h => {
     const tr = document.createElement("tr");
+    const isChosen = h.id === chosenId;
+
+    tr.className = isChosen ? "chosen" : "";
 
     tr.innerHTML = `
-      <td>${escapeHtml(h.name)}</td>
-      <td class="muted">${Number(h.lat).toFixed(6)}, ${Number(h.lng).toFixed(6)}</td>
       <td>
-        <div class="row">
-          <button data-act="gmaps" data-id="${h.id}">Google Maps</button>
+        <b>${escapeHtml(h.name)}</b><br/>
+        <span class="muted small">${Number(h.lat).toFixed(6)}, ${Number(h.lng).toFixed(6)}</span>
+        ${isChosen ? `<div class="pill" style="margin-top:6px">נבחר</div>` : ``}
+      </td>
+
+      <td>
+        <div class="stack">
+          <button class="big btnPrimary" data-act="gmaps" data-id="${h.id}">פתח זמן ב-Google Maps</button>
           <button data-act="waze" data-id="${h.id}">Waze</button>
         </div>
-        <div class="muted small" style="margin-top:6px">
-          טיפ: תסתכל על זמן הנסיעה שמופיע במפות ובחר הכי מהיר.
-        </div>
       </td>
+
+      <td>
+        <button data-act="choose" data-id="${h.id}">${isChosen ? "הסר בחירה" : "סמן כבחירה"}</button>
+      </td>
+
       <td>
         <button data-act="del" data-id="${h.id}">מחק</button>
       </td>
@@ -174,14 +225,22 @@ function renderTable() {
       if (!h) return;
 
       if (act === "del") {
+        if (!confirm(`למחוק את "${h.name}"?`)) return;
         hospitals = hospitals.filter(x => x.id !== id);
+        if (chosenId === id) { chosenId = ""; saveChoice(""); }
         saveHospitals();
         renderTable();
         return;
       }
 
+      if (act === "choose") {
+        chosenId = (chosenId === id) ? "" : id;
+        saveChoice(chosenId);
+        renderTable();
+        return;
+      }
+
       if (!myPos) {
-        // אפשר עדיין לפתוח ניווט בלי origin מפורש, אבל עדיף לבקש GPS
         const go = confirm("לא אותר מיקום עדיין. להמשיך לפתוח ניווט בכל זאת?");
         if (!go) return;
       }
@@ -190,12 +249,15 @@ function renderTable() {
         ? googleMapsDirUrl(h.lat, h.lng)
         : wazeUrl(h.lat, h.lng);
 
-      window.location.href = url;
+      pushRecent(h);
+
+      // פתח בטאב חדש כדי לשמור את הדף פתוח
+      window.open(url, "_blank");
     });
   });
 }
 
-/** ======== Geolocation ======== */
+/** ======== מיקום ======== */
 el("btnLocate").addEventListener("click", () => {
   if (!navigator.geolocation) {
     setStatus("הדפדפן לא תומך Geolocation.", false);
@@ -225,18 +287,26 @@ el("btnAdd").addEventListener("click", () => {
   hospitals.push({ id: crypto.randomUUID(), name, lat, lng });
   saveHospitals();
   renderTable();
-
   el("name").value = ""; el("lat").value = ""; el("lng").value = "";
 });
 
 el("btnReset").addEventListener("click", () => {
+  if (!confirm("לאפס לרשימת ברירת מחדל?")) return;
   hospitals = DEFAULT_HOSPITALS.map(x => ({...x, id: crypto.randomUUID()}));
+  chosenId = ""; saveChoice("");
+  recent = []; saveRecent();
   saveHospitals();
-  renderTable();
   el("jsonBox").value = "";
+  renderRecent();
+  renderTable();
 });
 
-/** ======== ייצוא/ייבוא JSON ======== */
+el("btnClearChoice").addEventListener("click", () => {
+  chosenId = ""; saveChoice("");
+  renderTable();
+});
+
+/** ======== ייצוא/ייבוא ======== */
 el("btnExport").addEventListener("click", () => {
   el("jsonBox").value = JSON.stringify(hospitals, null, 2);
   el("jsonBox").focus();
@@ -245,12 +315,10 @@ el("btnExport").addEventListener("click", () => {
 el("btnImport").addEventListener("click", () => {
   try {
     const txt = el("jsonBox").value.trim();
-    if (!txt) {
-      alert("תדביק JSON בתיבה קודם.");
-      return;
-    }
+    if (!txt) { alert("תדביק JSON בתיבה קודם."); return; }
     const parsed = JSON.parse(txt);
     if (!Array.isArray(parsed)) throw new Error("JSON חייב להיות מערך");
+
     const cleaned = parsed.map(item => ({
       id: item.id || crypto.randomUUID(),
       name: String(item.name || "").trim(),
@@ -258,9 +326,12 @@ el("btnImport").addEventListener("click", () => {
       lng: Number(item.lng),
     })).filter(x => x.name && Number.isFinite(x.lat) && Number.isFinite(x.lng));
 
-    if (!cleaned.length) throw new Error("לא נמצאו רשומות תקינות ב-JSON");
+    if (!cleaned.length) throw new Error("לא נמצאו רשומות תקינות");
     hospitals = cleaned;
+    chosenId = ""; saveChoice("");
+    recent = []; saveRecent();
     saveHospitals();
+    renderRecent();
     renderTable();
     alert("יובא בהצלחה!");
   } catch (e) {
@@ -268,6 +339,8 @@ el("btnImport").addEventListener("click", () => {
   }
 });
 
+/** init */
+renderRecent();
 renderTable();
 </script>
 </body>
