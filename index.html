@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fast2Care — בחירת בית חולים לפי זמן נסיעה (חינמי)</title>
+  <title>Fast2Care — מיון לפי מרחק אווירי</title>
   <style>
     body { font-family: system-ui, Arial; margin: 16px; line-height: 1.35; }
     .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -18,27 +18,25 @@
     th { background: #f7f7f7; }
     .small { font-size: 13px; }
     .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; }
-    .chosen { border-color: #0a7; }
-    .big { font-size: 16px; padding: 12px 12px; }
-    .btnPrimary { font-weight: 700; }
+    .big { font-size: 16px; padding: 12px; font-weight: 700; }
     .stack { display:flex; flex-direction:column; gap:6px; }
   </style>
 </head>
 <body>
-  <h2>Fast2Care — בחירת בית חולים לפי זמן נסיעה (בלי API)</h2>
+  <h2>Fast2Care — מיון בתי חולים לפי מרחק אווירי</h2>
   <div class="muted">
-    אין חישוב זמנים אוטומטי (כי זה דורש API). במקום זה: פותחים “מסלול” בגוגל מפס לכל יעד,
-    רואים זמן, וחוזרים לבחור הכי מהיר.
+    הדף מאתר מיקום אוטומטית (עם אישור משתמש), מציג עיר, וממיין את בתי החולים לפי מרחק אווירי.
   </div>
 
   <div class="card">
     <h3>המיקום שלי</h3>
     <div class="row">
-      <button id="btnLocate" class="big btnPrimary">מצא אותי (GPS)</button>
-      <span id="locStatus" class="muted">עוד לא אותר מיקום.</span>
+      <button id="btnRetry" class="big">נסה שוב לאתר מיקום</button>
+      <span id="locStatus" class="muted">מאתר מיקום…</span>
     </div>
+    <div id="cityLine" class="muted small" style="margin-top:8px"></div>
     <div class="muted small" style="margin-top:6px">
-      GPS עובד רק ב-HTTPS (למשל GitHub Pages). אם חסמת הרשאות מיקום — צריך לאשר בכרום.
+      GPS עובד רק ב-HTTPS (למשל GitHub Pages). :contentReference[oaicite:3]{index=3}
     </div>
   </div>
 
@@ -50,21 +48,16 @@
 
     <div class="row" style="margin-top:10px">
       <input id="search" placeholder="חיפוש לפי שם..." style="flex:1; min-width:180px" />
-      <button id="btnClearChoice">נקה בחירה</button>
-    </div>
-
-    <div class="card" style="margin-top:10px">
-      <b>נפתחו לאחרונה</b>
-      <div id="recent" class="muted small" style="margin-top:6px">אין עדיין.</div>
+      <span class="muted small">ממוין לפי מרחק אווירי מהקרוב לרחוק</span>
     </div>
 
     <table id="tbl">
       <thead>
         <tr>
-          <th style="width:38%">שם</th>
-          <th style="width:22%">פעולה מהירה</th>
-          <th style="width:18%">סימון</th>
-          <th style="width:22%">ניהול</th>
+          <th style="width:40%">שם</th>
+          <th style="width:18%">מרחק</th>
+          <th style="width:24%">פתיחה מהירה</th>
+          <th style="width:18%">ניהול</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -72,7 +65,7 @@
   </div>
 
   <div class="card">
-    <h3>הוספה / עריכה רשימה</h3>
+    <h3>הוספה / ניהול רשימה</h3>
     <div class="row">
       <input id="name" placeholder="שם" style="flex:1; min-width: 140px;" />
       <input id="lat" placeholder="Lat" inputmode="decimal" style="width: 120px;" />
@@ -86,13 +79,14 @@
     </div>
     <textarea id="jsonBox" placeholder="ייצוא/ייבוא JSON כאן"
               style="width:100%; margin-top:10px; min-height:110px; padding:10px; font-size:14px;"></textarea>
+    <div class="muted small" style="margin-top:10px">
+      Reverse geocoding: © OpenStreetMap contributors (Nominatim). נבצע בקשה אחת בלבד בעת טעינה (מגבלת שימוש ~1 לשנייה). :contentReference[oaicite:4]{index=4}
+    </div>
   </div>
 
 <script>
 /** ======== שמירה ======== */
-const LS_KEY = "fast2care_hospitals_v2";
-const LS_CHOICE = "fast2care_choice_v1";
-const LS_RECENT = "fast2care_recent_v1";
+const LS_KEY = "fast2care_hospitals_v3";
 
 /** דיפולט לדוגמה — תחליף ל-15 בתי חולים שלך */
 const DEFAULT_HOSPITALS = [
@@ -105,8 +99,7 @@ const DEFAULT_HOSPITALS = [
 
 let hospitals = loadHospitals();
 let myPos = null; // {lat,lng}
-let chosenId = loadChoice();
-let recent = loadRecent(); // array of {id, name, ts}
+let cityText = "";
 
 const el = (id) => document.getElementById(id);
 
@@ -122,15 +115,6 @@ function loadHospitals() {
 }
 function saveHospitals() { localStorage.setItem(LS_KEY, JSON.stringify(hospitals)); }
 
-function loadChoice() { return localStorage.getItem(LS_CHOICE) || ""; }
-function saveChoice(id) { localStorage.setItem(LS_CHOICE, id || ""); }
-
-function loadRecent() {
-  try { return JSON.parse(localStorage.getItem(LS_RECENT) || "[]"); }
-  catch { return []; }
-}
-function saveRecent() { localStorage.setItem(LS_RECENT, JSON.stringify(recent)); }
-
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -143,7 +127,24 @@ function setStatus(msg, ok=true) {
   s.className = ok ? "ok" : "bad";
 }
 
-/** ======== קישורי ניווט ======== */
+/** ======== מרחק אווירי (Haversine) ======== */
+function haversineKm(a, b) {
+  const R = 6371; // km
+  const toRad = (x) => x * Math.PI / 180;
+  const dLat = toRad(b.lat - a.lat);
+  const dLng = toRad(b.lng - a.lng);
+  const lat1 = toRad(a.lat);
+  const lat2 = toRad(b.lat);
+
+  const sinDLat = Math.sin(dLat/2);
+  const sinDLng = Math.sin(dLng/2);
+  const h = sinDLat*sinDLat + Math.cos(lat1)*Math.cos(lat2)*sinDLng*sinDLng;
+  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
+}
+
+/** ======== קישורי ניווט ========
+ * Google Maps URLs: api=1 + origin/destination :contentReference[oaicite:5]{index=5}
+ */
 function googleMapsDirUrl(destLat, destLng) {
   const base = "https://www.google.com/maps/dir/?api=1";
   const destination = `&destination=${encodeURIComponent(destLat + "," + destLng)}&travelmode=driving`;
@@ -154,62 +155,71 @@ function wazeUrl(destLat, destLng) {
   return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
 }
 
-/** ======== Recently opened ======== */
-function pushRecent(h) {
-  const now = Date.now();
-  recent = recent.filter(x => x.id !== h.id);
-  recent.unshift({ id: h.id, name: h.name, ts: now });
-  recent = recent.slice(0, 3);
-  saveRecent();
-  renderRecent();
-}
+/** ======== Reverse geocoding (Nominatim) ========
+ * Reverse endpoint docs :contentReference[oaicite:6]{index=6}
+ * Usage policy: max ~1 req/sec + attribution :contentReference[oaicite:7]{index=7}
+ */
+async function reverseCity(lat, lng) {
+  try {
+    const url = new URL("https://nominatim.openstreetmap.org/reverse");
+    url.searchParams.set("format", "jsonv2");
+    url.searchParams.set("lat", lat);
+    url.searchParams.set("lon", lng);
+    url.searchParams.set("accept-language", "he");
 
-function renderRecent() {
-  if (!recent.length) {
-    el("recent").textContent = "אין עדיין.";
-    return;
+    const r = await fetch(url.toString(), { headers: { "Accept": "application/json" } });
+    if (!r.ok) throw new Error("reverse http " + r.status);
+    const data = await r.json();
+    const addr = data.address || {};
+    return addr.city || addr.town || addr.village || addr.municipality || addr.county || "";
+  } catch {
+    return "";
   }
-  el("recent").innerHTML = recent.map(r => {
-    const dt = new Date(r.ts);
-    const t = dt.toLocaleTimeString("he-IL", { hour: "2-digit", minute: "2-digit" });
-    return `• ${escapeHtml(r.name)} <span class="muted">(${t})</span>`;
-  }).join("<br/>");
 }
 
-/** ======== טבלה ======== */
-function renderTable() {
+/** ======== רינדור ומיון ======== */
+function getDisplayList() {
   const q = el("search").value.trim().toLowerCase();
-  const list = hospitals.filter(h => !q || h.name.toLowerCase().includes(q));
+  let list = hospitals.filter(h => !q || h.name.toLowerCase().includes(q));
+
+  if (myPos) {
+    list = list
+      .map(h => ({
+        ...h,
+        _km: haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) })
+      }))
+      .sort((a,b) => a._km - b._km);
+  } else {
+    list = list.map(h => ({...h, _km: null}));
+  }
 
   el("count").textContent = `${list.length} מתוך ${hospitals.length}`;
+  return list;
+}
 
+function renderTable() {
+  const list = getDisplayList();
   const tbody = el("tbl").querySelector("tbody");
   tbody.innerHTML = "";
 
   list.forEach(h => {
+    const kmText = (h._km == null)
+      ? `<span class="muted">—</span>`
+      : `<b>${h._km.toFixed(1)} ק״מ</b>`;
+
     const tr = document.createElement("tr");
-    const isChosen = h.id === chosenId;
-
-    tr.className = isChosen ? "chosen" : "";
-
     tr.innerHTML = `
       <td>
         <b>${escapeHtml(h.name)}</b><br/>
         <span class="muted small">${Number(h.lat).toFixed(6)}, ${Number(h.lng).toFixed(6)}</span>
-        ${isChosen ? `<div class="pill" style="margin-top:6px">נבחר</div>` : ``}
       </td>
-
+      <td>${kmText}</td>
       <td>
         <div class="stack">
-          <button class="big btnPrimary" data-act="gmaps" data-id="${h.id}">פתח זמן ב-Google Maps</button>
+          <button data-act="gmaps" data-id="${h.id}">פתח ב-Google Maps</button>
           <button data-act="waze" data-id="${h.id}">Waze</button>
         </div>
       </td>
-
-      <td>
-        <button data-act="choose" data-id="${h.id}">${isChosen ? "הסר בחירה" : "סמן כבחירה"}</button>
-      </td>
-
       <td>
         <button data-act="del" data-id="${h.id}">מחק</button>
       </td>
@@ -227,52 +237,51 @@ function renderTable() {
       if (act === "del") {
         if (!confirm(`למחוק את "${h.name}"?`)) return;
         hospitals = hospitals.filter(x => x.id !== id);
-        if (chosenId === id) { chosenId = ""; saveChoice(""); }
         saveHospitals();
         renderTable();
         return;
-      }
-
-      if (act === "choose") {
-        chosenId = (chosenId === id) ? "" : id;
-        saveChoice(chosenId);
-        renderTable();
-        return;
-      }
-
-      if (!myPos) {
-        const go = confirm("לא אותר מיקום עדיין. להמשיך לפתוח ניווט בכל זאת?");
-        if (!go) return;
       }
 
       const url = (act === "gmaps")
         ? googleMapsDirUrl(h.lat, h.lng)
         : wazeUrl(h.lat, h.lng);
 
-      pushRecent(h);
-
-      // פתח בטאב חדש כדי לשמור את הדף פתוח
       window.open(url, "_blank");
     });
   });
 }
 
-/** ======== מיקום ======== */
-el("btnLocate").addEventListener("click", () => {
+/** ======== מיקום: אוטומטי בעת טעינה ======== */
+async function locateAuto() {
   if (!navigator.geolocation) {
     setStatus("הדפדפן לא תומך Geolocation.", false);
     return;
   }
+
   setStatus("מאתר מיקום…");
   navigator.geolocation.getCurrentPosition(
-    (pos) => {
+    async (pos) => {
       myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       setStatus(`מיקום נקלט: ${myPos.lat.toFixed(6)}, ${myPos.lng.toFixed(6)}`);
+
+      // עיר
+      const city = await reverseCity(myPos.lat, myPos.lng);
+      cityText = city ? `זוהית בעיר: ${city}` : "זוהית מיקום (לא הצלחתי לזהות עיר).";
+      el("cityLine").textContent = cityText;
+
+      // מיון מחדש + רינדור
+      renderTable();
     },
-    (err) => setStatus(`שגיאה במיקום: ${err.message}`, false),
+    (err) => {
+      setStatus(`שגיאה במיקום: ${err.message}`, false);
+      el("cityLine").textContent = "כדי למיין לפי מרחק צריך לאשר הרשאת מיקום בכרום.";
+      renderTable();
+    },
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
   );
-});
+}
+
+el("btnRetry").addEventListener("click", locateAuto);
 
 /** ======== הוספה/איפוס ======== */
 el("btnAdd").addEventListener("click", () => {
@@ -293,16 +302,8 @@ el("btnAdd").addEventListener("click", () => {
 el("btnReset").addEventListener("click", () => {
   if (!confirm("לאפס לרשימת ברירת מחדל?")) return;
   hospitals = DEFAULT_HOSPITALS.map(x => ({...x, id: crypto.randomUUID()}));
-  chosenId = ""; saveChoice("");
-  recent = []; saveRecent();
   saveHospitals();
   el("jsonBox").value = "";
-  renderRecent();
-  renderTable();
-});
-
-el("btnClearChoice").addEventListener("click", () => {
-  chosenId = ""; saveChoice("");
   renderTable();
 });
 
@@ -328,10 +329,7 @@ el("btnImport").addEventListener("click", () => {
 
     if (!cleaned.length) throw new Error("לא נמצאו רשומות תקינות");
     hospitals = cleaned;
-    chosenId = ""; saveChoice("");
-    recent = []; saveRecent();
     saveHospitals();
-    renderRecent();
     renderTable();
     alert("יובא בהצלחה!");
   } catch (e) {
@@ -339,9 +337,12 @@ el("btnImport").addEventListener("click", () => {
   }
 });
 
+/** ======== חיפוש ======== */
+el("search").addEventListener("input", renderTable);
+
 /** init */
-renderRecent();
 renderTable();
+window.addEventListener("load", locateAuto);
 </script>
 </body>
 </html>
