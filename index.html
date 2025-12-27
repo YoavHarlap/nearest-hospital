@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fast2Care — זמן נסיעה אמיתי עם גיבוי אווירי</title>
+  <title>Fast2Care — פתח כמה יעדים בגוגל מפס</title>
   <style>
     body { font-family: system-ui, Arial; margin: 16px; line-height: 1.35; }
     .card { border: 1px solid #ddd; border-radius: 12px; padding: 12px; margin-top: 12px; }
@@ -19,91 +19,59 @@
     .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; }
     .big { font-size: 16px; padding: 12px; font-weight: 700; }
     .stack { display:flex; flex-direction:column; gap:6px; }
-    .mode { font-weight:700; }
   </style>
 </head>
 <body>
-  <h2>Fast2Care — מיון לפי זמן נסיעה (ORS) עם גיבוי אווירי</h2>
+  <h2>Fast2Care — פתיחה מהירה של ETA בגוגל מפס</h2>
   <div class="muted">
-    אם ORS נכשל/אין אינטרנט/אין מפתח – נשארים עם מיון אווירי כדי שלא תיתקע.
+    הדף ממיין אווירית, ואז בלחיצה אחת פותח כמה יעדים ב-Google Maps כדי שתראה זמני אמת (ETA) בכל טאב.
   </div>
 
   <div class="card">
-    <h3>מצב</h3>
+    <h3>המיקום שלי</h3>
     <div class="row">
-      <button id="btnRun" class="big">אתר מיקום + מיין</button>
+      <button id="btnLocate" class="big">אתר מיקום</button>
       <span id="status" class="muted">מוכן.</span>
-      <span id="modePill" class="pill">מצב: —</span>
       <span id="count" class="pill"></span>
     </div>
-    <div class="muted" style="margin-top:8px">
-      מצב נוכחי: <span id="modeText" class="mode">—</span>
-    </div>
+    <div id="addr" class="muted" style="margin-top:8px"></div>
   </div>
 
   <div class="card">
-    <h3>יעד מומלץ</h3>
-    <div id="best" class="muted">עוד אין תוצאה.</div>
-    <div class="row" style="margin-top:10px">
-      <button id="btnNavWaze" disabled>נווט ב-Waze</button>
-      <button id="btnNavGmaps" disabled>נווט ב-Google Maps</button>
+    <h3>פעולה מהירה</h3>
+    <div class="row">
+      <button id="btnOpenTop5" class="big" disabled>פתח 5 הראשונים ב-Google Maps</button>
+      <button id="btnOpenTop5Waze" disabled>פתח 5 הראשונים ב-Waze</button>
+    </div>
+    <div class="muted" style="margin-top:8px">
+      אם כרום חוסם חלונות קופצים (Pop-ups), תאשר — אחרת ייפתח רק טאב אחד.
     </div>
   </div>
 
   <div class="card">
     <div class="row" style="justify-content:space-between">
-      <h3 style="margin:0">בתי חולים</h3>
+      <h3 style="margin:0">בתי חולים (ממויין לפי מרחק אווירי)</h3>
       <input id="search" placeholder="חיפוש לפי שם..." style="min-width:180px" />
     </div>
 
     <table id="tbl">
       <thead>
         <tr>
-          <th style="width:36%">שם</th>
-          <th style="width:18%">זמן נסיעה</th>
-          <th style="width:18%">מרחק נסיעה</th>
-          <th style="width:14%">מרחק אווירי</th>
-          <th style="width:14%">פעולות</th>
+          <th style="width:46%">שם</th>
+          <th style="width:18%">אווירי</th>
+          <th style="width:36%">פתיחה מהירה</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
 
-  <div class="card">
-    <h3>הגדרות ORS + ניהול רשימה</h3>
-    <div class="muted">
-      הדבק ORS API Key כאן בקוד (לפרוטוטייפ). אם אין/לא עובד — יהיה גיבוי אווירי.
-    </div>
-
-    <div class="row" style="margin-top:10px">
-      <input id="name" placeholder="שם" style="flex:1; min-width: 140px;" />
-      <input id="lat" placeholder="Lat" inputmode="decimal" style="width: 120px;" />
-      <input id="lng" placeholder="Lng" inputmode="decimal" style="width: 120px;" />
-      <button id="btnAdd">הוסף</button>
-    </div>
-
-    <div class="row" style="margin-top:10px">
-      <button id="btnReset">איפוס לרשימת ברירת מחדל</button>
-      <button id="btnExport">ייצוא JSON</button>
-      <button id="btnImport">ייבוא JSON</button>
-    </div>
-
-    <textarea id="jsonBox" placeholder="ייצוא/ייבוא JSON כאן"
-              style="width:100%; margin-top:10px; min-height:110px; padding:10px; font-size:14px;"></textarea>
-  </div>
-
 <script>
-/** =========================
- *  הדבק ORS API KEY כאן
- *  ========================= */
-const ORS_API_KEY = "eyJvcmciOiI1YjNjZTM1OTc4NTExMTAwMDFjZjYyNDgiLCJpZCI6Ijk5MTBmODA3NjYyMzRjNWY5MGQxOGNmNTBjYzI2MjFmIiwiaCI6Im11cm11cjY0In0";
+/** כמה טאבים לפתוח בלחיצה אחת */
+const OPEN_TOP_N = 5;
 
-/** שמירה מקומית */
-const LS_KEY = "fast2care_hospitals_v5";
-
-/** דיפולט לדוגמה — תחליף ל-15 בתי החולים שלך */
-const DEFAULT_HOSPITALS = [
+/** דיפולט לדוגמה — החלף לרשימת 15 שלך */
+const HOSPITALS = [
   { id: crypto.randomUUID(), name: "איכילוב (דוגמה)", lat: 32.0781, lng: 34.7898 },
   { id: crypto.randomUUID(), name: "שיבא תל השומר (דוגמה)", lat: 32.0460, lng: 34.8447 },
   { id: crypto.randomUUID(), name: "בלינסון (דוגמה)", lat: 32.0910, lng: 34.8814 },
@@ -111,11 +79,8 @@ const DEFAULT_HOSPITALS = [
   { id: crypto.randomUUID(), name: "רמב\"ם חיפה (דוגמה)", lat: 32.8371, lng: 35.0506 },
 ];
 
-let hospitals = loadHospitals();
-let myPos = null;          // {lat,lng}
-let displayList = [];      // list with computed fields
-let selected = null;       // chosen item
-let mode = "none";         // "air" | "ors" | "none"
+let myPos = null;
+let sorted = [];
 
 const el = (id) => document.getElementById(id);
 
@@ -123,44 +88,13 @@ function setStatus(msg, ok=true) {
   el("status").textContent = msg;
   el("status").className = ok ? "ok" : "bad";
 }
-function setMode(newMode, note="") {
-  mode = newMode;
-  const label = newMode === "ors" ? "זמן נסיעה (ORS)" : newMode === "air" ? "מרחק אווירי (גיבוי)" : "—";
-  el("modeText").textContent = note ? `${label} — ${note}` : label;
-  el("modePill").textContent = `מצב: ${label}`;
-}
-
-function loadHospitals() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return DEFAULT_HOSPITALS;
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_HOSPITALS;
-  } catch {
-    return DEFAULT_HOSPITALS;
-  }
-}
-function saveHospitals() { localStorage.setItem(LS_KEY, JSON.stringify(hospitals)); }
 
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[c]));
 }
-function fmtMinutes(sec) {
-  if (!Number.isFinite(sec)) return "—";
-  return `${Math.round(sec/60)} דק׳`;
-}
-function fmtKmFromMeters(m) {
-  if (!Number.isFinite(m)) return "—";
-  return `${(m/1000).toFixed(1)} ק״מ`;
-}
-function fmtKm(km) {
-  if (!Number.isFinite(km)) return "—";
-  return `${km.toFixed(1)} ק״מ`;
-}
 
-/** Haversine (אווירי) */
 function haversineKm(a, b) {
   const R = 6371;
   const toRad = (x) => x * Math.PI / 180;
@@ -172,7 +106,6 @@ function haversineKm(a, b) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-/** ניווט */
 function googleMapsDirUrl(destLat, destLng) {
   const base = "https://www.google.com/maps/dir/?api=1";
   const destination = `&destination=${encodeURIComponent(destLat + "," + destLng)}&travelmode=driving`;
@@ -183,73 +116,34 @@ function wazeUrl(destLat, destLng) {
   return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
 }
 
-/** ORS Matrix (1 מקור -> N יעדים) */
-async function orsMatrixDrivingCar() {
-  if (!ORS_API_KEY || ORS_API_KEY.includes("PASTE_ORS_KEY_HERE")) {
-    throw new Error("חסר ORS_API_KEY");
+/** Reverse geocoding (עיר+רחוב) */
+async function reverseAddress(lat, lng) {
+  try {
+    const url = new URL("https://nominatim.openstreetmap.org/reverse");
+    url.searchParams.set("format", "jsonv2");
+    url.searchParams.set("lat", lat);
+    url.searchParams.set("lon", lng);
+    url.searchParams.set("accept-language", "he");
+    const r = await fetch(url.toString(), { headers: { "Accept": "application/json" }});
+    if (!r.ok) throw new Error("reverse http " + r.status);
+    const data = await r.json();
+    const a = data.address || {};
+    const city = a.city || a.town || a.village || a.municipality || "";
+    const road = a.road || a.pedestrian || a.footway || "";
+    const num  = a.house_number || "";
+    const parts = [];
+    if (city) parts.push(city);
+    if (road) parts.push(road + (num ? " " + num : ""));
+    return parts.length ? `זוהית ב: ${parts.join(", ")}` : "זוהית מיקום (לא הצלחתי לזהות כתובת).";
+  } catch {
+    return "זוהית מיקום (זיהוי כתובת נכשל).";
   }
-  const n = hospitals.length;
-  const locations = [
-    [myPos.lng, myPos.lat], // source index 0
-    ...hospitals.map(h => [Number(h.lng), Number(h.lat)]) // destinations 1..n
-  ];
-  const destinations = Array.from({length: n}, (_, i) => i + 1);
-
-  const body = {
-    locations,
-    sources: [0],
-    destinations,
-    metrics: ["duration", "distance"]
-  };
-
-  const url = "https://api.openrouteservice.org/v2/matrix/driving-car";
-  const resp = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Authorization": ORS_API_KEY,
-      "Content-Type": "application/json",
-      "Accept": "application/json"
-    },
-    body: JSON.stringify(body)
-  });
-
-  if (!resp.ok) {
-    const txt = await resp.text().catch(() => "");
-    throw new Error(`ORS HTTP ${resp.status}${txt ? " — " + txt.slice(0,120) : ""}`);
-  }
-
-  const data = await resp.json();
-  const durRow = (data.durations && data.durations[0]) ? data.durations[0] : [];
-  const distRow = (data.distances && data.distances[0]) ? data.distances[0] : [];
-
-  if (durRow.length !== n) throw new Error("ORS response mismatch");
-  return hospitals.map((h, idx) => ({
-    ...h,
-    dur_s: durRow[idx],
-    dist_m: distRow[idx]
-  }));
 }
 
-/** בניית רשימה אווירית (Fallback מהיר) */
-function buildAirSortedList() {
-  const list = hospitals.map(h => {
-    const air_km = myPos
-      ? haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) })
-      : null;
-    return { ...h, air_km, dur_s: null, dist_m: null };
-  });
-
-  // מיון: אם אין מיקום – בלי מיון; אם יש – לפי אווירי
-  if (myPos) list.sort((a,b) => (a.air_km ?? Infinity) - (b.air_km ?? Infinity));
-  return list;
-}
-
-/** רינדור */
-function renderTable() {
+function render() {
   const q = el("search").value.trim().toLowerCase();
-  const list = (displayList.length ? displayList : hospitals).filter(h => !q || h.name.toLowerCase().includes(q));
-
-  el("count").textContent = `${list.length} מתוך ${hospitals.length}`;
+  const list = sorted.filter(h => !q || h.name.toLowerCase().includes(q));
+  el("count").textContent = `${list.length} מתוך ${sorted.length || HOSPITALS.length}`;
 
   const tbody = el("tbl").querySelector("tbody");
   tbody.innerHTML = "";
@@ -258,13 +152,10 @@ function renderTable() {
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><b>${escapeHtml(h.name)}</b></td>
-      <td>${Number.isFinite(h.dur_s) ? `<b>${escapeHtml(fmtMinutes(h.dur_s))}</b>` : `<span class="muted">—</span>`}</td>
-      <td>${Number.isFinite(h.dist_m) ? fmtKmFromMeters(h.dist_m) : `<span class="muted">—</span>`}</td>
-      <td>${Number.isFinite(h.air_km) ? fmtKm(h.air_km) : `<span class="muted">—</span>`}</td>
+      <td>${Number.isFinite(h.air_km) ? `${h.air_km.toFixed(1)} ק״מ` : `<span class="muted">—</span>`}</td>
       <td>
         <div class="stack">
-          <button data-act="select" data-id="${h.id}">בחר</button>
-          <button data-act="gmaps" data-id="${h.id}">Maps</button>
+          <button data-act="gmaps" data-id="${h.id}">Google Maps (ETA)</button>
           <button data-act="waze" data-id="${h.id}">Waze</button>
         </div>
       </td>
@@ -276,193 +167,71 @@ function renderTable() {
     btn.addEventListener("click", () => {
       const act = btn.getAttribute("data-act");
       const id = btn.getAttribute("data-id");
-      const h = displayList.find(x => x.id === id) || hospitals.find(x => x.id === id);
+      const h = sorted.find(x => x.id === id);
       if (!h) return;
-
-      if (act === "select") {
-        selected = h;
-        updateBestUI();
-        return;
-      }
-      const url = (act === "gmaps") ? googleMapsDirUrl(h.lat, h.lng) : wazeUrl(h.lat, h.lng);
+      const url = act === "gmaps" ? googleMapsDirUrl(h.lat, h.lng) : wazeUrl(h.lat, h.lng);
       window.open(url, "_blank");
     });
   });
 }
 
-function updateBestUI() {
-  if (!selected) {
-    el("best").textContent = "עוד אין תוצאה.";
-    el("best").className = "muted";
-    el("btnNavWaze").disabled = true;
-    el("btnNavGmaps").disabled = true;
-    return;
-  }
-  const t = Number.isFinite(selected.dur_s) ? fmtMinutes(selected.dur_s) : "—";
-  const air = Number.isFinite(selected.air_km) ? fmtKm(selected.air_km) : "—";
-  el("best").innerHTML = `נבחר: <b>${escapeHtml(selected.name)}</b> — זמן: <b>${escapeHtml(t)}</b> — אווירי: <b>${escapeHtml(air)}</b>`;
-  el("best").className = "ok";
-  el("btnNavWaze").disabled = false;
-  el("btnNavGmaps").disabled = false;
-}
-
-/** איתור מיקום + מיון עם Fallback */
-async function locateAndSortWithFallback() {
+async function locateAndSort() {
   try {
     if (!navigator.geolocation) {
       setStatus("הדפדפן לא תומך Geolocation.", false);
-      setMode("air", "אין Geolocation");
       return;
     }
-
     setStatus("מאתר מיקום…");
     const pos = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true,
-        timeout: 12000,
-        maximumAge: 0
+        enableHighAccuracy: true, timeout: 12000, maximumAge: 0
       });
     });
-
     myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    setStatus(`מיקום נקלט: ${myPos.lat.toFixed(5)}, ${myPos.lng.toFixed(5)}`, true);
 
-    // 1) קודם כל — מיון אווירי מיידי (כדי שתראה משהו גם אם ORS נופל)
-    displayList = buildAirSortedList();
-    setMode("air", "מיון מהיר");
-    selected = displayList[0] || null;
-    renderTable();
-    updateBestUI();
+    el("addr").textContent = "מזהה עיר/רחוב…";
+    el("addr").textContent = await reverseAddress(myPos.lat, myPos.lng);
 
-    // 2) ואז — ניסיון ORS
-    setStatus("מיקום נקלט. מנסה לחשב זמן נסיעה (ORS)…");
-
-    const orsList = await orsMatrixDrivingCar();
-
-    // לשלב תוצאות ORS לתוך הרשימה + להשאיר גם אווירי
-    const merged = orsList.map(h => ({
+    sorted = HOSPITALS.map(h => ({
       ...h,
-      air_km: myPos ? haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) }) : null
-    }));
+      air_km: haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) })
+    })).sort((a,b) => a.air_km - b.air_km);
 
-    // מיון לפי זמן (ואם null, בסוף)
-    merged.sort((a,b) => (Number.isFinite(a.dur_s) ? a.dur_s : Infinity) - (Number.isFinite(b.dur_s) ? b.dur_s : Infinity));
+    render();
 
-    displayList = merged;
-    setMode("ors", "מיון לפי זמן נסיעה");
-    selected = displayList.find(x => Number.isFinite(x.dur_s)) || displayList[0] || null;
-
-    renderTable();
-    updateBestUI();
-    setStatus("סיימתי. ממוין לפי זמן נסיעה.", true);
+    el("btnOpenTop5").disabled = false;
+    el("btnOpenTop5Waze").disabled = false;
 
   } catch (e) {
-    // ORS או מיקום נכשלו — נשארים באווירי אם יש מיקום, או פשוט לא ממוין
     console.error(e);
-
-    if (myPos) {
-      displayList = buildAirSortedList();
-      setMode("air", "ORS נכשל, נשארנו על גיבוי");
-      selected = displayList[0] || null;
-      renderTable();
-      updateBestUI();
-      setStatus("ORS נכשל — משתמשים במיון אווירי (גיבוי).", false);
-    } else {
-      setMode("air", "אין מיקום, אין ORS");
-      setStatus("נכשל איתור מיקום. אשר הרשאת מיקום ונסה שוב.", false);
-      displayList = buildAirSortedList(); // בלי מיון
-      renderTable();
-      updateBestUI();
-    }
+    setStatus("נכשל איתור מיקום. אשר הרשאה ונסה שוב.", false);
   }
 }
 
-/** Events */
-el("btnRun").addEventListener("click", locateAndSortWithFallback);
-el("search").addEventListener("input", renderTable);
+function openTopN(kind) {
+  if (!sorted.length) return;
+  const top = sorted.slice(0, OPEN_TOP_N);
 
-el("btnNavWaze").addEventListener("click", () => {
-  if (!selected) return;
-  window.open(wazeUrl(selected.lat, selected.lng), "_blank");
-});
-el("btnNavGmaps").addEventListener("click", () => {
-  if (!selected) return;
-  window.open(googleMapsDirUrl(selected.lat, selected.lng), "_blank");
-});
+  // חייב להיות מתוך קליק משתמש, אחרת pop-up blocker יחסום
+  top.forEach((h, i) => {
+    const url = (kind === "gmaps") ? googleMapsDirUrl(h.lat, h.lng) : wazeUrl(h.lat, h.lng);
+    // דיליי קטן מפחית חסימה
+    setTimeout(() => window.open(url, "_blank"), i * 250);
+  });
+}
 
-el("btnAdd").addEventListener("click", () => {
-  const name = el("name").value.trim();
-  const lat = Number(el("lat").value);
-  const lng = Number(el("lng").value);
-  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) {
-    alert("נא למלא שם + Lat/Lng תקינים");
-    return;
-  }
-  hospitals.push({ id: crypto.randomUUID(), name, lat, lng });
-  saveHospitals();
-  el("name").value = ""; el("lat").value = ""; el("lng").value = "";
-
-  // רענון תצוגה: אם יש מיקום, נבנה לפחות אווירי
-  displayList = myPos ? buildAirSortedList() : hospitals.slice();
-  setMode(myPos ? "air" : "none", "עודכן לאחר הוספה");
-  selected = displayList[0] || null;
-  renderTable();
-  updateBestUI();
-});
-
-el("btnReset").addEventListener("click", () => {
-  if (!confirm("לאפס לרשימת ברירת מחדל?")) return;
-  hospitals = DEFAULT_HOSPITALS.map(x => ({...x, id: crypto.randomUUID()}));
-  saveHospitals();
-  el("jsonBox").value = "";
-  displayList = myPos ? buildAirSortedList() : hospitals.slice();
-  setMode(myPos ? "air" : "none", "אופס");
-  selected = displayList[0] || null;
-  renderTable();
-  updateBestUI();
-});
-
-el("btnExport").addEventListener("click", () => {
-  el("jsonBox").value = JSON.stringify(hospitals, null, 2);
-  el("jsonBox").focus();
-});
-el("btnImport").addEventListener("click", () => {
-  try {
-    const txt = el("jsonBox").value.trim();
-    if (!txt) { alert("תדביק JSON בתיבה קודם."); return; }
-    const parsed = JSON.parse(txt);
-    if (!Array.isArray(parsed)) throw new Error("JSON חייב להיות מערך");
-    const cleaned = parsed.map(item => ({
-      id: item.id || crypto.randomUUID(),
-      name: String(item.name || "").trim(),
-      lat: Number(item.lat),
-      lng: Number(item.lng),
-    })).filter(x => x.name && Number.isFinite(x.lat) && Number.isFinite(x.lng));
-    if (!cleaned.length) throw new Error("לא נמצאו רשומות תקינות");
-
-    hospitals = cleaned;
-    saveHospitals();
-
-    displayList = myPos ? buildAirSortedList() : hospitals.slice();
-    setMode(myPos ? "air" : "none", "עודכן לאחר ייבוא");
-    selected = displayList[0] || null;
-    renderTable();
-    updateBestUI();
-    alert("יובא בהצלחה!");
-  } catch (e) {
-    alert("ייבוא נכשל: " + (e.message || e));
-  }
-});
+/** events */
+el("btnLocate").addEventListener("click", locateAndSort);
+el("search").addEventListener("input", render);
+el("btnOpenTop5").addEventListener("click", () => openTopN("gmaps"));
+el("btnOpenTop5Waze").addEventListener("click", () => openTopN("waze"));
 
 /** init */
-displayList = hospitals.slice();
-renderTable();
-updateBestUI();
-setMode("none");
-window.addEventListener("load", () => {
-  // אופציונלי: להתחיל אוטומטית בלי ללחוץ
-  locateAndSortWithFallback();
-});
+sorted = HOSPITALS.slice();
+render();
+// אוטומטי בטעינה (עדיין יופיע אישור מיקום)
+window.addEventListener("load", locateAndSort);
 </script>
 </body>
 </html>
-
