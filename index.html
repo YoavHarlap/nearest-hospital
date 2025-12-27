@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fast2Care — פתח כמה יעדים בגוגל מפס</title>
+  <title>Fast2Care — Top 4 ב-Google Maps</title>
   <style>
     body { font-family: system-ui, Arial; margin: 16px; line-height: 1.35; }
     .card { border: 1px solid #ddd; border-radius: 12px; padding: 12px; margin-top: 12px; }
@@ -22,29 +22,22 @@
   </style>
 </head>
 <body>
-  <h2>Fast2Care — פתיחה מהירה של ETA בגוגל מפס</h2>
+  <h2>Fast2Care — מיון אווירי + פתיחת 4 הקרובים ב-Google Maps</h2>
   <div class="muted">
-    הדף ממיין אווירית, ואז בלחיצה אחת פותח כמה יעדים ב-Google Maps כדי שתראה זמני אמת (ETA) בכל טאב.
+    המטרה: לראות מהר ETA אמיתי של גוגל ע"י פתיחה אוטומטית של 4 היעדים הקרובים ביותר (אווירית).
   </div>
 
   <div class="card">
     <h3>המיקום שלי</h3>
     <div class="row">
       <button id="btnLocate" class="big">אתר מיקום</button>
+      <button id="btnOpenTop4" class="big" disabled>פתח 4 הכי קרובים ב-Google Maps</button>
       <span id="status" class="muted">מוכן.</span>
       <span id="count" class="pill"></span>
     </div>
     <div id="addr" class="muted" style="margin-top:8px"></div>
-  </div>
-
-  <div class="card">
-    <h3>פעולה מהירה</h3>
-    <div class="row">
-      <button id="btnOpenTop5" class="big" disabled>פתח 5 הראשונים ב-Google Maps</button>
-      <button id="btnOpenTop5Waze" disabled>פתח 5 הראשונים ב-Waze</button>
-    </div>
-    <div class="muted" style="margin-top:8px">
-      אם כרום חוסם חלונות קופצים (Pop-ups), תאשר — אחרת ייפתח רק טאב אחד.
+    <div class="muted" style="margin-top:6px">
+      אם כרום חוסם Pop-ups: תפריט ⋮ → Settings → Site settings → Pop-ups and redirects → Allow (לאתר שלך).
     </div>
   </div>
 
@@ -57,9 +50,9 @@
     <table id="tbl">
       <thead>
         <tr>
-          <th style="width:46%">שם</th>
-          <th style="width:18%">אווירי</th>
-          <th style="width:36%">פתיחה מהירה</th>
+          <th style="width:44%">שם</th>
+          <th style="width:16%">אווירי</th>
+          <th style="width:40%">פתיחה מהירה</th>
         </tr>
       </thead>
       <tbody></tbody>
@@ -67,15 +60,16 @@
   </div>
 
 <script>
-/** כמה טאבים לפתוח בלחיצה אחת */
-const OPEN_TOP_N = 5;
+/** כמה כרטיסיות לפתוח */
+const OPEN_TOP_N = 4;
 
 /** דיפולט לדוגמה — החלף לרשימת 15 שלך */
-const HOSPITALS = [
+let hospitals = [
   { id: crypto.randomUUID(), name: "איכילוב (דוגמה)", lat: 32.0781, lng: 34.7898 },
   { id: crypto.randomUUID(), name: "שיבא תל השומר (דוגמה)", lat: 32.0460, lng: 34.8447 },
   { id: crypto.randomUUID(), name: "בלינסון (דוגמה)", lat: 32.0910, lng: 34.8814 },
   { id: crypto.randomUUID(), name: "וולפסון (דוגמה)", lat: 32.0168, lng: 34.7580 },
+  { id: crypto.randomUUID(), name: "אסותא רמת החייל (דוגמה)", lat: 32.1093, lng: 34.8416 },
   { id: crypto.randomUUID(), name: "רמב\"ם חיפה (דוגמה)", lat: 32.8371, lng: 35.0506 },
 ];
 
@@ -95,6 +89,7 @@ function escapeHtml(s) {
   }[c]));
 }
 
+/** מרחק אווירי */
 function haversineKm(a, b) {
   const R = 6371;
   const toRad = (x) => x * Math.PI / 180;
@@ -106,6 +101,7 @@ function haversineKm(a, b) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
+/** קישורי ניווט לגוגל מפס / וויז */
 function googleMapsDirUrl(destLat, destLng) {
   const base = "https://www.google.com/maps/dir/?api=1";
   const destination = `&destination=${encodeURIComponent(destLat + "," + destLng)}&travelmode=driving`;
@@ -116,7 +112,7 @@ function wazeUrl(destLat, destLng) {
   return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
 }
 
-/** Reverse geocoding (עיר+רחוב) */
+/** זיהוי כתובת: עיר + רחוב + מספר (Nominatim) */
 async function reverseAddress(lat, lng) {
   try {
     const url = new URL("https://nominatim.openstreetmap.org/reverse");
@@ -143,7 +139,8 @@ async function reverseAddress(lat, lng) {
 function render() {
   const q = el("search").value.trim().toLowerCase();
   const list = sorted.filter(h => !q || h.name.toLowerCase().includes(q));
-  el("count").textContent = `${list.length} מתוך ${sorted.length || HOSPITALS.length}`;
+
+  el("count").textContent = `${list.length} מתוך ${sorted.length || hospitals.length}`;
 
   const tbody = el("tbl").querySelector("tbody");
   tbody.innerHTML = "";
@@ -155,7 +152,7 @@ function render() {
       <td>${Number.isFinite(h.air_km) ? `${h.air_km.toFixed(1)} ק״מ` : `<span class="muted">—</span>`}</td>
       <td>
         <div class="stack">
-          <button data-act="gmaps" data-id="${h.id}">Google Maps (ETA)</button>
+          <button data-act="gmaps" data-id="${h.id}">Google Maps (ראה ETA)</button>
           <button data-act="waze" data-id="${h.id}">Waze</button>
         </div>
       </td>
@@ -181,27 +178,27 @@ async function locateAndSort() {
       setStatus("הדפדפן לא תומך Geolocation.", false);
       return;
     }
+
     setStatus("מאתר מיקום…");
     const pos = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
         enableHighAccuracy: true, timeout: 12000, maximumAge: 0
       });
     });
+
     myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     setStatus(`מיקום נקלט: ${myPos.lat.toFixed(5)}, ${myPos.lng.toFixed(5)}`, true);
 
-    el("addr").textContent = "מזהה עיר/רחוב…";
+    el("addr").textContent = "מזהה כתובת (עיר/רחוב)…";
     el("addr").textContent = await reverseAddress(myPos.lat, myPos.lng);
 
-    sorted = HOSPITALS.map(h => ({
+    sorted = hospitals.map(h => ({
       ...h,
       air_km: haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) })
     })).sort((a,b) => a.air_km - b.air_km);
 
     render();
-
-    el("btnOpenTop5").disabled = false;
-    el("btnOpenTop5Waze").disabled = false;
+    el("btnOpenTop4").disabled = sorted.length < 1;
 
   } catch (e) {
     console.error(e);
@@ -209,28 +206,25 @@ async function locateAndSort() {
   }
 }
 
-function openTopN(kind) {
+function openTop4Gmaps() {
   if (!sorted.length) return;
+
   const top = sorted.slice(0, OPEN_TOP_N);
 
-  // חייב להיות מתוך קליק משתמש, אחרת pop-up blocker יחסום
+  // חשוב: פתיחת כמה טאבים חייבת להיות מתוך קליק
+  // דיליי קטן מפחית חסימת popups
   top.forEach((h, i) => {
-    const url = (kind === "gmaps") ? googleMapsDirUrl(h.lat, h.lng) : wazeUrl(h.lat, h.lng);
-    // דיליי קטן מפחית חסימה
+    const url = googleMapsDirUrl(h.lat, h.lng);
     setTimeout(() => window.open(url, "_blank"), i * 250);
   });
 }
 
 /** events */
 el("btnLocate").addEventListener("click", locateAndSort);
+el("btnOpenTop4").addEventListener("click", openTop4Gmaps);
 el("search").addEventListener("input", render);
-el("btnOpenTop5").addEventListener("click", () => openTopN("gmaps"));
-el("btnOpenTop5Waze").addEventListener("click", () => openTopN("waze"));
 
-/** init */
-sorted = HOSPITALS.slice();
-render();
-// אוטומטי בטעינה (עדיין יופיע אישור מיקום)
+/** init: מנסה לאתר אוטומטית בטעינה */
 window.addEventListener("load", locateAndSort);
 </script>
 </body>
