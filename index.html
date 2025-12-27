@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>בית חולים הקרוב לפי זמן נסיעה</title>
+  <title>Fast2Care — בחירת בית חולים לפי זמן נסיעה (ללא API)</title>
   <style>
     body { font-family: system-ui, Arial; margin: 16px; line-height: 1.4; }
     .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
@@ -16,30 +16,39 @@
     .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 12px; }
     .ok { color: #0a7; }
     .bad { color: #c00; }
+    .small { font-size: 13px; }
   </style>
 </head>
 <body>
-  <h2>בית חולים הקרוב לפי זמן נסיעה</h2>
+  <h2>Fast2Care — בחירת בית חולים לפי זמן נסיעה</h2>
+  <div class="muted">
+    גרסה חינמית בלי API: הדף פותח Google Maps/Waze עם היעד, ואתה מסתכל על זמן הנסיעה ובוחר.
+  </div>
+
   <div class="card">
+    <h3>המיקום שלי</h3>
     <div class="row">
       <button id="btnLocate">מצא אותי (GPS)</button>
       <span id="locStatus" class="muted">עוד לא אותר מיקום.</span>
     </div>
-    <div class="muted" style="margin-top:8px">
-      הערה: מיקום בדפדפן דורש HTTPS והרשאה מהמשתמש. :contentReference[oaicite:4]{index=4}
+    <div class="muted small" style="margin-top:8px">
+      כדי ש-GPS יעבוד צריך לפתוח את הדף דרך HTTPS (למשל GitHub Pages), לא מתוך קובץ מקומי.
     </div>
   </div>
 
   <div class="card">
-    <h3>רשימת בתי חולים</h3>
+    <h3>בתי חולים</h3>
+
     <div class="row">
       <input id="name" placeholder="שם" style="flex:1; min-width: 140px;" />
       <input id="lat" placeholder="Lat" inputmode="decimal" style="width: 120px;" />
       <input id="lng" placeholder="Lng" inputmode="decimal" style="width: 120px;" />
       <button id="btnAdd">הוסף</button>
     </div>
-    <div class="muted" style="margin-top:8px">
-      טיפ: אפשר להשיג Lat/Lng ע״י לחיצה ארוכה במפות גוגל והעתקת הקואורדינטות.
+
+    <div class="muted small" style="margin-top:8px">
+      טיפ: במפות גוגל תעשה לחיצה ארוכה על מקום → יופיע Lat/Lng להעתקה.
+      הרשימה נשמרת אוטומטית במכשיר (LocalStorage).
     </div>
 
     <table id="tbl">
@@ -47,7 +56,7 @@
         <tr>
           <th>שם</th>
           <th>Lat,Lng</th>
-          <th>זמן נסיעה</th>
+          <th>קיצורים</th>
           <th>פעולות</th>
         </tr>
       </thead>
@@ -55,37 +64,37 @@
     </table>
 
     <div class="row" style="margin-top:12px">
-      <button id="btnCompute">חשב הקרוב ביותר לפי זמן נסיעה</button>
       <button id="btnReset">איפוס לרשימת ברירת מחדל</button>
+      <button id="btnExport">ייצוא רשימה (JSON)</button>
+      <button id="btnImport">ייבוא רשימה (JSON)</button>
     </div>
+
+    <textarea id="jsonBox" placeholder="כאן יופיע JSON לייצוא / תדביק כאן לייבוא"
+              style="width:100%; margin-top:10px; min-height:120px; padding:10px; font-size:14px;"></textarea>
   </div>
 
   <div class="card">
-    <h3>תוצאה</h3>
-    <div id="result" class="muted">עוד אין תוצאה.</div>
-    <div class="row" style="margin-top:10px">
-      <button id="btnWaze" disabled>נווט ב-Waze</button>
-      <button id="btnGMaps" disabled>נווט ב-Google Maps</button>
-    </div>
+    <h3>איך משתמשים בפועל</h3>
+    <ol>
+      <li>לחץ <b>מצא אותי (GPS)</b></li>
+      <li>ליד כל בית חולים לחץ <b>Google Maps</b> (או <b>Waze</b>)</li>
+      <li>תסתכל על זמן הנסיעה שמופיע באפליקציה ובחר הכי מהיר</li>
+    </ol>
   </div>
 
 <script>
-/** =========================
- *  הגדר כאן API KEY
- *  ========================= */
-const GOOGLE_API_KEY = "PASTE_YOUR_KEY_HERE";
+/** ======== הגדרות ושמירה ======== */
+const LS_KEY = "fast2care_hospitals_v1";
 
-/** ברירת מחדל (דוגמה) — תחליף לרשימת בתי החולים שלך */
+/** ברירת מחדל לדוגמה — תחליף/תוסיף לשלך */
 const DEFAULT_HOSPITALS = [
   { id: crypto.randomUUID(), name: "איכילוב (דוגמה)", lat: 32.0781, lng: 34.7898 },
   { id: crypto.randomUUID(), name: "שיבא תל השומר (דוגמה)", lat: 32.0460, lng: 34.8447 },
   { id: crypto.randomUUID(), name: "רמב\"ם חיפה (דוגמה)", lat: 32.8371, lng: 35.0506 },
 ];
 
-const LS_KEY = "hospitals_v1";
 let hospitals = loadHospitals();
-let myPos = null;          // {lat,lng}
-let best = null;           // {hospital, durationSeconds, durationText}
+let myPos = null; // {lat,lng}
 
 const el = (id) => document.getElementById(id);
 
@@ -103,35 +112,6 @@ function saveHospitals() {
   localStorage.setItem(LS_KEY, JSON.stringify(hospitals));
 }
 
-function renderTable(durationsById = {}) {
-  const tbody = el("tbl").querySelector("tbody");
-  tbody.innerHTML = "";
-  hospitals.forEach(h => {
-    const tr = document.createElement("tr");
-    const d = durationsById[h.id];
-
-    tr.innerHTML = `
-      <td>${escapeHtml(h.name)}</td>
-      <td class="muted">${h.lat.toFixed(6)}, ${h.lng.toFixed(6)}</td>
-      <td>${d ? `<span class="ok">${escapeHtml(d.text)}</span>` : `<span class="muted">—</span>`}</td>
-      <td>
-        <button data-act="del" data-id="${h.id}">מחק</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  tbody.querySelectorAll("button[data-act='del']").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-id");
-      hospitals = hospitals.filter(x => x.id !== id);
-      saveHospitals();
-      renderTable();
-      clearResult();
-    });
-  });
-}
-
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
@@ -144,18 +124,81 @@ function setStatus(msg, ok=true) {
   s.className = ok ? "ok" : "bad";
 }
 
-function clearResult() {
-  best = null;
-  el("result").textContent = "עוד אין תוצאה.";
-  el("result").className = "muted";
-  el("btnWaze").disabled = true;
-  el("btnGMaps").disabled = true;
+/** ======== קישורי ניווט ======== */
+function googleMapsDirUrl(destLat, destLng) {
+  // פותח מסך "מסלול" עם יעד. אם יש מיקום נוכחי, גוגל תשתמש בו כברירת מחדל.
+  // אפשר גם להוסיף origin אם יש לנו myPos.
+  const base = "https://www.google.com/maps/dir/?api=1";
+  const destination = `&destination=${encodeURIComponent(destLat + "," + destLng)}&travelmode=driving`;
+  const origin = myPos ? `&origin=${encodeURIComponent(myPos.lat + "," + myPos.lng)}` : "";
+  return base + destination + origin;
 }
 
-/** ===== Geolocation (דורש HTTPS והרשאה) ===== */
+function wazeUrl(destLat, destLng) {
+  // פותח Waze לניווט ליעד
+  return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
+}
+
+/** ======== רינדור טבלה ======== */
+function renderTable() {
+  const tbody = el("tbl").querySelector("tbody");
+  tbody.innerHTML = "";
+
+  hospitals.forEach(h => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${escapeHtml(h.name)}</td>
+      <td class="muted">${Number(h.lat).toFixed(6)}, ${Number(h.lng).toFixed(6)}</td>
+      <td>
+        <div class="row">
+          <button data-act="gmaps" data-id="${h.id}">Google Maps</button>
+          <button data-act="waze" data-id="${h.id}">Waze</button>
+        </div>
+        <div class="muted small" style="margin-top:6px">
+          טיפ: תסתכל על זמן הנסיעה שמופיע במפות ובחר הכי מהיר.
+        </div>
+      </td>
+      <td>
+        <button data-act="del" data-id="${h.id}">מחק</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll("button[data-act]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const act = btn.getAttribute("data-act");
+      const id = btn.getAttribute("data-id");
+      const h = hospitals.find(x => x.id === id);
+      if (!h) return;
+
+      if (act === "del") {
+        hospitals = hospitals.filter(x => x.id !== id);
+        saveHospitals();
+        renderTable();
+        return;
+      }
+
+      if (!myPos) {
+        // אפשר עדיין לפתוח ניווט בלי origin מפורש, אבל עדיף לבקש GPS
+        const go = confirm("לא אותר מיקום עדיין. להמשיך לפתוח ניווט בכל זאת?");
+        if (!go) return;
+      }
+
+      const url = (act === "gmaps")
+        ? googleMapsDirUrl(h.lat, h.lng)
+        : wazeUrl(h.lat, h.lng);
+
+      window.location.href = url;
+    });
+  });
+}
+
+/** ======== Geolocation ======== */
 el("btnLocate").addEventListener("click", () => {
   if (!navigator.geolocation) {
-    setStatus("המכשיר/דפדפן לא תומך Geolocation.", false);
+    setStatus("הדפדפן לא תומך Geolocation.", false);
     return;
   }
   setStatus("מאתר מיקום…");
@@ -163,16 +206,13 @@ el("btnLocate").addEventListener("click", () => {
     (pos) => {
       myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
       setStatus(`מיקום נקלט: ${myPos.lat.toFixed(6)}, ${myPos.lng.toFixed(6)}`);
-      clearResult();
     },
-    (err) => {
-      setStatus(`שגיאה במיקום: ${err.message}`, false);
-    },
+    (err) => setStatus(`שגיאה במיקום: ${err.message}`, false),
     { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
   );
 });
 
-/** ===== Add hospital ===== */
+/** ======== הוספה/איפוס ======== */
 el("btnAdd").addEventListener("click", () => {
   const name = el("name").value.trim();
   const lat = Number(el("lat").value);
@@ -185,130 +225,47 @@ el("btnAdd").addEventListener("click", () => {
   hospitals.push({ id: crypto.randomUUID(), name, lat, lng });
   saveHospitals();
   renderTable();
+
   el("name").value = ""; el("lat").value = ""; el("lng").value = "";
-  clearResult();
 });
 
-/** ===== Reset ===== */
 el("btnReset").addEventListener("click", () => {
   hospitals = DEFAULT_HOSPITALS.map(x => ({...x, id: crypto.randomUUID()}));
   saveHospitals();
   renderTable();
-  myPos = null;
-  setStatus("עוד לא אותר מיקום.");
-  clearResult();
+  el("jsonBox").value = "";
 });
 
-/** ===== Compute using Google Distance Matrix API =====
- * Docs: returns distance + travel time; supports duration_in_traffic when driving + departure_time :contentReference[oaicite:5]{index=5}
- */
-el("btnCompute").addEventListener("click", async () => {
+/** ======== ייצוא/ייבוא JSON ======== */
+el("btnExport").addEventListener("click", () => {
+  el("jsonBox").value = JSON.stringify(hospitals, null, 2);
+  el("jsonBox").focus();
+});
+
+el("btnImport").addEventListener("click", () => {
   try {
-    if (!GOOGLE_API_KEY || GOOGLE_API_KEY.includes("PASTE_YOUR_KEY_HERE")) {
-      alert("חסר GOOGLE_API_KEY בקוד.");
+    const txt = el("jsonBox").value.trim();
+    if (!txt) {
+      alert("תדביק JSON בתיבה קודם.");
       return;
     }
-    if (!myPos) {
-      alert("קודם לחץ 'מצא אותי (GPS)'.");
-      return;
-    }
-    if (!hospitals.length) {
-      alert("אין בתי חולים ברשימה.");
-      return;
-    }
+    const parsed = JSON.parse(txt);
+    if (!Array.isArray(parsed)) throw new Error("JSON חייב להיות מערך");
+    const cleaned = parsed.map(item => ({
+      id: item.id || crypto.randomUUID(),
+      name: String(item.name || "").trim(),
+      lat: Number(item.lat),
+      lng: Number(item.lng),
+    })).filter(x => x.name && Number.isFinite(x.lat) && Number.isFinite(x.lng));
 
-    el("result").textContent = "מחשב זמני נסיעה…";
-    el("result").className = "muted";
-
-    // Distance Matrix REST endpoint
-    const origins = `${myPos.lat},${myPos.lng}`;
-    const destinations = hospitals.map(h => `${h.lat},${h.lng}`).join("|");
-
-    // departure_time=now ינסה להחזיר גם duration_in_traffic (כפוף להרשאות/תנאים בחשבון)
-    const url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
-    url.searchParams.set("origins", origins);
-    url.searchParams.set("destinations", destinations);
-    url.searchParams.set("mode", "driving");
-    url.searchParams.set("language", "he");
-    url.searchParams.set("departure_time", "now");
-    url.searchParams.set("key", GOOGLE_API_KEY);
-
-    // שים לב: עלול להיות CORS בדפדפן. אם זה קורה — פתרון: Proxy קטן (Cloud Function).
-    const resp = await fetch(url.toString());
-    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-    const data = await resp.json();
-
-    if (data.status !== "OK") {
-      throw new Error(`API status: ${data.status}${data.error_message ? " — " + data.error_message : ""}`);
-    }
-
-    const row = data.rows?.[0];
-    const elements = row?.elements || [];
-    if (elements.length !== hospitals.length) {
-      throw new Error("תשובה לא צפויה מה-API.");
-    }
-
-    const durationsById = {};
-    best = null;
-
-    elements.forEach((elmt, idx) => {
-      const h = hospitals[idx];
-      if (elmt.status !== "OK") {
-        durationsById[h.id] = { text: "לא זמין", seconds: Infinity };
-        return;
-      }
-      // Prefer duration_in_traffic if available, else duration
-      const durObj = elmt.duration_in_traffic || elmt.duration;
-      const seconds = durObj?.value ?? Infinity;
-      const text = durObj?.text ?? "—";
-      durationsById[h.id] = { text, seconds };
-
-      if (!best || seconds < best.durationSeconds) {
-        best = { hospital: h, durationSeconds: seconds, durationText: text };
-      }
-    });
-
-    renderTable(durationsById);
-
-    if (!best || !Number.isFinite(best.durationSeconds) || best.durationSeconds === Infinity) {
-      el("result").textContent = "לא הצלחתי לחשב זמן נסיעה לאף יעד.";
-      el("result").className = "bad";
-      return;
-    }
-
-    el("result").innerHTML =
-      `הקרוב ביותר לפי זמן נסיעה: <b>${escapeHtml(best.hospital.name)}</b><br/>` +
-      `זמן משוער: <b>${escapeHtml(best.durationText)}</b>`;
-    el("result").className = "ok";
-
-    el("btnWaze").disabled = false;
-    el("btnGMaps").disabled = false;
-
+    if (!cleaned.length) throw new Error("לא נמצאו רשומות תקינות ב-JSON");
+    hospitals = cleaned;
+    saveHospitals();
+    renderTable();
+    alert("יובא בהצלחה!");
   } catch (e) {
-    el("result").textContent =
-      "שגיאה בחישוב. אם זו שגיאת CORS בדפדפן, צריך Proxy קטן (שרתון) כדי לקרוא ל-Google API בלי לחשוף מפתח.";
-    el("result").className = "bad";
-    console.error(e);
-    alert(String(e.message || e));
+    alert("ייבוא נכשל: " + (e.message || e));
   }
-});
-
-/** ===== Navigation buttons =====
- * Waze base deep link: https://waze.com/ul :contentReference[oaicite:6]{index=6}
- */
-el("btnWaze").addEventListener("click", () => {
-  if (!best) return;
-  const { lat, lng } = best.hospital;
-  const wazeUrl = `https://waze.com/ul?ll=${encodeURIComponent(lat + "," + lng)}&navigate=yes`;
-  window.location.href = wazeUrl;
-});
-
-el("btnGMaps").addEventListener("click", () => {
-  if (!best) return;
-  const { lat, lng } = best.hospital;
-  // Universal Google Maps directions URL
-  const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + "," + lng)}&travelmode=driving`;
-  window.location.href = gmapsUrl;
 });
 
 renderTable();
