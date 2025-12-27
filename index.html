@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fast2Care — Top 4 ב-Google Maps</title>
+  <title>Fast2Care — מיון אווירי + Google Maps</title>
   <style>
     body { font-family: system-ui, Arial; margin: 16px; line-height: 1.35; }
     .card { border: 1px solid #ddd; border-radius: 12px; padding: 12px; margin-top: 12px; }
     .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    input, button { padding: 10px; font-size: 16px; }
+    input, button, textarea { padding: 10px; font-size: 16px; }
     button { cursor: pointer; }
     .muted { color: #555; }
     .ok { color: #0a7; }
@@ -22,25 +22,25 @@
   </style>
 </head>
 <body>
-  <h2>Fast2Care — מיון אווירי + פתיחת 4 הקרובים ב-Google Maps</h2>
+  <h2>Fast2Care — מיון אווירי + פתיחה מהירה ב-Google Maps</h2>
   <div class="muted">
-    ממיין לפי מרחק אווירי ואז בלחיצה אחת פותח 4 יעדים ב-Google Maps כדי לראות ETA מהר.
-    פתיחה לגוגל נעשית עם <b>שם בית החולים</b> (ולא רק נ״צ), ובפורמט “וובי” כדי להפחית קפיצה לאפליקציה.
+    ממיין לפי מרחק אווירי. אפשר לפתוח 4 בתי חולים כטאבים (ETA לכל אחד),
+    או לפתוח מסלול אחד עם 4 עצירות כדי לראות הכל במסך אחד.
   </div>
 
   <div class="card">
     <h3>המיקום שלי</h3>
     <div class="row">
       <button id="btnLocate" class="big">אתר מיקום</button>
-      <button id="btnOpenTop4" class="big" disabled>פתח 4 הכי קרובים ב-Google Maps</button>
+      <button id="btnOpenTop4" class="big" disabled>פתח 4 הכי קרובים (טאבים)</button>
+      <button id="btnOpenMultiStop" class="big" disabled>פתח מסלול מרובה עצירות (Top 4)</button>
       <span id="status" class="muted">מוכן.</span>
       <span id="count" class="pill"></span>
     </div>
     <div id="addr" class="muted" style="margin-top:8px"></div>
-    <div class="muted" style="margin-top:6px">
-      אם כרום חוסם Pop-ups: תפריט ⋮ → Settings → Site settings → Pop-ups and redirects → Allow (לאתר שלך).
-      <br/>
-      אם עדיין נפתח באפליקציה: Settings → Apps → Maps → Open by default → Open supported links → Don’t allow.
+
+    <div class="muted" style="margin-top:8px">
+      אם Google Maps קופץ לאפליקציה באנדרואיד: Settings → Apps → Maps → Open by default → Open supported links → <b>Don’t allow</b>.
     </div>
   </div>
 
@@ -53,21 +53,47 @@
     <table id="tbl">
       <thead>
         <tr>
-          <th style="width:44%">שם</th>
+          <th style="width:40%">שם</th>
           <th style="width:16%">אווירי</th>
-          <th style="width:40%">פתיחה מהירה</th>
+          <th style="width:24%">Google/Waze</th>
+          <th style="width:20%">ניהול</th>
         </tr>
       </thead>
       <tbody></tbody>
     </table>
   </div>
 
+  <div class="card">
+    <h3>הוספה / ייבוא-ייצוא JSON (נשמר לפעם הבאה)</h3>
+    <div class="row">
+      <input id="name" placeholder="שם" style="flex:1; min-width: 140px;" />
+      <input id="lat" placeholder="Lat" inputmode="decimal" style="width: 120px;" />
+      <input id="lng" placeholder="Lng" inputmode="decimal" style="width: 120px;" />
+      <button id="btnAdd">הוסף</button>
+    </div>
+
+    <div class="row" style="margin-top:10px">
+      <button id="btnReset">איפוס לרשימת ברירת מחדל</button>
+      <button id="btnExport">ייצוא JSON</button>
+      <button id="btnImport">ייבוא JSON</button>
+    </div>
+
+    <textarea id="jsonBox" placeholder="הדבק כאן JSON לייבוא, או לחץ 'ייצוא JSON' לקבלת הרשימה"
+              style="width:100%; margin-top:10px; min-height:120px;"></textarea>
+    <div class="muted" style="margin-top:8px">
+      הרשימה נשמרת במכשיר (LocalStorage). אם מוחקים נתוני גלישה/Cache — זה יימחק.
+    </div>
+  </div>
+
 <script>
-/** כמה כרטיסיות לפתוח */
+/** כמה כרטיסיות/עצירות לפתוח */
 const OPEN_TOP_N = 4;
 
-/** דיפולט לדוגמה — החלף לרשימת 15 שלך */
-let hospitals = [
+/** שמירה מקומית */
+const LS_KEY = "fast2care_hospitals_v_json2";
+
+/** דיפולט — תחליף ל-15 שלך */
+const DEFAULT_HOSPITALS = [
   { id: crypto.randomUUID(), name: "איכילוב (דוגמה)", lat: 32.0781, lng: 34.7898 },
   { id: crypto.randomUUID(), name: "שיבא תל השומר (דוגמה)", lat: 32.0460, lng: 34.8447 },
   { id: crypto.randomUUID(), name: "בלינסון (דוגמה)", lat: 32.0910, lng: 34.8814 },
@@ -76,6 +102,7 @@ let hospitals = [
   { id: crypto.randomUUID(), name: "רמב\"ם חיפה (דוגמה)", lat: 32.8371, lng: 35.0506 },
 ];
 
+let hospitals = loadHospitals();
 let myPos = null;
 let sorted = [];
 
@@ -92,6 +119,20 @@ function escapeHtml(s) {
   }[c]));
 }
 
+function loadHospitals() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return DEFAULT_HOSPITALS;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_HOSPITALS;
+  } catch {
+    return DEFAULT_HOSPITALS;
+  }
+}
+function saveHospitals() {
+  localStorage.setItem(LS_KEY, JSON.stringify(hospitals));
+}
+
 /** מרחק אווירי */
 function haversineKm(a, b) {
   const R = 6371;
@@ -104,23 +145,43 @@ function haversineKm(a, b) {
   return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
 }
 
-/**
- * ✅ Google Maps URL "וובי" שמנסה להפחית מעבר לאפליקציה
- * ✅ משתמש בשם בית החולים כיעד (daddr) כדי שתראה שם ולא רק נ״צ
- *
- * הערה: אם באנדרואיד מוגדר App Links ל-Maps, לפעמים עדיין יעבור לאפליקציה.
- * במקרה כזה צריך לבטל "Open supported links" באפליקציית Maps.
- */
-function googleMapsDirUrl(destLat, destLng, destName) {
-  const base = "https://www.google.com/maps";
+/** קישור רגיל ליעד יחיד */
+function googleMapsSingleUrl(destLat, destLng, destName) {
+  const base = "https://www.google.com/maps/dir/?api=1";
   const origin = myPos ? `${myPos.lat},${myPos.lng}` : "";
-  const saddr = encodeURIComponent(origin);
-  // יעד: קודם שם (נוח לזיהוי), ואם אין שם אז נ״צ
-  const daddr = encodeURIComponent(destName || (destLat + "," + destLng));
-  return `${base}?output=classic&dirflg=d&saddr=${saddr}&daddr=${daddr}`;
+  const destination = encodeURIComponent(destName || (destLat + "," + destLng));
+  const o = origin ? `&origin=${encodeURIComponent(origin)}` : "";
+  return `${base}${o}&destination=${destination}&travelmode=driving`;
 }
 
-/** Waze deep link (עדיין ייתכן שייפתח באפליקציה וזה בסדר) */
+/**
+ * ✅ קישור למסלול מרובה עצירות:
+ * origin = המיקום שלך
+ * destination = היעד הראשון
+ * waypoints = שאר היעדים
+ *
+ * הערה: Google Maps מגביל כמות waypoints, לכן אנחנו עושים Top 4 בלבד.
+ */
+function googleMapsMultiStopUrl(stops) {
+  // stops: array of {name, lat, lng} length >= 2 ideally
+  const origin = myPos ? `${myPos.lat},${myPos.lng}` : "";
+  if (!origin) return null;
+
+  const base = "https://www.google.com/maps/dir/?api=1";
+  const o = `&origin=${encodeURIComponent(origin)}`;
+  const destination = encodeURIComponent(stops[0].name || (stops[0].lat + "," + stops[0].lng));
+  const destPart = `&destination=${destination}&travelmode=driving`;
+
+  // waypoints: שאר העצירות
+  const rest = stops.slice(1);
+  const wp = rest.length
+    ? `&waypoints=${encodeURIComponent(rest.map(s => s.name || (s.lat + "," + s.lng)).join("|"))}`
+    : "";
+
+  return base + o + destPart + wp;
+}
+
+/** Waze deep link */
 function wazeUrl(destLat, destLng) {
   return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
 }
@@ -149,6 +210,17 @@ async function reverseAddress(lat, lng) {
   }
 }
 
+function computeSorted() {
+  if (!myPos) {
+    sorted = hospitals.map(h => ({...h, air_km: null}));
+    return;
+  }
+  sorted = hospitals.map(h => ({
+    ...h,
+    air_km: haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) })
+  })).sort((a,b) => (a.air_km ?? Infinity) - (b.air_km ?? Infinity));
+}
+
 function render() {
   const q = el("search").value.trim().toLowerCase();
   const list = sorted.filter(h => !q || h.name.toLowerCase().includes(q));
@@ -159,15 +231,19 @@ function render() {
   tbody.innerHTML = "";
 
   list.forEach(h => {
+    const km = Number.isFinite(h.air_km) ? `${h.air_km.toFixed(1)} ק״מ` : `<span class="muted">—</span>`;
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td><b>${escapeHtml(h.name)}</b></td>
-      <td>${Number.isFinite(h.air_km) ? `${h.air_km.toFixed(1)} ק״מ` : `<span class="muted">—</span>`}</td>
+      <td>${km}</td>
       <td>
         <div class="stack">
-          <button data-act="gmaps" data-id="${h.id}">Google Maps (ראה ETA)</button>
+          <button data-act="gmaps" data-id="${h.id}">Google Maps (ETA)</button>
           <button data-act="waze" data-id="${h.id}">Waze</button>
         </div>
+      </td>
+      <td>
+        <button data-act="del" data-id="${h.id}">מחק</button>
       </td>
     `;
     tbody.appendChild(tr);
@@ -177,16 +253,29 @@ function render() {
     btn.addEventListener("click", () => {
       const act = btn.getAttribute("data-act");
       const id = btn.getAttribute("data-id");
-      const h = sorted.find(x => x.id === id);
+      const h = sorted.find(x => x.id === id) || hospitals.find(x => x.id === id);
       if (!h) return;
 
+      if (act === "del") {
+        if (!confirm(`למחוק את "${h.name}"?`)) return;
+        hospitals = hospitals.filter(x => x.id !== id);
+        saveHospitals();
+        computeSorted();
+        render();
+        return;
+      }
+
       const url = (act === "gmaps")
-        ? googleMapsDirUrl(h.lat, h.lng, h.name)
+        ? googleMapsSingleUrl(h.lat, h.lng, h.name)
         : wazeUrl(h.lat, h.lng);
 
       window.open(url, "_blank");
     });
   });
+
+  const enabled = !!myPos && sorted.length > 0;
+  el("btnOpenTop4").disabled = !enabled;
+  el("btnOpenMultiStop").disabled = !enabled || Math.min(sorted.length, OPEN_TOP_N) < 2;
 }
 
 async function locateAndSort() {
@@ -195,65 +284,106 @@ async function locateAndSort() {
       setStatus("הדפדפן לא תומך Geolocation.", false);
       return;
     }
-
     setStatus("מאתר מיקום…");
     const pos = await new Promise((resolve, reject) => {
       navigator.geolocation.getCurrentPosition(resolve, reject, {
         enableHighAccuracy: true, timeout: 12000, maximumAge: 0
       });
     });
-
     myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     setStatus(`מיקום נקלט: ${myPos.lat.toFixed(5)}, ${myPos.lng.toFixed(5)}`, true);
 
     el("addr").textContent = "מזהה כתובת (עיר/רחוב)…";
     el("addr").textContent = await reverseAddress(myPos.lat, myPos.lng);
 
-    sorted = hospitals.map(h => ({
-      ...h,
-      air_km: haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) })
-    })).sort((a,b) => a.air_km - b.air_km);
-
+    computeSorted();
     render();
-    el("btnOpenTop4").disabled = sorted.length < 1;
-
   } catch (e) {
     console.error(e);
     setStatus("נכשל איתור מיקום. אשר הרשאה ונסה שוב.", false);
   }
 }
 
-function openTopNGmaps() {
+/** פתיחת טאבים ל-ETA לכל יעד */
+function openTopNGmapsTabs() {
   if (!sorted.length) return;
   const top = sorted.slice(0, OPEN_TOP_N);
-
-  // ניסיון לפתוח כמה כרטיסיות.
-  // אם popups חסומים, ייפתח רק חלק.
-  let opened = 0;
-
   top.forEach((h, i) => {
-    const url = googleMapsDirUrl(h.lat, h.lng, h.name);
-    setTimeout(() => {
-      const w = window.open(url, "_blank");
-      if (w) opened++;
-
-      if (i === top.length - 1) {
-        setTimeout(() => {
-          if (opened < top.length) {
-            alert("הדפדפן חסם חלק מהכרטיסיות. אפשר לאפשר Pop-ups לאתר כדי שייפתחו כולן.");
-          }
-        }, 250);
-      }
-    }, i * 250);
+    const url = googleMapsSingleUrl(h.lat, h.lng, h.name);
+    setTimeout(() => window.open(url, "_blank"), i * 250);
   });
 }
 
-/** events */
+/** פתיחת מסלול מרובה עצירות (מסך אחד) */
+function openMultiStopRoute() {
+  if (!sorted.length || !myPos) return;
+  const top = sorted.slice(0, OPEN_TOP_N).map(h => ({ name: h.name, lat: h.lat, lng: h.lng }));
+  const url = googleMapsMultiStopUrl(top);
+  if (!url) return;
+  window.open(url, "_blank");
+}
+
+/** JSON */
+el("btnExport").addEventListener("click", () => {
+  el("jsonBox").value = JSON.stringify(hospitals, null, 2);
+  el("jsonBox").focus();
+});
+el("btnImport").addEventListener("click", () => {
+  try {
+    const txt = el("jsonBox").value.trim();
+    if (!txt) { alert("תדביק JSON בתיבה קודם."); return; }
+    const parsed = JSON.parse(txt);
+    if (!Array.isArray(parsed)) throw new Error("JSON חייב להיות מערך");
+
+    const cleaned = parsed.map(item => ({
+      id: item.id || crypto.randomUUID(),
+      name: String(item.name || "").trim(),
+      lat: Number(item.lat),
+      lng: Number(item.lng),
+    })).filter(x => x.name && Number.isFinite(x.lat) && Number.isFinite(x.lng));
+
+    if (!cleaned.length) throw new Error("לא נמצאו רשומות תקינות");
+    hospitals = cleaned;
+    saveHospitals();
+
+    computeSorted();
+    render();
+    alert("יובא בהצלחה!");
+  } catch (e) {
+    alert("ייבוא נכשל: " + (e.message || e));
+  }
+});
+el("btnReset").addEventListener("click", () => {
+  if (!confirm("לאפס לרשימת ברירת מחדל?")) return;
+  hospitals = DEFAULT_HOSPITALS.map(x => ({...x, id: crypto.randomUUID()}));
+  saveHospitals();
+  el("jsonBox").value = "";
+  computeSorted();
+  render();
+});
+el("btnAdd").addEventListener("click", () => {
+  const name = el("name").value.trim();
+  const lat = Number(el("lat").value);
+  const lng = Number(el("lng").value);
+  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+    alert("נא למלא שם + Lat/Lng תקינים");
+    return;
+  }
+  hospitals.push({ id: crypto.randomUUID(), name, lat, lng });
+  saveHospitals();
+  el("name").value = ""; el("lat").value = ""; el("lng").value = "";
+  computeSorted();
+  render();
+});
+
 el("btnLocate").addEventListener("click", locateAndSort);
-el("btnOpenTop4").addEventListener("click", openTopNGmaps);
+el("btnOpenTop4").addEventListener("click", openTopNGmapsTabs);
+el("btnOpenMultiStop").addEventListener("click", openMultiStopRoute);
 el("search").addEventListener("input", render);
 
-/** init: מנסה לאתר אוטומטית בטעינה */
+/** init */
+computeSorted();
+render();
 window.addEventListener("load", locateAndSort);
 </script>
 </body>
