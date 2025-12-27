@@ -1,0 +1,317 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>בית חולים הקרוב לפי זמן נסיעה</title>
+  <style>
+    body { font-family: system-ui, Arial; margin: 16px; line-height: 1.4; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+    input, button { padding: 10px; font-size: 16px; }
+    button { cursor: pointer; }
+    table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+    th, td { border: 1px solid #ddd; padding: 8px; vertical-align: top; }
+    th { background: #f6f6f6; }
+    .muted { color: #555; }
+    .card { border: 1px solid #ddd; border-radius: 10px; padding: 12px; margin-top: 12px; }
+    .ok { color: #0a7; }
+    .bad { color: #c00; }
+  </style>
+</head>
+<body>
+  <h2>בית חולים הקרוב לפי זמן נסיעה</h2>
+  <div class="card">
+    <div class="row">
+      <button id="btnLocate">מצא אותי (GPS)</button>
+      <span id="locStatus" class="muted">עוד לא אותר מיקום.</span>
+    </div>
+    <div class="muted" style="margin-top:8px">
+      הערה: מיקום בדפדפן דורש HTTPS והרשאה מהמשתמש. :contentReference[oaicite:4]{index=4}
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>רשימת בתי חולים</h3>
+    <div class="row">
+      <input id="name" placeholder="שם" style="flex:1; min-width: 140px;" />
+      <input id="lat" placeholder="Lat" inputmode="decimal" style="width: 120px;" />
+      <input id="lng" placeholder="Lng" inputmode="decimal" style="width: 120px;" />
+      <button id="btnAdd">הוסף</button>
+    </div>
+    <div class="muted" style="margin-top:8px">
+      טיפ: אפשר להשיג Lat/Lng ע״י לחיצה ארוכה במפות גוגל והעתקת הקואורדינטות.
+    </div>
+
+    <table id="tbl">
+      <thead>
+        <tr>
+          <th>שם</th>
+          <th>Lat,Lng</th>
+          <th>זמן נסיעה</th>
+          <th>פעולות</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <div class="row" style="margin-top:12px">
+      <button id="btnCompute">חשב הקרוב ביותר לפי זמן נסיעה</button>
+      <button id="btnReset">איפוס לרשימת ברירת מחדל</button>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>תוצאה</h3>
+    <div id="result" class="muted">עוד אין תוצאה.</div>
+    <div class="row" style="margin-top:10px">
+      <button id="btnWaze" disabled>נווט ב-Waze</button>
+      <button id="btnGMaps" disabled>נווט ב-Google Maps</button>
+    </div>
+  </div>
+
+<script>
+/** =========================
+ *  הגדר כאן API KEY
+ *  ========================= */
+const GOOGLE_API_KEY = "PASTE_YOUR_KEY_HERE";
+
+/** ברירת מחדל (דוגמה) — תחליף לרשימת בתי החולים שלך */
+const DEFAULT_HOSPITALS = [
+  { id: crypto.randomUUID(), name: "איכילוב (דוגמה)", lat: 32.0781, lng: 34.7898 },
+  { id: crypto.randomUUID(), name: "שיבא תל השומר (דוגמה)", lat: 32.0460, lng: 34.8447 },
+  { id: crypto.randomUUID(), name: "רמב\"ם חיפה (דוגמה)", lat: 32.8371, lng: 35.0506 },
+];
+
+const LS_KEY = "hospitals_v1";
+let hospitals = loadHospitals();
+let myPos = null;          // {lat,lng}
+let best = null;           // {hospital, durationSeconds, durationText}
+
+const el = (id) => document.getElementById(id);
+
+function loadHospitals() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (!raw) return DEFAULT_HOSPITALS;
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_HOSPITALS;
+  } catch {
+    return DEFAULT_HOSPITALS;
+  }
+}
+function saveHospitals() {
+  localStorage.setItem(LS_KEY, JSON.stringify(hospitals));
+}
+
+function renderTable(durationsById = {}) {
+  const tbody = el("tbl").querySelector("tbody");
+  tbody.innerHTML = "";
+  hospitals.forEach(h => {
+    const tr = document.createElement("tr");
+    const d = durationsById[h.id];
+
+    tr.innerHTML = `
+      <td>${escapeHtml(h.name)}</td>
+      <td class="muted">${h.lat.toFixed(6)}, ${h.lng.toFixed(6)}</td>
+      <td>${d ? `<span class="ok">${escapeHtml(d.text)}</span>` : `<span class="muted">—</span>`}</td>
+      <td>
+        <button data-act="del" data-id="${h.id}">מחק</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  tbody.querySelectorAll("button[data-act='del']").forEach(btn => {
+    btn.addEventListener("click", () => {
+      const id = btn.getAttribute("data-id");
+      hospitals = hospitals.filter(x => x.id !== id);
+      saveHospitals();
+      renderTable();
+      clearResult();
+    });
+  });
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, (c) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[c]));
+}
+
+function setStatus(msg, ok=true) {
+  const s = el("locStatus");
+  s.textContent = msg;
+  s.className = ok ? "ok" : "bad";
+}
+
+function clearResult() {
+  best = null;
+  el("result").textContent = "עוד אין תוצאה.";
+  el("result").className = "muted";
+  el("btnWaze").disabled = true;
+  el("btnGMaps").disabled = true;
+}
+
+/** ===== Geolocation (דורש HTTPS והרשאה) ===== */
+el("btnLocate").addEventListener("click", () => {
+  if (!navigator.geolocation) {
+    setStatus("המכשיר/דפדפן לא תומך Geolocation.", false);
+    return;
+  }
+  setStatus("מאתר מיקום…");
+  navigator.geolocation.getCurrentPosition(
+    (pos) => {
+      myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+      setStatus(`מיקום נקלט: ${myPos.lat.toFixed(6)}, ${myPos.lng.toFixed(6)}`);
+      clearResult();
+    },
+    (err) => {
+      setStatus(`שגיאה במיקום: ${err.message}`, false);
+    },
+    { enableHighAccuracy: true, timeout: 12000, maximumAge: 0 }
+  );
+});
+
+/** ===== Add hospital ===== */
+el("btnAdd").addEventListener("click", () => {
+  const name = el("name").value.trim();
+  const lat = Number(el("lat").value);
+  const lng = Number(el("lng").value);
+
+  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) {
+    alert("נא למלא שם + Lat/Lng תקינים");
+    return;
+  }
+  hospitals.push({ id: crypto.randomUUID(), name, lat, lng });
+  saveHospitals();
+  renderTable();
+  el("name").value = ""; el("lat").value = ""; el("lng").value = "";
+  clearResult();
+});
+
+/** ===== Reset ===== */
+el("btnReset").addEventListener("click", () => {
+  hospitals = DEFAULT_HOSPITALS.map(x => ({...x, id: crypto.randomUUID()}));
+  saveHospitals();
+  renderTable();
+  myPos = null;
+  setStatus("עוד לא אותר מיקום.");
+  clearResult();
+});
+
+/** ===== Compute using Google Distance Matrix API =====
+ * Docs: returns distance + travel time; supports duration_in_traffic when driving + departure_time :contentReference[oaicite:5]{index=5}
+ */
+el("btnCompute").addEventListener("click", async () => {
+  try {
+    if (!GOOGLE_API_KEY || GOOGLE_API_KEY.includes("PASTE_YOUR_KEY_HERE")) {
+      alert("חסר GOOGLE_API_KEY בקוד.");
+      return;
+    }
+    if (!myPos) {
+      alert("קודם לחץ 'מצא אותי (GPS)'.");
+      return;
+    }
+    if (!hospitals.length) {
+      alert("אין בתי חולים ברשימה.");
+      return;
+    }
+
+    el("result").textContent = "מחשב זמני נסיעה…";
+    el("result").className = "muted";
+
+    // Distance Matrix REST endpoint
+    const origins = `${myPos.lat},${myPos.lng}`;
+    const destinations = hospitals.map(h => `${h.lat},${h.lng}`).join("|");
+
+    // departure_time=now ינסה להחזיר גם duration_in_traffic (כפוף להרשאות/תנאים בחשבון)
+    const url = new URL("https://maps.googleapis.com/maps/api/distancematrix/json");
+    url.searchParams.set("origins", origins);
+    url.searchParams.set("destinations", destinations);
+    url.searchParams.set("mode", "driving");
+    url.searchParams.set("language", "he");
+    url.searchParams.set("departure_time", "now");
+    url.searchParams.set("key", GOOGLE_API_KEY);
+
+    // שים לב: עלול להיות CORS בדפדפן. אם זה קורה — פתרון: Proxy קטן (Cloud Function).
+    const resp = await fetch(url.toString());
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    const data = await resp.json();
+
+    if (data.status !== "OK") {
+      throw new Error(`API status: ${data.status}${data.error_message ? " — " + data.error_message : ""}`);
+    }
+
+    const row = data.rows?.[0];
+    const elements = row?.elements || [];
+    if (elements.length !== hospitals.length) {
+      throw new Error("תשובה לא צפויה מה-API.");
+    }
+
+    const durationsById = {};
+    best = null;
+
+    elements.forEach((elmt, idx) => {
+      const h = hospitals[idx];
+      if (elmt.status !== "OK") {
+        durationsById[h.id] = { text: "לא זמין", seconds: Infinity };
+        return;
+      }
+      // Prefer duration_in_traffic if available, else duration
+      const durObj = elmt.duration_in_traffic || elmt.duration;
+      const seconds = durObj?.value ?? Infinity;
+      const text = durObj?.text ?? "—";
+      durationsById[h.id] = { text, seconds };
+
+      if (!best || seconds < best.durationSeconds) {
+        best = { hospital: h, durationSeconds: seconds, durationText: text };
+      }
+    });
+
+    renderTable(durationsById);
+
+    if (!best || !Number.isFinite(best.durationSeconds) || best.durationSeconds === Infinity) {
+      el("result").textContent = "לא הצלחתי לחשב זמן נסיעה לאף יעד.";
+      el("result").className = "bad";
+      return;
+    }
+
+    el("result").innerHTML =
+      `הקרוב ביותר לפי זמן נסיעה: <b>${escapeHtml(best.hospital.name)}</b><br/>` +
+      `זמן משוער: <b>${escapeHtml(best.durationText)}</b>`;
+    el("result").className = "ok";
+
+    el("btnWaze").disabled = false;
+    el("btnGMaps").disabled = false;
+
+  } catch (e) {
+    el("result").textContent =
+      "שגיאה בחישוב. אם זו שגיאת CORS בדפדפן, צריך Proxy קטן (שרתון) כדי לקרוא ל-Google API בלי לחשוף מפתח.";
+    el("result").className = "bad";
+    console.error(e);
+    alert(String(e.message || e));
+  }
+});
+
+/** ===== Navigation buttons =====
+ * Waze base deep link: https://waze.com/ul :contentReference[oaicite:6]{index=6}
+ */
+el("btnWaze").addEventListener("click", () => {
+  if (!best) return;
+  const { lat, lng } = best.hospital;
+  const wazeUrl = `https://waze.com/ul?ll=${encodeURIComponent(lat + "," + lng)}&navigate=yes`;
+  window.location.href = wazeUrl;
+});
+
+el("btnGMaps").addEventListener("click", () => {
+  if (!best) return;
+  const { lat, lng } = best.hospital;
+  // Universal Google Maps directions URL
+  const gmapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + "," + lng)}&travelmode=driving`;
+  window.location.href = gmapsUrl;
+});
+
+renderTable();
+</script>
+</body>
+</html>
