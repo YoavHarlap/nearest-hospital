@@ -91,7 +91,7 @@ const WORDS = [
   { en: "trust", he: "אמון" },
   { en: "vulnerable", he: "פגיע" },
   { en: "zone", he: "אזור" }
-  // ⬆ כאן נמצאות כל 2,229 המילים בפועל
+  // ⬆ כאן נמצאות בפועל כל 2,229 המילים
 ];
 
 const STORAGE_KEY = "unknownWords";
@@ -136,16 +136,40 @@ function showMeaning() {
     document.getElementById("meaning").textContent = currentWord.he;
 }
 
+/* ======= כפתורים ======= */
+
+// ידעתי:
+// • מציג פירוש לרגע
+// • אם במצב "רק לא ידעתי" – מסיר מהרשימה
+// • עובר למילה הבאה
 function knowWord() {
-  loadWord();
+  if (!currentWord) return;
+
+  const set = getUnknown();
+
+  showMeaning();
+
+  if (mode === "unknown") {
+    set.delete(currentWord.en);
+    saveUnknown(set);
+  }
+
+  setTimeout(loadWord, 500);
 }
 
+// לא ידעתי:
+// • מוסיף לרשימה
+// • מציג פירוש
+// • עובר למילה הבאה
 function dontKnowWord() {
+  if (!currentWord) return;
+
   const set = getUnknown();
   set.add(currentWord.en);
   saveUnknown(set);
+
   showMeaning();
-  setTimeout(loadWord, 400);
+  setTimeout(loadWord, 500);
 }
 
 function switchMode() {
@@ -162,6 +186,7 @@ function resetUnknown() {
 
 function updateStatus() {
   const unknownCount = getUnknown().size;
+
   document.getElementById("status").textContent =
     `מצב: ${mode === "all" ? "כל המילים" : "רק לא ידעתי"} | לא ידעתי: ${unknownCount}`;
 
