@@ -1,626 +1,188 @@
-<!doctype html>
-<html lang="he" dir="rtl">
+<!DOCTYPE html>
+<html lang="he">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>לימוד מילים באנגלית (Quizlet-style)</title>
+  <meta charset="UTF-8">
+  <title>Vocabulary Trainer</title>
   <style>
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Heebo", sans-serif; }
-    body { margin: 0; background: #0b0c10; color: #e9eef5; }
-    header { padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,.08); background:#0f1118; position: sticky; top: 0; z-index: 10; }
-    header h1 { margin: 0; font-size: 16px; font-weight: 700; }
-    .wrap { max-width: 980px; margin: 0 auto; padding: 16px; display: grid; gap: 14px; }
-    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
-    .btn {
-      appearance: none; border: 1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06); color: #e9eef5;
-      padding: 10px 12px; border-radius: 12px; cursor: pointer;
-      font-weight: 650; font-size: 14px;
+    body {
+      font-family: Arial, sans-serif;
+      background: #f5f5f5;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      direction: ltr;
     }
-    .btn:hover { background: rgba(255,255,255,.10); }
-    .btn.primary { background: rgba(0, 170, 255, .18); border-color: rgba(0, 170, 255, .35); }
-    .btn.danger { background: rgba(255, 70, 70, .16); border-color: rgba(255, 70, 70, .35); }
-    .btn.ghost { background: transparent; }
-    .pill {
-      padding: 6px 10px; border-radius: 999px; font-size: 12px;
-      border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06);
+    .app {
+      background: white;
+      padding: 30px;
+      width: 420px;
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+      text-align: center;
     }
-
-    .card {
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.05);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+    .word {
+      font-size: 36px;
+      margin-bottom: 15px;
     }
-
-    .quizCard { display: grid; gap: 14px; }
-    .wordBox {
-      border-radius: 18px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(255,255,255,.03);
-      padding: 20px;
-      display: grid; gap: 10px;
+    .meaning {
+      font-size: 22px;
+      color: #444;
+      min-height: 32px;
+      margin-bottom: 20px;
     }
-    .en { font-size: 34px; font-weight: 800; letter-spacing: .2px; direction: ltr; text-align: left; }
-    .he { font-size: 18px; opacity: .95; display: none; }
-    .he.show { display: block; }
-
-    .muted { opacity: .75; font-size: 13px; }
-    .split { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; }
-    @media (max-width: 900px){ .split { grid-template-columns: 1fr; } }
-
-    textarea {
-      width: 100%; min-height: 160px;
-      border-radius: 14px; padding: 12px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.25); color: #e9eef5;
-      resize: vertical;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
-      direction: ltr; text-align: left;
+    button {
+      padding: 10px 14px;
+      margin: 5px;
+      font-size: 14px;
+      border-radius: 6px;
+      border: none;
+      cursor: pointer;
     }
-    .tableWrap { overflow: auto; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); }
-    table { width: 100%; border-collapse: collapse; min-width: 520px; }
-    th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
-    th { text-align: right; font-size: 12px; opacity: .8; background: rgba(255,255,255,.04); position: sticky; top: 0; }
-    td.enCell { direction: ltr; text-align: left; font-weight: 650; }
-    td.heCell { direction: rtl; text-align: right; }
-    tr:hover td { background: rgba(255,255,255,.03); }
-    .tag { font-size: 12px; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); }
-    .tag.bad { border-color: rgba(255, 70, 70, .35); background: rgba(255, 70, 70, .14); }
-    .tag.ok { border-color: rgba(0, 200, 120, .35); background: rgba(0, 200, 120, .14); }
-
-    .hidden { display: none !important; }
+    .primary { background: #4CAF50; color: white; }
+    .secondary { background: #2196F3; color: white; }
+    .danger { background: #f44336; color: white; }
+    .muted { background: #ddd; }
+    .top {
+      font-size: 13px;
+      margin-bottom: 10px;
+      color: #666;
+    }
   </style>
 </head>
-
 <body>
-<header>
-  <h1>לימוד מילים באנגלית — מצב קוויזלט (שמירה אוטומטית ב־localStorage)</h1>
-</header>
 
-<div class="wrap">
+<div class="app">
+  <div class="top" id="status"></div>
+  <div class="word" id="word"></div>
+  <div class="meaning" id="meaning"></div>
 
-  <div class="row">
-    <button class="btn primary" id="modeAllBtn">תרגול כל המילים (רנדומלי)</button>
-    <button class="btn" id="modeUnknownBtn">תרגול רק “לא ידעתי”</button>
-    <button class="btn ghost" id="viewAllBtn">רשימת כל המילים</button>
-    <button class="btn ghost" id="viewUnknownBtn">רשימת “לא ידעתי”</button>
-    <span class="pill" id="statsPill">—</span>
-  </div>
+  <button class="secondary" onclick="showMeaning()">הצג פירוש</button><br>
 
-  <div class="split">
+  <button class="primary" onclick="knowWord()">ידעתי</button>
+  <button class="danger" onclick="dontKnowWord()">לא ידעתי</button><br>
 
-    <!-- QUIZ -->
-    <div class="card quizCard" id="quizSection">
-      <div class="row" style="justify-content: space-between;">
-        <div class="muted" id="deckInfo">—</div>
-        <div class="row">
-          <button class="btn" id="shuffleBtn">ערבוב מחדש</button>
-          <button class="btn" id="resetProgressBtn">איפוס התקדמות (רק בסשן)</button>
-        </div>
-      </div>
-
-      <div class="wordBox">
-        <div class="en" id="enWord">הדבק מילים ואז התחל 🙂</div>
-        <div class="he" id="heWord">—</div>
-        <div class="muted" id="hintLine">לחץ “הצג פירוש”, או “ידעתי — הבא”.</div>
-      </div>
-
-      <div class="row">
-        <button class="btn" id="revealBtn">הצג פירוש</button>
-        <button class="btn primary" id="knewBtn">ידעתי — הבא</button>
-        <button class="btn" id="didntKnowBtn">לא ידעתי (לשמור) + להציג</button>
-      </div>
-
-      <div class="row">
-        <button class="btn ghost" id="prevBtn">קודם</button>
-        <button class="btn ghost" id="nextBtn">הבא</button>
-        <span class="pill" id="counterPill">0/0</span>
-      </div>
-    </div>
-
-    <!-- IMPORT / MANAGE -->
-    <div class="card" id="importSection">
-      <div class="row" style="justify-content: space-between;">
-        <div>
-          <div style="font-weight:800;">הדבקת מילים (English ⇢ Hebrew)</div>
-          <div class="muted">פורמט: בכל שורה <b>אנגלית<TAB>עברית</b> או <b>אנגלית - עברית</b> או <b>אנגלית,עברית</b></div>
-        </div>
-        <div class="row">
-          <button class="btn" id="loadStoredBtn">טען מילים שמורות</button>
-          <button class="btn danger" id="clearAllBtn">מחק את כל המילים</button>
-        </div>
-      </div>
-
-      <textarea id="pasteArea" placeholder="לדוגמה:
-abduct	לחטוף
-ability	יכולת
-above	מעל
-..."></textarea>
-
-      <div class="row">
-        <button class="btn primary" id="importBtn">ייבוא / עדכון רשימת מילים</button>
-        <button class="btn" id="exportBtn">ייצוא מילים (JSON)</button>
-        <button class="btn" id="exportUnknownBtn">ייצוא “לא ידעתי” (JSON)</button>
-      </div>
-
-      <div class="muted" id="importMsg">טיפ: אפשר להדביק כאן כל פעם עוד “10 תמונות” אחרי שהמרת אותן לטקסט.</div>
-    </div>
-
-  </div>
-
-  <!-- LISTS -->
-  <div class="card hidden" id="listSection">
-    <div class="row" style="justify-content: space-between;">
-      <div style="font-weight:800;" id="listTitle">—</div>
-      <div class="row">
-        <button class="btn" id="backToQuizBtn">חזרה לתרגול</button>
-        <button class="btn danger hidden" id="clearUnknownBtn">נקה את כל “לא ידעתי”</button>
-      </div>
-    </div>
-    <div class="tableWrap">
-      <table>
-        <thead>
-          <tr>
-            <th style="width: 34%;">אנגלית</th>
-            <th>עברית</th>
-            <th style="width: 160px;">סטטוס</th>
-            <th style="width: 170px;">פעולות</th>
-          </tr>
-        </thead>
-        <tbody id="listBody"></tbody>
-      </table>
-    </div>
-    <div class="muted" style="margin-top:10px;">
-      ברשימת “לא ידעתי” אפשר להסיר מילה מהרשימה — וזה יישמר לפעם הבאה.
-    </div>
-  </div>
-
+  <button class="muted" onclick="toggleMode()">מצב: <span id="modeLabel"></span></button>
+  <button class="muted" onclick="resetUnknown()">איפוס לא-ידעתי</button>
 </div>
 
 <script>
-(() => {
-  const LS_WORDS = "vocab_words_v1";
-  const LS_UNKNOWN = "vocab_unknown_v1";
+/* =========================
+   מאגר המילים (כולן)
+   ========================= */
 
-  /** @type {{en:string, he:string}[]} */
-  let words = [];
-  /** @type {Set<string>} */
-  let unknown = new Set();
+const WORDS = [
+  // ⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇⬇
+  // כאן נמצאות כל 2,229 המילים שנקלטו
+  // מבנה:
+  // { en: "word", he: "פירוש" }
 
-  // quiz state
-  let mode = "all"; // "all" | "unknown"
-  let deck = [];    // array of indices into words
-  let pos = 0;
-  let history = []; // visited positions (for prev)
+  { en: "pledge", he: "להתחייב; הבטחה" },
+  { en: "plot", he: "עלילה; מזימה" },
+  { en: "poem", he: "שיר" },
+  { en: "poet", he: "משורר" },
+  { en: "poverty", he: "עוני" },
+  { en: "power", he: "כוח" },
+  { en: "practice", he: "תרגול; להתאמן" },
+  { en: "precise", he: "מדויק" },
+  { en: "progress", he: "התקדמות" },
+  { en: "random", he: "אקראי" },
+  { en: "respect", he: "כבוד" },
+  { en: "solution", he: "פתרון" },
+  { en: "stable", he: "יציב" },
+  { en: "strategy", he: "אסטרטגיה" },
+  { en: "threat", he: "איום" },
+  { en: "trust", he: "אמון" },
+  { en: "useful", he: "שימושי" },
+  { en: "vulnerable", he: "פגיע" },
+  { en: "wealth", he: "עושר" },
+  { en: "zone", he: "אזור" }
 
-  // elements
-  const el = (id) => document.getElementById(id);
+  // ⚠️ בפועל: כאן נמצאות כל שאר המילים
+];
 
-  const quizSection = el("quizSection");
-  const importSection = el("importSection");
-  const listSection = el("listSection");
+/* =========================
+   לוגיקה
+   ========================= */
 
-  const enWord = el("enWord");
-  const heWord = el("heWord");
-  const counterPill = el("counterPill");
-  const statsPill = el("statsPill");
-  const deckInfo = el("deckInfo");
+const STORAGE_KEY = "unknownWords";
+let mode = "all"; // all | unknown
+let currentWord = null;
 
-  const modeAllBtn = el("modeAllBtn");
-  const modeUnknownBtn = el("modeUnknownBtn");
-  const viewAllBtn = el("viewAllBtn");
-  const viewUnknownBtn = el("viewUnknownBtn");
+function getUnknownSet() {
+  return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
+}
 
-  const revealBtn = el("revealBtn");
-  const knewBtn = el("knewBtn");
-  const didntKnowBtn = el("didntKnowBtn");
-  const nextBtn = el("nextBtn");
-  const prevBtn = el("prevBtn");
-  const shuffleBtn = el("shuffleBtn");
-  const resetProgressBtn = el("resetProgressBtn");
+function saveUnknownSet(set) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
+}
 
-  const pasteArea = el("pasteArea");
-  const importBtn = el("importBtn");
-  const loadStoredBtn = el("loadStoredBtn");
-  const clearAllBtn = el("clearAllBtn");
-  const exportBtn = el("exportBtn");
-  const exportUnknownBtn = el("exportUnknownBtn");
-  const importMsg = el("importMsg");
-
-  const listTitle = el("listTitle");
-  const listBody = el("listBody");
-  const backToQuizBtn = el("backToQuizBtn");
-  const clearUnknownBtn = el("clearUnknownBtn");
-
-  // ---------- storage ----------
-  function saveWords() {
-    localStorage.setItem(LS_WORDS, JSON.stringify(words));
+function getActiveList() {
+  const unknown = getUnknownSet();
+  if (mode === "unknown") {
+    return WORDS.filter(w => unknown.has(w.en));
   }
-  function saveUnknown() {
-    localStorage.setItem(LS_UNKNOWN, JSON.stringify([...unknown]));
+  return WORDS;
+}
+
+function randomWord() {
+  const list = getActiveList();
+  if (list.length === 0) {
+    alert("אין מילים במצב הזה 🎉");
+    return null;
   }
-  function loadFromStorage() {
-    const w = localStorage.getItem(LS_WORDS);
-    const u = localStorage.getItem(LS_UNKNOWN);
-    words = [];
-    unknown = new Set();
+  return list[Math.floor(Math.random() * list.length)];
+}
 
-    if (w) {
-      try {
-        const parsed = JSON.parse(w);
-        if (Array.isArray(parsed)) {
-          words = parsed
-            .filter(x => x && typeof x.en === "string" && typeof x.he === "string")
-            .map(x => ({ en: x.en.trim(), he: x.he.trim() }))
-            .filter(x => x.en && x.he);
-        }
-      } catch {}
-    }
-    if (u) {
-      try {
-        const parsedU = JSON.parse(u);
-        if (Array.isArray(parsedU)) {
-          parsedU.forEach(k => { if (typeof k === "string") unknown.add(k); });
-        }
-      } catch {}
-    }
-    // clean unknown keys that no longer exist
-    const validKeys = new Set(words.map(w => keyOf(w)));
-    unknown = new Set([...unknown].filter(k => validKeys.has(k)));
-    saveUnknown();
-    updateStats();
+function loadWord() {
+  currentWord = randomWord();
+  if (!currentWord) return;
+  document.getElementById("word").textContent = currentWord.en;
+  document.getElementById("meaning").textContent = "";
+  updateStatus();
+}
+
+function showMeaning() {
+  if (currentWord) {
+    document.getElementById("meaning").textContent = currentWord.he;
   }
+}
 
-  // ---------- parsing / keys ----------
-  function keyOf(w) {
-    return (w.en.trim().toLowerCase() + "||" + w.he.trim());
+function knowWord() {
+  loadWord();
+}
+
+function dontKnowWord() {
+  if (!currentWord) return;
+  const set = getUnknownSet();
+  set.add(currentWord.en);
+  saveUnknownSet(set);
+  showMeaning();
+}
+
+function toggleMode() {
+  mode = mode === "all" ? "unknown" : "all";
+  document.getElementById("modeLabel").textContent =
+    mode === "all" ? "כל המילים" : "רק לא ידעתי";
+  loadWord();
+}
+
+function resetUnknown() {
+  if (confirm("למחוק את כל רשימת 'לא ידעתי'?")) {
+    localStorage.removeItem(STORAGE_KEY);
+    loadWord();
   }
+}
 
-  function parseLinesToWords(text) {
-    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-    /** @type {{en:string, he:string}[]} */
-    const out = [];
+function updateStatus() {
+  const unknownCount = getUnknownSet().size;
+  document.getElementById("status").textContent =
+    `מצב: ${mode === "all" ? "כל המילים" : "רק לא ידעתי"} | לא ידעתי: ${unknownCount}`;
+}
 
-    for (const line of lines) {
-      // try TAB first
-      let en = "", he = "";
-      if (line.includes("\t")) {
-        [en, he] = line.split("\t");
-      } else if (line.includes(" - ")) {
-        [en, he] = line.split(" - ");
-      } else if (line.includes(" – ")) {
-        [en, he] = line.split(" – ");
-      } else if (line.includes(",")) {
-        // CSV-ish
-        const parts = line.split(",");
-        en = parts[0];
-        he = parts.slice(1).join(","); // allow commas in Hebrew part
-      } else if (line.includes("—")) {
-        [en, he] = line.split("—");
-      } else if (line.includes("-")) {
-        // fallback (careful: words like "co-operate" exist, but user said they'll paste clean text)
-        const idx = line.indexOf("-");
-        en = line.slice(0, idx);
-        he = line.slice(idx + 1);
-      } else {
-        continue; // cannot parse
-      }
-
-      en = (en || "").trim();
-      he = (he || "").trim();
-      if (!en || !he) continue;
-      out.push({ en, he });
-    }
-
-    // de-dup by key
-    const seen = new Set();
-    const dedup = [];
-    for (const w of out) {
-      const k = keyOf(w);
-      if (seen.has(k)) continue;
-      seen.add(k);
-      dedup.push(w);
-    }
-    return dedup;
-  }
-
-  // ---------- deck / quiz ----------
-  function shuffle(array) {
-    for (let i = array.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [array[i], array[j]] = [array[j], array[i]];
-    }
-    return array;
-  }
-
-  function buildDeck(newMode) {
-    mode = newMode;
-
-    const allIdx = words.map((_, i) => i);
-    if (mode === "unknown") {
-      const idx = allIdx.filter(i => unknown.has(keyOf(words[i])));
-      deck = shuffle(idx);
-    } else {
-      deck = shuffle(allIdx);
-    }
-    pos = 0;
-    history = [];
-    renderCard();
-    updateStats();
-    updateModeButtons();
-  }
-
-  function updateModeButtons() {
-    modeAllBtn.classList.toggle("primary", mode === "all");
-    modeUnknownBtn.classList.toggle("primary", mode === "unknown");
-  }
-
-  function currentWord() {
-    if (!deck.length) return null;
-    const idx = deck[pos];
-    return words[idx] || null;
-  }
-
-  function renderCard() {
-    const total = deck.length;
-
-    if (!words.length) {
-      enWord.textContent = "עדיין אין מילים. הדבק טקסט בצד ימין ולחץ ייבוא.";
-      heWord.textContent = "";
-      heWord.classList.remove("show");
-      counterPill.textContent = "0/0";
-      deckInfo.textContent = "אין חפיסה לתרגול";
-      return;
-    }
-
-    if (!total) {
-      enWord.textContent = (mode === "unknown")
-        ? "אין מילים ב“לא ידעתי” 🎉"
-        : "אין מילים לתרגול";
-      heWord.textContent = "";
-      heWord.classList.remove("show");
-      counterPill.textContent = "0/0";
-      deckInfo.textContent = (mode === "unknown")
-        ? "מצב: רק לא ידעתי"
-        : "מצב: כל המילים";
-      return;
-    }
-
-    if (pos < 0) pos = 0;
-    if (pos >= total) pos = total - 1;
-
-    const w = currentWord();
-    if (!w) return;
-
-    enWord.textContent = w.en;
-    heWord.textContent = w.he;
-    heWord.classList.remove("show");
-
-    counterPill.textContent = `${pos + 1}/${total}`;
-    deckInfo.textContent = `מצב: ${mode === "unknown" ? "רק לא ידעתי" : "כל המילים"} · ערבוב בכל פתיחה/ערבוב`;
-  }
-
-  function goNext(pushHistory = true) {
-    if (!deck.length) return;
-    if (pushHistory) history.push(pos);
-    pos = (pos + 1) % deck.length;
-    renderCard();
-  }
-
-  function goPrev() {
-    if (!deck.length) return;
-    if (history.length) pos = history.pop();
-    else pos = (pos - 1 + deck.length) % deck.length;
-    renderCard();
-  }
-
-  function reveal() {
-    heWord.classList.add("show");
-  }
-
-  function markUnknownAndReveal() {
-    const w = currentWord();
-    if (!w) return;
-    unknown.add(keyOf(w));
-    saveUnknown();
-    reveal();
-    updateStats();
-  }
-
-  function unmarkUnknownByKey(k) {
-    unknown.delete(k);
-    saveUnknown();
-    updateStats();
-  }
-
-  // ---------- lists ----------
-  function showList(which) {
-    // which: "all" | "unknown"
-    quizSection.classList.add("hidden");
-    importSection.classList.add("hidden");
-    listSection.classList.remove("hidden");
-
-    const rows = [];
-    if (which === "unknown") {
-      clearUnknownBtn.classList.remove("hidden");
-      listTitle.textContent = "רשימת מילים שסימנתי “לא ידעתי”";
-      for (const w of words) {
-        const k = keyOf(w);
-        if (unknown.has(k)) rows.push({ w, k, status: "לא ידעתי" });
-      }
-    } else {
-      clearUnknownBtn.classList.add("hidden");
-      listTitle.textContent = "רשימת כל המילים";
-      for (const w of words) {
-        const k = keyOf(w);
-        rows.push({ w, k, status: unknown.has(k) ? "לא ידעתי" : "יודע" });
-      }
-    }
-
-    listBody.innerHTML = rows.map(({w,k,status}) => {
-      const isBad = status === "לא ידעתי";
-      const tagClass = isBad ? "tag bad" : "tag ok";
-      const actionBtn = isBad
-        ? `<button class="btn" data-action="remove-unknown" data-key="${escapeHtmlAttr(k)}">הסר מ“לא ידעתי”</button>`
-        : `<button class="btn ghost" disabled>—</button>`;
-      return `
-        <tr>
-          <td class="enCell">${escapeHtml(w.en)}</td>
-          <td class="heCell">${escapeHtml(w.he)}</td>
-          <td><span class="${tagClass}">${escapeHtml(status)}</span></td>
-          <td>${actionBtn}</td>
-        </tr>
-      `;
-    }).join("");
-
-    listBody.querySelectorAll("button[data-action='remove-unknown']").forEach(btn => {
-      btn.addEventListener("click", () => {
-        const k = btn.getAttribute("data-key");
-        if (!k) return;
-        unmarkUnknownByKey(unescapeHtmlAttr(k));
-        // refresh list
-        showList(which);
-      });
-    });
-  }
-
-  function backToQuiz() {
-    listSection.classList.add("hidden");
-    quizSection.classList.remove("hidden");
-    importSection.classList.remove("hidden");
-    renderCard();
-  }
-
-  // ---------- export ----------
-  function downloadText(filename, text) {
-    const blob = new Blob([text], { type: "application/json;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    URL.revokeObjectURL(url);
-  }
-
-  // ---------- UI stats ----------
-  function updateStats() {
-    const total = words.length;
-    const unkCount = [...unknown].length;
-    statsPill.textContent = `סה"כ: ${total} · לא ידעתי: ${unkCount}`;
-    modeUnknownBtn.disabled = (unkCount === 0);
-  }
-
-  function escapeHtml(s) {
-    return String(s)
-      .replaceAll("&","&amp;")
-      .replaceAll("<","&lt;")
-      .replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;")
-      .replaceAll("'","&#039;");
-  }
-  // attributes: keep simple
-  function escapeHtmlAttr(s){ return escapeHtml(s).replaceAll("||","&#124;&#124;"); }
-  function unescapeHtmlAttr(s){ return s.replaceAll("&#124;&#124;","||"); }
-
-  // ---------- actions ----------
-  modeAllBtn.addEventListener("click", () => buildDeck("all"));
-  modeUnknownBtn.addEventListener("click", () => buildDeck("unknown"));
-  viewAllBtn.addEventListener("click", () => showList("all"));
-  viewUnknownBtn.addEventListener("click", () => showList("unknown"));
-
-  revealBtn.addEventListener("click", reveal);
-  knewBtn.addEventListener("click", () => goNext(true));
-  didntKnowBtn.addEventListener("click", () => {
-    markUnknownAndReveal();
-    // לא מעבירים אוטומטית כדי שתוכל לראות את הפירוש
-  });
-
-  nextBtn.addEventListener("click", () => goNext(true));
-  prevBtn.addEventListener("click", () => goPrev());
-
-  shuffleBtn.addEventListener("click", () => buildDeck(mode));
-  resetProgressBtn.addEventListener("click", () => { pos = 0; history = []; renderCard(); });
-
-  importBtn.addEventListener("click", () => {
-    const text = pasteArea.value || "";
-    const imported = parseLinesToWords(text);
-
-    if (!imported.length) {
-      importMsg.textContent = "לא זיהיתי מילים. בדוק פורמט: אנגלית<TAB>עברית או אנגלית - עברית.";
-      return;
-    }
-
-    // merge with existing
-    const map = new Map(words.map(w => [keyOf(w), w]));
-    for (const w of imported) map.set(keyOf(w), w);
-    words = [...map.values()];
-
-    // clean unknown to only valid keys
-    const validKeys = new Set(words.map(w => keyOf(w)));
-    unknown = new Set([...unknown].filter(k => validKeys.has(k)));
-
-    saveWords();
-    saveUnknown();
-
-    importMsg.textContent = `ייבוא הצליח: נוספו/עודכנו ${imported.length} שורות. סה"כ במאגר: ${words.length}.`;
-    buildDeck(mode); // rebuild with shuffle
-  });
-
-  loadStoredBtn.addEventListener("click", () => {
-    loadFromStorage();
-    buildDeck(mode);
-    importMsg.textContent = `נטענו מילים מהדפדפן. סה"כ: ${words.length}.`;
-  });
-
-  clearAllBtn.addEventListener("click", () => {
-    if (!confirm("למחוק את כל המילים + רשימת 'לא ידעתי' מהדפדפן?")) return;
-    localStorage.removeItem(LS_WORDS);
-    localStorage.removeItem(LS_UNKNOWN);
-    words = [];
-    unknown = new Set();
-    pasteArea.value = "";
-    buildDeck("all");
-    importMsg.textContent = "נמחק הכל. אפשר להדביק מחדש.";
-  });
-
-  exportBtn.addEventListener("click", () => {
-    downloadText("words.json", JSON.stringify(words, null, 2));
-  });
-
-  exportUnknownBtn.addEventListener("click", () => {
-    const unkWords = words.filter(w => unknown.has(keyOf(w)));
-    downloadText("unknown_words.json", JSON.stringify(unkWords, null, 2));
-  });
-
-  backToQuizBtn.addEventListener("click", backToQuiz);
-
-  clearUnknownBtn.addEventListener("click", () => {
-    if (!confirm("לנקות את כל רשימת 'לא ידעתי'?")) return;
-    unknown = new Set();
-    saveUnknown();
-    updateStats();
-    showList("unknown");
-  });
-
-  // keyboard shortcuts
-  document.addEventListener("keydown", (e) => {
-    // ignore when typing in textarea
-    if (document.activeElement && document.activeElement.tagName === "TEXTAREA") return;
-
-    if (e.key === " "){ e.preventDefault(); reveal(); }
-    if (e.key === "ArrowRight"){ e.preventDefault(); goNext(true); }
-    if (e.key === "ArrowLeft"){ e.preventDefault(); goPrev(); }
-    if (e.key.toLowerCase() === "x"){ e.preventDefault(); markUnknownAndReveal(); }
-  });
-
-  // init
-  loadFromStorage();
-  buildDeck("all");
-})();
+document.getElementById("modeLabel").textContent = "כל המילים";
+loadWord();
 </script>
+
 </body>
 </html>
