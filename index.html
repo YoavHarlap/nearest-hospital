@@ -15,227 +15,237 @@
     align-items: center;
     height: 100vh;
   }
-
   .app {
     width: 100%;
     max-width: 420px;
-    background: #ffffff;
-    padding: 24px;
+    background: #fff;
+    padding: 20px;
     box-sizing: border-box;
     text-align: center;
   }
-
-  .status {
-    font-size: 14px;
-    color: #555;
-    margin-bottom: 10px;
-  }
-
-  .word {
-    font-size: 40px;
-    font-weight: 700;
-    margin: 24px 0;
-  }
-
-  .meaning {
-    font-size: 22px;
-    color: #333;
-    min-height: 34px;
-    margin-bottom: 20px;
-  }
-
+  .status { font-size: 14px; color: #555; margin-bottom: 8px; }
+  .word { font-size: 38px; font-weight: 700; margin: 20px 0; }
+  .meaning { font-size: 22px; min-height: 32px; margin-bottom: 16px; }
   button {
     width: 100%;
-    padding: 16px;
-    margin: 6px 0;
-    font-size: 17px;
-    border-radius: 10px;
+    padding: 14px;
+    margin: 5px 0;
+    font-size: 16px;
+    border-radius: 8px;
     border: none;
     cursor: pointer;
   }
-
   .show { background: #e0e0e0; }
-  .know { background: #4CAF50; color: white; }
-  .dont { background: #f44336; color: white; }
-  .mode { background: #2196F3; color: white; }
-  .reset { background: #9e9e9e; color: white; }
+  .know { background: #4CAF50; color: #fff; }
+  .dont { background: #f44336; color: #fff; }
+  .mode { background: #2196F3; color: #fff; }
+  .reset { background: #9e9e9e; color: #fff; }
 </style>
 </head>
 
 <body>
 <div class="app">
 
-  <div class="status" id="status"></div>
+<div class="status" id="status"></div>
 
-  <div class="word" id="word"></div>
-  <div class="meaning" id="meaning"></div>
+<div class="word" id="word"></div>
+<div class="meaning" id="meaning"></div>
 
-  <button class="show" onclick="showMeaning()">הצג פירוש</button>
+<button class="show" onclick="showMeaning()">הצג פירוש</button>
+<button class="know" onclick="markKnown()">ידעתי</button>
+<button class="dont" onclick="markUnknown()">לא ידעתי</button>
 
-  <button class="know" onclick="markKnown()">ידעתי</button>
-  <button class="dont" onclick="markUnknown()">לא ידעתי</button>
-
-  <button class="mode" onclick="switchMode()" id="modeBtn"></button>
-  <button class="reset" onclick="resetLists()">איפוס כל הרשימות</button>
+<button class="mode" onclick="switchMode()" id="modeBtn"></button>
+<button class="reset" onclick="resetAll()">איפוס כל הרשימות</button>
 
 </div>
 
 <script>
-/* ========= מאגר מילים ========= */
+/* ========= מאגר מילים (נקלט מהצ'אט הזה) ========= */
 const WORDS = [
-  { en: "pledge", he: "להתחייב; הבטחה" },
-  { en: "plot", he: "עלילה; מזימה" },
-  { en: "poem", he: "שיר" },
-  { en: "power", he: "כוח" },
-  { en: "progress", he: "התקדמות" },
-  { en: "trust", he: "אמון" },
-  { en: "vulnerable", he: "פגיע" },
-  { en: "zone", he: "אזור" }
-  // ⬆ כאן יהיו בפועל כל 2,229 המילים
+  { en: "abduct", he: "לחטוף" },
+  { en: "abduction", he: "חטיפה" },
+  { en: "abide", he: "לציית; להתמיד" },
+  { en: "ability", he: "יכולת" },
+  { en: "able", he: "יכול" },
+  { en: "abolish", he: "לבטל" },
+  { en: "above", he: "מעל" },
+  { en: "abrupt", he: "פתאומי" },
+  { en: "absence", he: "היעדרות" },
+  { en: "absent", he: "נעדר" },
+  { en: "absolute", he: "מוחלט" },
+  { en: "absolutely", he: "בהחלט" },
+  { en: "abundant", he: "שופע" },
+  { en: "abuse", he: "ניצול; התעללות" },
+  { en: "accept", he: "לקבל" },
+  { en: "access", he: "גישה" },
+  { en: "accident", he: "תאונה" },
+  { en: "acclaim", he: "לשבח" },
+  { en: "accommodation", he: "מגורים; התאמה" },
+  { en: "accomplish", he: "להשלים" },
+  { en: "accomplished", he: "מוכשר; מושלם" },
+  { en: "accordance", he: "התאמה" },
+  { en: "according to", he: "לפי" },
+  { en: "accordingly", he: "בהתאם" },
+  { en: "account for", he: "להסביר; להוות" },
+  { en: "accumulate", he: "לצבור" },
+  { en: "accurate", he: "מדויק" },
+  { en: "accurately", he: "במדויק" },
+
+  { en: "adapt", he: "להסתגל" },
+  { en: "addition", he: "תוספת" },
+  { en: "adequate", he: "מספיק" },
+  { en: "adjust", he: "להתאים" },
+  { en: "admit", he: "להודות" },
+  { en: "adopt", he: "לאמץ" },
+  { en: "advance", he: "לקדם" },
+  { en: "advantage", he: "יתרון" },
+  { en: "affect", he: "להשפיע" },
+  { en: "affirm", he: "לאשר" },
+  { en: "against", he: "נגד" },
+  { en: "agency", he: "סוכנות" },
+
+  { en: "allow", he: "לאפשר" },
+  { en: "alter", he: "לשנות" },
+  { en: "although", he: "למרות" },
+  { en: "always", he: "תמיד" },
+  { en: "amaze", he: "להדהים" },
+  { en: "among", he: "בקרב" },
+  { en: "analyze", he: "לנתח" },
+  { en: "ancient", he: "עתיק" },
+  { en: "announce", he: "להכריז" },
+  { en: "annual", he: "שנתי" },
+
+  { en: "another", he: "אחר" },
+  { en: "answer", he: "לענות" },
+  { en: "anxiety", he: "חרדה" },
+  { en: "apology", he: "התנצלות" },
+  { en: "appear", he: "להופיע" },
+  { en: "apply", he: "להגיש; ליישם" },
+  { en: "appreciate", he: "להעריך" },
+  { en: "approach", he: "גישה" },
+  { en: "approve", he: "לאשר" },
+  { en: "area", he: "אזור" },
+  { en: "argue", he: "להתווכח" },
+  { en: "arrive", he: "להגיע" },
+  { en: "artificial", he: "מלאכותי" },
+
+  { en: "attack", he: "לתקוף" },
+  { en: "attempt", he: "ניסיון" },
+  { en: "attitude", he: "גישה" },
+  { en: "attract", he: "למשוך" },
+  { en: "authority", he: "סמכות" },
+  { en: "available", he: "זמין" },
+  { en: "average", he: "ממוצע" },
+  { en: "avoid", he: "להימנע" },
+
+  { en: "back", he: "גב" },
+  { en: "balance", he: "איזון" },
+  { en: "ban", he: "לאסור" },
+  { en: "bare", he: "חשוף" },
+  { en: "base", he: "בסיס" },
+  { en: "beat", he: "להכות" },
+  { en: "become", he: "להפוך ל" },
+  { en: "begin", he: "להתחיל" },
+  { en: "behavior", he: "התנהגות" },
+  { en: "belief", he: "אמונה" },
+  { en: "benefit", he: "תועלת" },
+  { en: "between", he: "בין" },
+
+  { en: "blame", he: "להאשים" },
+  { en: "blood", he: "דם" },
+  { en: "borrow", he: "ללוות" },
+  { en: "break", he: "לשבור" },
+  { en: "brief", he: "קצר" },
+  { en: "bright", he: "בהיר" },
+  { en: "budget", he: "תקציב" },
+  { en: "burden", he: "נטל" },
+
+  { en: "calculate", he: "לחשב" },
+  { en: "cancel", he: "לבטל" },
+  { en: "capital", he: "הון; עיר בירה" },
+  { en: "careful", he: "זהיר" },
+  { en: "cause", he: "גורם" },
+  { en: "certain", he: "בטוח" },
+  { en: "challenge", he: "אתגר" },
+  { en: "change", he: "לשנות" },
+  { en: "character", he: "אופי" },
+  { en: "charge", he: "לחייב" },
+  { en: "claim", he: "לטעון" },
+  { en: "clear", he: "ברור" },
+  { en: "close", he: "לסגור" },
+  { en: "collect", he: "לאסוף" },
+  { en: "comfort", he: "נוחות" },
+  { en: "common", he: "נפוץ" }
 ];
 
-/* ========= אחסון ========= */
-const LS = {
-  seen: "seenWords",
-  known: "knownWords",
-  unknown: "unknownWords"
-};
+/* ========= לוגיקה ========= */
+const LS = { seen:"SEEN", known:"KNOWN", unknown:"UNKNOWN" };
+let mode = "unseen";
+let current = null;
 
-function getSet(key) {
-  return new Set(JSON.parse(localStorage.getItem(key) || "[]"));
-}
-function saveSet(key, set) {
-  localStorage.setItem(key, JSON.stringify([...set]));
-}
+function get(k){ return new Set(JSON.parse(localStorage.getItem(k)||"[]")); }
+function set(k,v){ localStorage.setItem(k, JSON.stringify([...v])); }
 
-/* ========= מצבים ========= */
-let mode = "unseen"; // unseen | known | unknown
-let currentWord = null;
-
-/* ========= רשימה פעילה ========= */
-function activeList() {
-  const seen = getSet(LS.seen);
-  const known = getSet(LS.known);
-  const unknown = getSet(LS.unknown);
-
-  if (mode === "unseen") {
-    return WORDS.filter(w => !seen.has(w.en));
-  }
-  if (mode === "known") {
-    return WORDS.filter(w => known.has(w.en));
-  }
-  return WORDS.filter(w => unknown.has(w.en));
+function activeList(){
+  const seen=get(LS.seen), known=get(LS.known), unknown=get(LS.unknown);
+  if(mode==="unseen") return WORDS.filter(w=>!seen.has(w.en));
+  if(mode==="known") return WORDS.filter(w=>known.has(w.en));
+  return WORDS.filter(w=>unknown.has(w.en));
 }
 
-/* ========= טעינת מילה ========= */
-function loadWord() {
-  const list = activeList();
-
-  if (list.length === 0) {
-    document.getElementById("word").textContent = "🎉 סיימת את כל הכרטיסיות!";
-    document.getElementById("meaning").textContent = "";
+function loadWord(){
+  const list=activeList();
+  if(!list.length){
+    document.getElementById("word").textContent="🎉 סיימת את כל הכרטיסיות!";
+    document.getElementById("meaning").textContent="";
     return;
   }
-
-  currentWord = list[Math.floor(Math.random() * list.length)];
-  document.getElementById("word").textContent = currentWord.en;
-  document.getElementById("meaning").textContent = "";
+  current=list[Math.floor(Math.random()*list.length)];
+  document.getElementById("word").textContent=current.en;
+  document.getElementById("meaning").textContent="";
   updateStatus();
 }
 
-function showMeaning() {
-  if (currentWord)
-    document.getElementById("meaning").textContent = currentWord.he;
-}
+function showMeaning(){ if(current) document.getElementById("meaning").textContent=current.he; }
 
-/* ========= כפתורים ========= */
-
-// ידעתי
-function markKnown() {
-  if (!currentWord) return;
-
-  const seen = getSet(LS.seen);
-  const known = getSet(LS.known);
-  const unknown = getSet(LS.unknown);
-
+function markKnown(){
   showMeaning();
-
-  seen.add(currentWord.en);
-  known.add(currentWord.en);
-  unknown.delete(currentWord.en);
-
-  saveSet(LS.seen, seen);
-  saveSet(LS.known, known);
-  saveSet(LS.unknown, unknown);
-
-  setTimeout(loadWord, 500);
+  const s=get(LS.seen), k=get(LS.known), u=get(LS.unknown);
+  s.add(current.en); k.add(current.en); u.delete(current.en);
+  set(LS.seen,s); set(LS.known,k); set(LS.unknown,u);
+  setTimeout(loadWord,400);
 }
 
-// לא ידעתי
-function markUnknown() {
-  if (!currentWord) return;
-
-  const seen = getSet(LS.seen);
-  const known = getSet(LS.known);
-  const unknown = getSet(LS.unknown);
-
+function markUnknown(){
   showMeaning();
-
-  seen.add(currentWord.en);
-  unknown.add(currentWord.en);
-  known.delete(currentWord.en);
-
-  saveSet(LS.seen, seen);
-  saveSet(LS.known, known);
-  saveSet(LS.unknown, unknown);
-
-  setTimeout(loadWord, 500);
+  const s=get(LS.seen), k=get(LS.known), u=get(LS.unknown);
+  s.add(current.en); u.add(current.en); k.delete(current.en);
+  set(LS.seen,s); set(LS.known,k); set(LS.unknown,u);
+  setTimeout(loadWord,400);
 }
 
-/* ========= מצבים ========= */
-function switchMode() {
-  mode =
-    mode === "unseen" ? "unknown" :
-    mode === "unknown" ? "known" :
-    "unseen";
-
+function switchMode(){
+  mode = mode==="unseen"?"unknown":mode==="unknown"?"known":"unseen";
   loadWord();
 }
 
-/* ========= איפוס ========= */
-function resetLists() {
-  if (!confirm("לאפס את כל הרשימות?")) return;
-  localStorage.removeItem(LS.seen);
-  localStorage.removeItem(LS.known);
-  localStorage.removeItem(LS.unknown);
-  mode = "unseen";
+function resetAll(){
+  if(!confirm("לאפס הכל?")) return;
+  localStorage.clear();
+  mode="unseen";
   loadWord();
 }
 
-/* ========= סטטוס ========= */
-function updateStatus() {
-  const seen = getSet(LS.seen).size;
-  const known = getSet(LS.known).size;
-  const unknown = getSet(LS.unknown).size;
-
+function updateStatus(){
+  const s=get(LS.seen).size, k=get(LS.known).size, u=get(LS.unknown).size;
   document.getElementById("status").textContent =
-    `מצב: ${
-      mode === "unseen" ? "לא נצפו" :
-      mode === "known" ? "ידעתי" :
-      "לא ידעתי"
-    } | לא נצפו: ${WORDS.length - seen} | ידעתי: ${known} | לא ידעתי: ${unknown}`;
-
+    `מצב: ${mode} | לא נצפו: ${WORDS.length-s} | ידעתי: ${k} | לא ידעתי: ${u}`;
   document.getElementById("modeBtn").textContent =
-    mode === "unseen"
-      ? "עבור לרשימת הלא ידעתי"
-      : mode === "unknown"
-      ? "עבור לרשימת הידעתי"
-      : "עבור לרשימת הלא נצפו";
+    mode==="unseen"?"עבור ללא ידעתי":mode==="unknown"?"עבור לידעתי":"עבור ללא נצפו";
 }
 
-/* ========= התחלה ========= */
 loadWord();
 </script>
-
 </body>
 </html>
