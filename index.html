@@ -28,27 +28,27 @@
   .status {
     font-size: 14px;
     color: #555;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
   }
 
   .word {
-    font-size: 42px;
+    font-size: 40px;
     font-weight: 700;
     margin: 24px 0;
   }
 
   .meaning {
-    font-size: 24px;
+    font-size: 22px;
     color: #333;
-    min-height: 36px;
-    margin-bottom: 24px;
+    min-height: 34px;
+    margin-bottom: 20px;
   }
 
   button {
     width: 100%;
     padding: 16px;
-    margin: 8px 0;
-    font-size: 18px;
+    margin: 6px 0;
+    font-size: 17px;
     border-radius: 10px;
     border: none;
     cursor: pointer;
@@ -72,16 +72,16 @@
 
   <button class="show" onclick="showMeaning()">הצג פירוש</button>
 
-  <button class="know" onclick="knowWord()">ידעתי</button>
-  <button class="dont" onclick="dontKnowWord()">לא ידעתי</button>
+  <button class="know" onclick="markKnown()">ידעתי</button>
+  <button class="dont" onclick="markUnknown()">לא ידעתי</button>
 
   <button class="mode" onclick="switchMode()" id="modeBtn"></button>
-  <button class="reset" onclick="resetUnknown()">איפוס רשימת לא ידעתי</button>
+  <button class="reset" onclick="resetLists()">איפוס כל הרשימות</button>
 
 </div>
 
 <script>
-/* ======= מאגר מילים ======= */
+/* ========= מאגר מילים ========= */
 const WORDS = [
   { en: "pledge", he: "להתחייב; הבטחה" },
   { en: "plot", he: "עלילה; מזימה" },
@@ -91,41 +91,53 @@ const WORDS = [
   { en: "trust", he: "אמון" },
   { en: "vulnerable", he: "פגיע" },
   { en: "zone", he: "אזור" }
-  // ⬆ כאן נמצאות בפועל כל 2,229 המילים
+  // ⬆ כאן יהיו בפועל כל 2,229 המילים
 ];
 
-const STORAGE_KEY = "unknownWords";
-let mode = "all"; // all | unknown
+/* ========= אחסון ========= */
+const LS = {
+  seen: "seenWords",
+  known: "knownWords",
+  unknown: "unknownWords"
+};
+
+function getSet(key) {
+  return new Set(JSON.parse(localStorage.getItem(key) || "[]"));
+}
+function saveSet(key, set) {
+  localStorage.setItem(key, JSON.stringify([...set]));
+}
+
+/* ========= מצבים ========= */
+let mode = "unseen"; // unseen | known | unknown
 let currentWord = null;
 
-/* ======= אחסון ======= */
-function getUnknown() {
-  return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]"));
-}
-function saveUnknown(set) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify([...set]));
-}
-
-/* ======= לוגיקה ======= */
+/* ========= רשימה פעילה ========= */
 function activeList() {
-  const unknown = getUnknown();
-  return mode === "unknown"
-    ? WORDS.filter(w => unknown.has(w.en))
-    : WORDS;
-}
+  const seen = getSet(LS.seen);
+  const known = getSet(LS.known);
+  const unknown = getSet(LS.unknown);
 
-function randomWord() {
-  const list = activeList();
-  if (list.length === 0) {
-    alert("אין מילים במצב הזה 🎉");
-    return null;
+  if (mode === "unseen") {
+    return WORDS.filter(w => !seen.has(w.en));
   }
-  return list[Math.floor(Math.random() * list.length)];
+  if (mode === "known") {
+    return WORDS.filter(w => known.has(w.en));
+  }
+  return WORDS.filter(w => unknown.has(w.en));
 }
 
+/* ========= טעינת מילה ========= */
 function loadWord() {
-  currentWord = randomWord();
-  if (!currentWord) return;
+  const list = activeList();
+
+  if (list.length === 0) {
+    document.getElementById("word").textContent = "🎉 סיימת את כל הכרטיסיות!";
+    document.getElementById("meaning").textContent = "";
+    return;
+  }
+
+  currentWord = list[Math.floor(Math.random() * list.length)];
   document.getElementById("word").textContent = currentWord.en;
   document.getElementById("meaning").textContent = "";
   updateStatus();
@@ -136,67 +148,92 @@ function showMeaning() {
     document.getElementById("meaning").textContent = currentWord.he;
 }
 
-/* ======= כפתורים ======= */
+/* ========= כפתורים ========= */
 
-// ידעתי:
-// • מציג פירוש לרגע
-// • אם במצב "רק לא ידעתי" – מסיר מהרשימה
-// • עובר למילה הבאה
-function knowWord() {
+// ידעתי
+function markKnown() {
   if (!currentWord) return;
 
-  const set = getUnknown();
+  const seen = getSet(LS.seen);
+  const known = getSet(LS.known);
+  const unknown = getSet(LS.unknown);
 
   showMeaning();
 
-  if (mode === "unknown") {
-    set.delete(currentWord.en);
-    saveUnknown(set);
-  }
+  seen.add(currentWord.en);
+  known.add(currentWord.en);
+  unknown.delete(currentWord.en);
+
+  saveSet(LS.seen, seen);
+  saveSet(LS.known, known);
+  saveSet(LS.unknown, unknown);
 
   setTimeout(loadWord, 500);
 }
 
-// לא ידעתי:
-// • מוסיף לרשימה
-// • מציג פירוש
-// • עובר למילה הבאה
-function dontKnowWord() {
+// לא ידעתי
+function markUnknown() {
   if (!currentWord) return;
 
-  const set = getUnknown();
-  set.add(currentWord.en);
-  saveUnknown(set);
+  const seen = getSet(LS.seen);
+  const known = getSet(LS.known);
+  const unknown = getSet(LS.unknown);
 
   showMeaning();
+
+  seen.add(currentWord.en);
+  unknown.add(currentWord.en);
+  known.delete(currentWord.en);
+
+  saveSet(LS.seen, seen);
+  saveSet(LS.known, known);
+  saveSet(LS.unknown, unknown);
+
   setTimeout(loadWord, 500);
 }
 
+/* ========= מצבים ========= */
 function switchMode() {
-  mode = mode === "all" ? "unknown" : "all";
+  mode =
+    mode === "unseen" ? "unknown" :
+    mode === "unknown" ? "known" :
+    "unseen";
+
   loadWord();
 }
 
-function resetUnknown() {
-  if (confirm("למחוק את כל רשימת 'לא ידעתי'?")) {
-    localStorage.removeItem(STORAGE_KEY);
-    loadWord();
-  }
+/* ========= איפוס ========= */
+function resetLists() {
+  if (!confirm("לאפס את כל הרשימות?")) return;
+  localStorage.removeItem(LS.seen);
+  localStorage.removeItem(LS.known);
+  localStorage.removeItem(LS.unknown);
+  mode = "unseen";
+  loadWord();
 }
 
+/* ========= סטטוס ========= */
 function updateStatus() {
-  const unknownCount = getUnknown().size;
+  const seen = getSet(LS.seen).size;
+  const known = getSet(LS.known).size;
+  const unknown = getSet(LS.unknown).size;
 
   document.getElementById("status").textContent =
-    `מצב: ${mode === "all" ? "כל המילים" : "רק לא ידעתי"} | לא ידעתי: ${unknownCount}`;
+    `מצב: ${
+      mode === "unseen" ? "לא נצפו" :
+      mode === "known" ? "ידעתי" :
+      "לא ידעתי"
+    } | לא נצפו: ${WORDS.length - seen} | ידעתי: ${known} | לא ידעתי: ${unknown}`;
 
   document.getElementById("modeBtn").textContent =
-    mode === "all"
+    mode === "unseen"
       ? "עבור לרשימת הלא ידעתי"
-      : "עבור לכל המילים";
+      : mode === "unknown"
+      ? "עבור לרשימת הידעתי"
+      : "עבור לרשימת הלא נצפו";
 }
 
-/* ======= התחלה ======= */
+/* ========= התחלה ========= */
 loadWord();
 </script>
 
