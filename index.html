@@ -2,389 +2,625 @@
 <html lang="he" dir="rtl">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Fast2Care — מיון אווירי + Google Maps</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>לימוד מילים באנגלית (Quizlet-style)</title>
   <style>
-    body { font-family: system-ui, Arial; margin: 16px; line-height: 1.35; }
-    .card { border: 1px solid #ddd; border-radius: 12px; padding: 12px; margin-top: 12px; }
-    .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
-    input, button, textarea { padding: 10px; font-size: 16px; }
-    button { cursor: pointer; }
-    .muted { color: #555; }
-    .ok { color: #0a7; }
-    .bad { color: #c00; }
-    table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    th, td { border: 1px solid #eee; padding: 8px; vertical-align: top; }
-    th { background: #f7f7f7; }
-    .pill { display:inline-block; padding:2px 8px; border:1px solid #ddd; border-radius:999px; font-size:12px; }
-    .big { font-size: 16px; padding: 12px; font-weight: 700; }
-    .stack { display:flex; flex-direction:column; gap:6px; }
+    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, "Noto Sans", "Heebo", sans-serif; }
+    body { margin: 0; background: #0b0c10; color: #e9eef5; }
+    header { padding: 16px 18px; border-bottom: 1px solid rgba(255,255,255,.08); background:#0f1118; position: sticky; top: 0; z-index: 10; }
+    header h1 { margin: 0; font-size: 16px; font-weight: 700; }
+    .wrap { max-width: 980px; margin: 0 auto; padding: 16px; display: grid; gap: 14px; }
+    .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+    .btn {
+      appearance: none; border: 1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06); color: #e9eef5;
+      padding: 10px 12px; border-radius: 12px; cursor: pointer;
+      font-weight: 650; font-size: 14px;
+    }
+    .btn:hover { background: rgba(255,255,255,.10); }
+    .btn.primary { background: rgba(0, 170, 255, .18); border-color: rgba(0, 170, 255, .35); }
+    .btn.danger { background: rgba(255, 70, 70, .16); border-color: rgba(255, 70, 70, .35); }
+    .btn.ghost { background: transparent; }
+    .pill {
+      padding: 6px 10px; border-radius: 999px; font-size: 12px;
+      border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.06);
+    }
+
+    .card {
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.25);
+    }
+
+    .quizCard { display: grid; gap: 14px; }
+    .wordBox {
+      border-radius: 18px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(255,255,255,.03);
+      padding: 20px;
+      display: grid; gap: 10px;
+    }
+    .en { font-size: 34px; font-weight: 800; letter-spacing: .2px; direction: ltr; text-align: left; }
+    .he { font-size: 18px; opacity: .95; display: none; }
+    .he.show { display: block; }
+
+    .muted { opacity: .75; font-size: 13px; }
+    .split { display: grid; grid-template-columns: 1.1fr .9fr; gap: 14px; }
+    @media (max-width: 900px){ .split { grid-template-columns: 1fr; } }
+
+    textarea {
+      width: 100%; min-height: 160px;
+      border-radius: 14px; padding: 12px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.25); color: #e9eef5;
+      resize: vertical;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+      direction: ltr; text-align: left;
+    }
+    .tableWrap { overflow: auto; border-radius: 14px; border: 1px solid rgba(255,255,255,.10); }
+    table { width: 100%; border-collapse: collapse; min-width: 520px; }
+    th, td { padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    th { text-align: right; font-size: 12px; opacity: .8; background: rgba(255,255,255,.04); position: sticky; top: 0; }
+    td.enCell { direction: ltr; text-align: left; font-weight: 650; }
+    td.heCell { direction: rtl; text-align: right; }
+    tr:hover td { background: rgba(255,255,255,.03); }
+    .tag { font-size: 12px; padding: 3px 8px; border-radius: 999px; border: 1px solid rgba(255,255,255,.14); }
+    .tag.bad { border-color: rgba(255, 70, 70, .35); background: rgba(255, 70, 70, .14); }
+    .tag.ok { border-color: rgba(0, 200, 120, .35); background: rgba(0, 200, 120, .14); }
+
+    .hidden { display: none !important; }
   </style>
 </head>
+
 <body>
-  <h2>Fast2Care — מיון אווירי + פתיחה מהירה ב-Google Maps</h2>
-  <div class="muted">
-    ממיין לפי מרחק אווירי. אפשר לפתוח 4 בתי חולים כטאבים (ETA לכל אחד),
-    או לפתוח מסלול אחד עם 4 עצירות כדי לראות הכל במסך אחד.
+<header>
+  <h1>לימוד מילים באנגלית — מצב קוויזלט (שמירה אוטומטית ב־localStorage)</h1>
+</header>
+
+<div class="wrap">
+
+  <div class="row">
+    <button class="btn primary" id="modeAllBtn">תרגול כל המילים (רנדומלי)</button>
+    <button class="btn" id="modeUnknownBtn">תרגול רק “לא ידעתי”</button>
+    <button class="btn ghost" id="viewAllBtn">רשימת כל המילים</button>
+    <button class="btn ghost" id="viewUnknownBtn">רשימת “לא ידעתי”</button>
+    <span class="pill" id="statsPill">—</span>
   </div>
 
-  <div class="card">
-    <h3>המיקום שלי</h3>
-    <div class="row">
-      <button id="btnLocate" class="big">אתר מיקום</button>
-      <button id="btnOpenTop4" class="big" disabled>פתח 4 הכי קרובים (טאבים)</button>
-      <button id="btnOpenMultiStop" class="big" disabled>פתח מסלול מרובה עצירות (Top 4)</button>
-      <span id="status" class="muted">מוכן.</span>
-      <span id="count" class="pill"></span>
-    </div>
-    <div id="addr" class="muted" style="margin-top:8px"></div>
+  <div class="split">
 
-    <div class="muted" style="margin-top:8px">
-      אם Google Maps קופץ לאפליקציה באנדרואיד: Settings → Apps → Maps → Open by default → Open supported links → <b>Don’t allow</b>.
+    <!-- QUIZ -->
+    <div class="card quizCard" id="quizSection">
+      <div class="row" style="justify-content: space-between;">
+        <div class="muted" id="deckInfo">—</div>
+        <div class="row">
+          <button class="btn" id="shuffleBtn">ערבוב מחדש</button>
+          <button class="btn" id="resetProgressBtn">איפוס התקדמות (רק בסשן)</button>
+        </div>
+      </div>
+
+      <div class="wordBox">
+        <div class="en" id="enWord">הדבק מילים ואז התחל 🙂</div>
+        <div class="he" id="heWord">—</div>
+        <div class="muted" id="hintLine">לחץ “הצג פירוש”, או “ידעתי — הבא”.</div>
+      </div>
+
+      <div class="row">
+        <button class="btn" id="revealBtn">הצג פירוש</button>
+        <button class="btn primary" id="knewBtn">ידעתי — הבא</button>
+        <button class="btn" id="didntKnowBtn">לא ידעתי (לשמור) + להציג</button>
+      </div>
+
+      <div class="row">
+        <button class="btn ghost" id="prevBtn">קודם</button>
+        <button class="btn ghost" id="nextBtn">הבא</button>
+        <span class="pill" id="counterPill">0/0</span>
+      </div>
+    </div>
+
+    <!-- IMPORT / MANAGE -->
+    <div class="card" id="importSection">
+      <div class="row" style="justify-content: space-between;">
+        <div>
+          <div style="font-weight:800;">הדבקת מילים (English ⇢ Hebrew)</div>
+          <div class="muted">פורמט: בכל שורה <b>אנגלית<TAB>עברית</b> או <b>אנגלית - עברית</b> או <b>אנגלית,עברית</b></div>
+        </div>
+        <div class="row">
+          <button class="btn" id="loadStoredBtn">טען מילים שמורות</button>
+          <button class="btn danger" id="clearAllBtn">מחק את כל המילים</button>
+        </div>
+      </div>
+
+      <textarea id="pasteArea" placeholder="לדוגמה:
+abduct	לחטוף
+ability	יכולת
+above	מעל
+..."></textarea>
+
+      <div class="row">
+        <button class="btn primary" id="importBtn">ייבוא / עדכון רשימת מילים</button>
+        <button class="btn" id="exportBtn">ייצוא מילים (JSON)</button>
+        <button class="btn" id="exportUnknownBtn">ייצוא “לא ידעתי” (JSON)</button>
+      </div>
+
+      <div class="muted" id="importMsg">טיפ: אפשר להדביק כאן כל פעם עוד “10 תמונות” אחרי שהמרת אותן לטקסט.</div>
+    </div>
+
+  </div>
+
+  <!-- LISTS -->
+  <div class="card hidden" id="listSection">
+    <div class="row" style="justify-content: space-between;">
+      <div style="font-weight:800;" id="listTitle">—</div>
+      <div class="row">
+        <button class="btn" id="backToQuizBtn">חזרה לתרגול</button>
+        <button class="btn danger hidden" id="clearUnknownBtn">נקה את כל “לא ידעתי”</button>
+      </div>
+    </div>
+    <div class="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width: 34%;">אנגלית</th>
+            <th>עברית</th>
+            <th style="width: 160px;">סטטוס</th>
+            <th style="width: 170px;">פעולות</th>
+          </tr>
+        </thead>
+        <tbody id="listBody"></tbody>
+      </table>
+    </div>
+    <div class="muted" style="margin-top:10px;">
+      ברשימת “לא ידעתי” אפשר להסיר מילה מהרשימה — וזה יישמר לפעם הבאה.
     </div>
   </div>
 
-  <div class="card">
-    <div class="row" style="justify-content:space-between">
-      <h3 style="margin:0">בתי חולים (ממויין לפי מרחק אווירי)</h3>
-      <input id="search" placeholder="חיפוש לפי שם..." style="min-width:180px" />
-    </div>
-
-    <table id="tbl">
-      <thead>
-        <tr>
-          <th style="width:40%">שם</th>
-          <th style="width:16%">אווירי</th>
-          <th style="width:24%">Google/Waze</th>
-          <th style="width:20%">ניהול</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
-
-  <div class="card">
-    <h3>הוספה / ייבוא-ייצוא JSON (נשמר לפעם הבאה)</h3>
-    <div class="row">
-      <input id="name" placeholder="שם" style="flex:1; min-width: 140px;" />
-      <input id="lat" placeholder="Lat" inputmode="decimal" style="width: 120px;" />
-      <input id="lng" placeholder="Lng" inputmode="decimal" style="width: 120px;" />
-      <button id="btnAdd">הוסף</button>
-    </div>
-
-    <div class="row" style="margin-top:10px">
-      <button id="btnReset">איפוס לרשימת ברירת מחדל</button>
-      <button id="btnExport">ייצוא JSON</button>
-      <button id="btnImport">ייבוא JSON</button>
-    </div>
-
-    <textarea id="jsonBox" placeholder="הדבק כאן JSON לייבוא, או לחץ 'ייצוא JSON' לקבלת הרשימה"
-              style="width:100%; margin-top:10px; min-height:120px;"></textarea>
-    <div class="muted" style="margin-top:8px">
-      הרשימה נשמרת במכשיר (LocalStorage). אם מוחקים נתוני גלישה/Cache — זה יימחק.
-    </div>
-  </div>
+</div>
 
 <script>
-/** כמה כרטיסיות/עצירות לפתוח */
-const OPEN_TOP_N = 4;
+(() => {
+  const LS_WORDS = "vocab_words_v1";
+  const LS_UNKNOWN = "vocab_unknown_v1";
 
-/** שמירה מקומית */
-const LS_KEY = "fast2care_hospitals_v_json2";
+  /** @type {{en:string, he:string}[]} */
+  let words = [];
+  /** @type {Set<string>} */
+  let unknown = new Set();
 
-/** דיפולט — תחליף ל-15 שלך */
-const DEFAULT_HOSPITALS = [
-  { id: crypto.randomUUID(), name: "איכילוב (דוגמה)", lat: 32.0781, lng: 34.7898 },
-  { id: crypto.randomUUID(), name: "שיבא תל השומר (דוגמה)", lat: 32.0460, lng: 34.8447 },
-  { id: crypto.randomUUID(), name: "בלינסון (דוגמה)", lat: 32.0910, lng: 34.8814 },
-  { id: crypto.randomUUID(), name: "וולפסון (דוגמה)", lat: 32.0168, lng: 34.7580 },
-  { id: crypto.randomUUID(), name: "אסותא רמת החייל (דוגמה)", lat: 32.1093, lng: 34.8416 },
-  { id: crypto.randomUUID(), name: "רמב\"ם חיפה (דוגמה)", lat: 32.8371, lng: 35.0506 },
-];
+  // quiz state
+  let mode = "all"; // "all" | "unknown"
+  let deck = [];    // array of indices into words
+  let pos = 0;
+  let history = []; // visited positions (for prev)
 
-let hospitals = loadHospitals();
-let myPos = null;
-let sorted = [];
+  // elements
+  const el = (id) => document.getElementById(id);
 
-const el = (id) => document.getElementById(id);
+  const quizSection = el("quizSection");
+  const importSection = el("importSection");
+  const listSection = el("listSection");
 
-function setStatus(msg, ok=true) {
-  el("status").textContent = msg;
-  el("status").className = ok ? "ok" : "bad";
-}
+  const enWord = el("enWord");
+  const heWord = el("heWord");
+  const counterPill = el("counterPill");
+  const statsPill = el("statsPill");
+  const deckInfo = el("deckInfo");
 
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[c]));
-}
+  const modeAllBtn = el("modeAllBtn");
+  const modeUnknownBtn = el("modeUnknownBtn");
+  const viewAllBtn = el("viewAllBtn");
+  const viewUnknownBtn = el("viewUnknownBtn");
 
-function loadHospitals() {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return DEFAULT_HOSPITALS;
-    const parsed = JSON.parse(raw);
-    return Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_HOSPITALS;
-  } catch {
-    return DEFAULT_HOSPITALS;
+  const revealBtn = el("revealBtn");
+  const knewBtn = el("knewBtn");
+  const didntKnowBtn = el("didntKnowBtn");
+  const nextBtn = el("nextBtn");
+  const prevBtn = el("prevBtn");
+  const shuffleBtn = el("shuffleBtn");
+  const resetProgressBtn = el("resetProgressBtn");
+
+  const pasteArea = el("pasteArea");
+  const importBtn = el("importBtn");
+  const loadStoredBtn = el("loadStoredBtn");
+  const clearAllBtn = el("clearAllBtn");
+  const exportBtn = el("exportBtn");
+  const exportUnknownBtn = el("exportUnknownBtn");
+  const importMsg = el("importMsg");
+
+  const listTitle = el("listTitle");
+  const listBody = el("listBody");
+  const backToQuizBtn = el("backToQuizBtn");
+  const clearUnknownBtn = el("clearUnknownBtn");
+
+  // ---------- storage ----------
+  function saveWords() {
+    localStorage.setItem(LS_WORDS, JSON.stringify(words));
   }
-}
-function saveHospitals() {
-  localStorage.setItem(LS_KEY, JSON.stringify(hospitals));
-}
-
-/** מרחק אווירי */
-function haversineKm(a, b) {
-  const R = 6371;
-  const toRad = (x) => x * Math.PI / 180;
-  const dLat = toRad(b.lat - a.lat);
-  const dLng = toRad(b.lng - a.lng);
-  const lat1 = toRad(a.lat);
-  const lat2 = toRad(b.lat);
-  const h = Math.sin(dLat/2)**2 + Math.cos(lat1)*Math.cos(lat2)*Math.sin(dLng/2)**2;
-  return 2 * R * Math.asin(Math.min(1, Math.sqrt(h)));
-}
-
-/** קישור רגיל ליעד יחיד */
-function googleMapsSingleUrl(destLat, destLng, destName) {
-  const base = "https://www.google.com/maps/dir/?api=1";
-  const origin = myPos ? `${myPos.lat},${myPos.lng}` : "";
-  const destination = encodeURIComponent(destName || (destLat + "," + destLng));
-  const o = origin ? `&origin=${encodeURIComponent(origin)}` : "";
-  return `${base}${o}&destination=${destination}&travelmode=driving`;
-}
-
-/**
- * ✅ קישור למסלול מרובה עצירות:
- * origin = המיקום שלך
- * destination = היעד הראשון
- * waypoints = שאר היעדים
- *
- * הערה: Google Maps מגביל כמות waypoints, לכן אנחנו עושים Top 4 בלבד.
- */
-function googleMapsMultiStopUrl(stops) {
-  // stops: array of {name, lat, lng} length >= 2 ideally
-  const origin = myPos ? `${myPos.lat},${myPos.lng}` : "";
-  if (!origin) return null;
-
-  const base = "https://www.google.com/maps/dir/?api=1";
-  const o = `&origin=${encodeURIComponent(origin)}`;
-  const destination = encodeURIComponent(stops[0].name || (stops[0].lat + "," + stops[0].lng));
-  const destPart = `&destination=${destination}&travelmode=driving`;
-
-  // waypoints: שאר העצירות
-  const rest = stops.slice(1);
-  const wp = rest.length
-    ? `&waypoints=${encodeURIComponent(rest.map(s => s.name || (s.lat + "," + s.lng)).join("|"))}`
-    : "";
-
-  return base + o + destPart + wp;
-}
-
-/** Waze deep link */
-function wazeUrl(destLat, destLng) {
-  return `https://waze.com/ul?ll=${encodeURIComponent(destLat + "," + destLng)}&navigate=yes`;
-}
-
-/** זיהוי כתובת: עיר + רחוב + מספר (Nominatim) */
-async function reverseAddress(lat, lng) {
-  try {
-    const url = new URL("https://nominatim.openstreetmap.org/reverse");
-    url.searchParams.set("format", "jsonv2");
-    url.searchParams.set("lat", lat);
-    url.searchParams.set("lon", lng);
-    url.searchParams.set("accept-language", "he");
-    const r = await fetch(url.toString(), { headers: { "Accept": "application/json" }});
-    if (!r.ok) throw new Error("reverse http " + r.status);
-    const data = await r.json();
-    const a = data.address || {};
-    const city = a.city || a.town || a.village || a.municipality || "";
-    const road = a.road || a.pedestrian || a.footway || "";
-    const num  = a.house_number || "";
-    const parts = [];
-    if (city) parts.push(city);
-    if (road) parts.push(road + (num ? " " + num : ""));
-    return parts.length ? `זוהית ב: ${parts.join(", ")}` : "זוהית מיקום (לא הצלחתי לזהות כתובת).";
-  } catch {
-    return "זוהית מיקום (זיהוי כתובת נכשל).";
+  function saveUnknown() {
+    localStorage.setItem(LS_UNKNOWN, JSON.stringify([...unknown]));
   }
-}
+  function loadFromStorage() {
+    const w = localStorage.getItem(LS_WORDS);
+    const u = localStorage.getItem(LS_UNKNOWN);
+    words = [];
+    unknown = new Set();
 
-function computeSorted() {
-  if (!myPos) {
-    sorted = hospitals.map(h => ({...h, air_km: null}));
-    return;
+    if (w) {
+      try {
+        const parsed = JSON.parse(w);
+        if (Array.isArray(parsed)) {
+          words = parsed
+            .filter(x => x && typeof x.en === "string" && typeof x.he === "string")
+            .map(x => ({ en: x.en.trim(), he: x.he.trim() }))
+            .filter(x => x.en && x.he);
+        }
+      } catch {}
+    }
+    if (u) {
+      try {
+        const parsedU = JSON.parse(u);
+        if (Array.isArray(parsedU)) {
+          parsedU.forEach(k => { if (typeof k === "string") unknown.add(k); });
+        }
+      } catch {}
+    }
+    // clean unknown keys that no longer exist
+    const validKeys = new Set(words.map(w => keyOf(w)));
+    unknown = new Set([...unknown].filter(k => validKeys.has(k)));
+    saveUnknown();
+    updateStats();
   }
-  sorted = hospitals.map(h => ({
-    ...h,
-    air_km: haversineKm(myPos, { lat: Number(h.lat), lng: Number(h.lng) })
-  })).sort((a,b) => (a.air_km ?? Infinity) - (b.air_km ?? Infinity));
-}
 
-function render() {
-  const q = el("search").value.trim().toLowerCase();
-  const list = sorted.filter(h => !q || h.name.toLowerCase().includes(q));
+  // ---------- parsing / keys ----------
+  function keyOf(w) {
+    return (w.en.trim().toLowerCase() + "||" + w.he.trim());
+  }
 
-  el("count").textContent = `${list.length} מתוך ${sorted.length || hospitals.length}`;
+  function parseLinesToWords(text) {
+    const lines = text.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+    /** @type {{en:string, he:string}[]} */
+    const out = [];
 
-  const tbody = el("tbl").querySelector("tbody");
-  tbody.innerHTML = "";
-
-  list.forEach(h => {
-    const km = Number.isFinite(h.air_km) ? `${h.air_km.toFixed(1)} ק״מ` : `<span class="muted">—</span>`;
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td><b>${escapeHtml(h.name)}</b></td>
-      <td>${km}</td>
-      <td>
-        <div class="stack">
-          <button data-act="gmaps" data-id="${h.id}">Google Maps (ETA)</button>
-          <button data-act="waze" data-id="${h.id}">Waze</button>
-        </div>
-      </td>
-      <td>
-        <button data-act="del" data-id="${h.id}">מחק</button>
-      </td>
-    `;
-    tbody.appendChild(tr);
-  });
-
-  tbody.querySelectorAll("button[data-act]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const act = btn.getAttribute("data-act");
-      const id = btn.getAttribute("data-id");
-      const h = sorted.find(x => x.id === id) || hospitals.find(x => x.id === id);
-      if (!h) return;
-
-      if (act === "del") {
-        if (!confirm(`למחוק את "${h.name}"?`)) return;
-        hospitals = hospitals.filter(x => x.id !== id);
-        saveHospitals();
-        computeSorted();
-        render();
-        return;
+    for (const line of lines) {
+      // try TAB first
+      let en = "", he = "";
+      if (line.includes("\t")) {
+        [en, he] = line.split("\t");
+      } else if (line.includes(" - ")) {
+        [en, he] = line.split(" - ");
+      } else if (line.includes(" – ")) {
+        [en, he] = line.split(" – ");
+      } else if (line.includes(",")) {
+        // CSV-ish
+        const parts = line.split(",");
+        en = parts[0];
+        he = parts.slice(1).join(","); // allow commas in Hebrew part
+      } else if (line.includes("—")) {
+        [en, he] = line.split("—");
+      } else if (line.includes("-")) {
+        // fallback (careful: words like "co-operate" exist, but user said they'll paste clean text)
+        const idx = line.indexOf("-");
+        en = line.slice(0, idx);
+        he = line.slice(idx + 1);
+      } else {
+        continue; // cannot parse
       }
 
-      const url = (act === "gmaps")
-        ? googleMapsSingleUrl(h.lat, h.lng, h.name)
-        : wazeUrl(h.lat, h.lng);
+      en = (en || "").trim();
+      he = (he || "").trim();
+      if (!en || !he) continue;
+      out.push({ en, he });
+    }
 
-      window.open(url, "_blank");
-    });
-  });
+    // de-dup by key
+    const seen = new Set();
+    const dedup = [];
+    for (const w of out) {
+      const k = keyOf(w);
+      if (seen.has(k)) continue;
+      seen.add(k);
+      dedup.push(w);
+    }
+    return dedup;
+  }
 
-  const enabled = !!myPos && sorted.length > 0;
-  el("btnOpenTop4").disabled = !enabled;
-  el("btnOpenMultiStop").disabled = !enabled || Math.min(sorted.length, OPEN_TOP_N) < 2;
-}
+  // ---------- deck / quiz ----------
+  function shuffle(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+  }
 
-async function locateAndSort() {
-  try {
-    if (!navigator.geolocation) {
-      setStatus("הדפדפן לא תומך Geolocation.", false);
+  function buildDeck(newMode) {
+    mode = newMode;
+
+    const allIdx = words.map((_, i) => i);
+    if (mode === "unknown") {
+      const idx = allIdx.filter(i => unknown.has(keyOf(words[i])));
+      deck = shuffle(idx);
+    } else {
+      deck = shuffle(allIdx);
+    }
+    pos = 0;
+    history = [];
+    renderCard();
+    updateStats();
+    updateModeButtons();
+  }
+
+  function updateModeButtons() {
+    modeAllBtn.classList.toggle("primary", mode === "all");
+    modeUnknownBtn.classList.toggle("primary", mode === "unknown");
+  }
+
+  function currentWord() {
+    if (!deck.length) return null;
+    const idx = deck[pos];
+    return words[idx] || null;
+  }
+
+  function renderCard() {
+    const total = deck.length;
+
+    if (!words.length) {
+      enWord.textContent = "עדיין אין מילים. הדבק טקסט בצד ימין ולחץ ייבוא.";
+      heWord.textContent = "";
+      heWord.classList.remove("show");
+      counterPill.textContent = "0/0";
+      deckInfo.textContent = "אין חפיסה לתרגול";
       return;
     }
-    setStatus("מאתר מיקום…");
-    const pos = await new Promise((resolve, reject) => {
-      navigator.geolocation.getCurrentPosition(resolve, reject, {
-        enableHighAccuracy: true, timeout: 12000, maximumAge: 0
+
+    if (!total) {
+      enWord.textContent = (mode === "unknown")
+        ? "אין מילים ב“לא ידעתי” 🎉"
+        : "אין מילים לתרגול";
+      heWord.textContent = "";
+      heWord.classList.remove("show");
+      counterPill.textContent = "0/0";
+      deckInfo.textContent = (mode === "unknown")
+        ? "מצב: רק לא ידעתי"
+        : "מצב: כל המילים";
+      return;
+    }
+
+    if (pos < 0) pos = 0;
+    if (pos >= total) pos = total - 1;
+
+    const w = currentWord();
+    if (!w) return;
+
+    enWord.textContent = w.en;
+    heWord.textContent = w.he;
+    heWord.classList.remove("show");
+
+    counterPill.textContent = `${pos + 1}/${total}`;
+    deckInfo.textContent = `מצב: ${mode === "unknown" ? "רק לא ידעתי" : "כל המילים"} · ערבוב בכל פתיחה/ערבוב`;
+  }
+
+  function goNext(pushHistory = true) {
+    if (!deck.length) return;
+    if (pushHistory) history.push(pos);
+    pos = (pos + 1) % deck.length;
+    renderCard();
+  }
+
+  function goPrev() {
+    if (!deck.length) return;
+    if (history.length) pos = history.pop();
+    else pos = (pos - 1 + deck.length) % deck.length;
+    renderCard();
+  }
+
+  function reveal() {
+    heWord.classList.add("show");
+  }
+
+  function markUnknownAndReveal() {
+    const w = currentWord();
+    if (!w) return;
+    unknown.add(keyOf(w));
+    saveUnknown();
+    reveal();
+    updateStats();
+  }
+
+  function unmarkUnknownByKey(k) {
+    unknown.delete(k);
+    saveUnknown();
+    updateStats();
+  }
+
+  // ---------- lists ----------
+  function showList(which) {
+    // which: "all" | "unknown"
+    quizSection.classList.add("hidden");
+    importSection.classList.add("hidden");
+    listSection.classList.remove("hidden");
+
+    const rows = [];
+    if (which === "unknown") {
+      clearUnknownBtn.classList.remove("hidden");
+      listTitle.textContent = "רשימת מילים שסימנתי “לא ידעתי”";
+      for (const w of words) {
+        const k = keyOf(w);
+        if (unknown.has(k)) rows.push({ w, k, status: "לא ידעתי" });
+      }
+    } else {
+      clearUnknownBtn.classList.add("hidden");
+      listTitle.textContent = "רשימת כל המילים";
+      for (const w of words) {
+        const k = keyOf(w);
+        rows.push({ w, k, status: unknown.has(k) ? "לא ידעתי" : "יודע" });
+      }
+    }
+
+    listBody.innerHTML = rows.map(({w,k,status}) => {
+      const isBad = status === "לא ידעתי";
+      const tagClass = isBad ? "tag bad" : "tag ok";
+      const actionBtn = isBad
+        ? `<button class="btn" data-action="remove-unknown" data-key="${escapeHtmlAttr(k)}">הסר מ“לא ידעתי”</button>`
+        : `<button class="btn ghost" disabled>—</button>`;
+      return `
+        <tr>
+          <td class="enCell">${escapeHtml(w.en)}</td>
+          <td class="heCell">${escapeHtml(w.he)}</td>
+          <td><span class="${tagClass}">${escapeHtml(status)}</span></td>
+          <td>${actionBtn}</td>
+        </tr>
+      `;
+    }).join("");
+
+    listBody.querySelectorAll("button[data-action='remove-unknown']").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const k = btn.getAttribute("data-key");
+        if (!k) return;
+        unmarkUnknownByKey(unescapeHtmlAttr(k));
+        // refresh list
+        showList(which);
       });
     });
-    myPos = { lat: pos.coords.latitude, lng: pos.coords.longitude };
-    setStatus(`מיקום נקלט: ${myPos.lat.toFixed(5)}, ${myPos.lng.toFixed(5)}`, true);
-
-    el("addr").textContent = "מזהה כתובת (עיר/רחוב)…";
-    el("addr").textContent = await reverseAddress(myPos.lat, myPos.lng);
-
-    computeSorted();
-    render();
-  } catch (e) {
-    console.error(e);
-    setStatus("נכשל איתור מיקום. אשר הרשאה ונסה שוב.", false);
   }
-}
 
-/** פתיחת טאבים ל-ETA לכל יעד */
-function openTopNGmapsTabs() {
-  if (!sorted.length) return;
-  const top = sorted.slice(0, OPEN_TOP_N);
-  top.forEach((h, i) => {
-    const url = googleMapsSingleUrl(h.lat, h.lng, h.name);
-    setTimeout(() => window.open(url, "_blank"), i * 250);
+  function backToQuiz() {
+    listSection.classList.add("hidden");
+    quizSection.classList.remove("hidden");
+    importSection.classList.remove("hidden");
+    renderCard();
+  }
+
+  // ---------- export ----------
+  function downloadText(filename, text) {
+    const blob = new Blob([text], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  // ---------- UI stats ----------
+  function updateStats() {
+    const total = words.length;
+    const unkCount = [...unknown].length;
+    statsPill.textContent = `סה"כ: ${total} · לא ידעתי: ${unkCount}`;
+    modeUnknownBtn.disabled = (unkCount === 0);
+  }
+
+  function escapeHtml(s) {
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+  // attributes: keep simple
+  function escapeHtmlAttr(s){ return escapeHtml(s).replaceAll("||","&#124;&#124;"); }
+  function unescapeHtmlAttr(s){ return s.replaceAll("&#124;&#124;","||"); }
+
+  // ---------- actions ----------
+  modeAllBtn.addEventListener("click", () => buildDeck("all"));
+  modeUnknownBtn.addEventListener("click", () => buildDeck("unknown"));
+  viewAllBtn.addEventListener("click", () => showList("all"));
+  viewUnknownBtn.addEventListener("click", () => showList("unknown"));
+
+  revealBtn.addEventListener("click", reveal);
+  knewBtn.addEventListener("click", () => goNext(true));
+  didntKnowBtn.addEventListener("click", () => {
+    markUnknownAndReveal();
+    // לא מעבירים אוטומטית כדי שתוכל לראות את הפירוש
   });
-}
 
-/** פתיחת מסלול מרובה עצירות (מסך אחד) */
-function openMultiStopRoute() {
-  if (!sorted.length || !myPos) return;
-  const top = sorted.slice(0, OPEN_TOP_N).map(h => ({ name: h.name, lat: h.lat, lng: h.lng }));
-  const url = googleMapsMultiStopUrl(top);
-  if (!url) return;
-  window.open(url, "_blank");
-}
+  nextBtn.addEventListener("click", () => goNext(true));
+  prevBtn.addEventListener("click", () => goPrev());
 
-/** JSON */
-el("btnExport").addEventListener("click", () => {
-  el("jsonBox").value = JSON.stringify(hospitals, null, 2);
-  el("jsonBox").focus();
-});
-el("btnImport").addEventListener("click", () => {
-  try {
-    const txt = el("jsonBox").value.trim();
-    if (!txt) { alert("תדביק JSON בתיבה קודם."); return; }
-    const parsed = JSON.parse(txt);
-    if (!Array.isArray(parsed)) throw new Error("JSON חייב להיות מערך");
+  shuffleBtn.addEventListener("click", () => buildDeck(mode));
+  resetProgressBtn.addEventListener("click", () => { pos = 0; history = []; renderCard(); });
 
-    const cleaned = parsed.map(item => ({
-      id: item.id || crypto.randomUUID(),
-      name: String(item.name || "").trim(),
-      lat: Number(item.lat),
-      lng: Number(item.lng),
-    })).filter(x => x.name && Number.isFinite(x.lat) && Number.isFinite(x.lng));
+  importBtn.addEventListener("click", () => {
+    const text = pasteArea.value || "";
+    const imported = parseLinesToWords(text);
 
-    if (!cleaned.length) throw new Error("לא נמצאו רשומות תקינות");
-    hospitals = cleaned;
-    saveHospitals();
+    if (!imported.length) {
+      importMsg.textContent = "לא זיהיתי מילים. בדוק פורמט: אנגלית<TAB>עברית או אנגלית - עברית.";
+      return;
+    }
 
-    computeSorted();
-    render();
-    alert("יובא בהצלחה!");
-  } catch (e) {
-    alert("ייבוא נכשל: " + (e.message || e));
-  }
-});
-el("btnReset").addEventListener("click", () => {
-  if (!confirm("לאפס לרשימת ברירת מחדל?")) return;
-  hospitals = DEFAULT_HOSPITALS.map(x => ({...x, id: crypto.randomUUID()}));
-  saveHospitals();
-  el("jsonBox").value = "";
-  computeSorted();
-  render();
-});
-el("btnAdd").addEventListener("click", () => {
-  const name = el("name").value.trim();
-  const lat = Number(el("lat").value);
-  const lng = Number(el("lng").value);
-  if (!name || !Number.isFinite(lat) || !Number.isFinite(lng)) {
-    alert("נא למלא שם + Lat/Lng תקינים");
-    return;
-  }
-  hospitals.push({ id: crypto.randomUUID(), name, lat, lng });
-  saveHospitals();
-  el("name").value = ""; el("lat").value = ""; el("lng").value = "";
-  computeSorted();
-  render();
-});
+    // merge with existing
+    const map = new Map(words.map(w => [keyOf(w), w]));
+    for (const w of imported) map.set(keyOf(w), w);
+    words = [...map.values()];
 
-el("btnLocate").addEventListener("click", locateAndSort);
-el("btnOpenTop4").addEventListener("click", openTopNGmapsTabs);
-el("btnOpenMultiStop").addEventListener("click", openMultiStopRoute);
-el("search").addEventListener("input", render);
+    // clean unknown to only valid keys
+    const validKeys = new Set(words.map(w => keyOf(w)));
+    unknown = new Set([...unknown].filter(k => validKeys.has(k)));
 
-/** init */
-computeSorted();
-render();
-window.addEventListener("load", locateAndSort);
+    saveWords();
+    saveUnknown();
+
+    importMsg.textContent = `ייבוא הצליח: נוספו/עודכנו ${imported.length} שורות. סה"כ במאגר: ${words.length}.`;
+    buildDeck(mode); // rebuild with shuffle
+  });
+
+  loadStoredBtn.addEventListener("click", () => {
+    loadFromStorage();
+    buildDeck(mode);
+    importMsg.textContent = `נטענו מילים מהדפדפן. סה"כ: ${words.length}.`;
+  });
+
+  clearAllBtn.addEventListener("click", () => {
+    if (!confirm("למחוק את כל המילים + רשימת 'לא ידעתי' מהדפדפן?")) return;
+    localStorage.removeItem(LS_WORDS);
+    localStorage.removeItem(LS_UNKNOWN);
+    words = [];
+    unknown = new Set();
+    pasteArea.value = "";
+    buildDeck("all");
+    importMsg.textContent = "נמחק הכל. אפשר להדביק מחדש.";
+  });
+
+  exportBtn.addEventListener("click", () => {
+    downloadText("words.json", JSON.stringify(words, null, 2));
+  });
+
+  exportUnknownBtn.addEventListener("click", () => {
+    const unkWords = words.filter(w => unknown.has(keyOf(w)));
+    downloadText("unknown_words.json", JSON.stringify(unkWords, null, 2));
+  });
+
+  backToQuizBtn.addEventListener("click", backToQuiz);
+
+  clearUnknownBtn.addEventListener("click", () => {
+    if (!confirm("לנקות את כל רשימת 'לא ידעתי'?")) return;
+    unknown = new Set();
+    saveUnknown();
+    updateStats();
+    showList("unknown");
+  });
+
+  // keyboard shortcuts
+  document.addEventListener("keydown", (e) => {
+    // ignore when typing in textarea
+    if (document.activeElement && document.activeElement.tagName === "TEXTAREA") return;
+
+    if (e.key === " "){ e.preventDefault(); reveal(); }
+    if (e.key === "ArrowRight"){ e.preventDefault(); goNext(true); }
+    if (e.key === "ArrowLeft"){ e.preventDefault(); goPrev(); }
+    if (e.key.toLowerCase() === "x"){ e.preventDefault(); markUnknownAndReveal(); }
+  });
+
+  // init
+  loadFromStorage();
+  buildDeck("all");
+})();
 </script>
 </body>
 </html>
