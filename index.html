@@ -63,510 +63,3820 @@
 <script>
 /* ========= מאגר מילים (נקלט מהצ'אט הזה) ========= */
 const WORDS = [
-  { en: "abduct", he: "לחטוף" },
-  { en: "abduction", he: "חטיפה" },
-  { en: "abide", he: "לציית; להתמיד" },
-  { en: "ability", he: "יכולת" },
-  { en: "able", he: "יכול" },
-  { en: "abolish", he: "לבטל" },
-  { en: "above", he: "מעל" },
-  { en: "abrupt", he: "פתאומי" },
-  { en: "absence", he: "היעדר; חוסר" },
-  { en: "absent", he: "נעדר" },
-  { en: "absolute", he: "מוחלט" },
-  { en: "absolutely", he: "לחלוטין" },
-  { en: "abundant", he: "שופע; מלא" },
-  { en: "abuse", he: "להתעלל; שימוש לרעה" },
-  { en: "accept", he: "לקבל" },
-  { en: "access", he: "גישה; להיכנס" },
-  { en: "accident", he: "תאונה" },
-  { en: "acclaim", he: "להריע; לשבח" },
-  { en: "accommodation", he: "מגורים; דיור" },
-  { en: "accomplice", he: "שותף לעבירה" },
-  { en: "accomplish", he: "להשלים; לבצע" },
-  { en: "accomplished", he: "מושלם; גמור" },
-  { en: "accordance", he: "התאמה; תיאום" },
-  { en: "according to", he: "לפי" },
-  { en: "accordingly", he: "בהתאם" },
-  { en: "account for", he: "להסביר; לתת סיבה" },
-  { en: "accumulate", he: "לצבור" },
-  { en: "accurate", he: "מדויק" },
-  { en: "accurately", he: "במדויק" },
-  { en: "accusation", he: "האשמה" },
-  { en: "achieve", he: "להשיג" },
-  { en: "acid", he: "חומצה" },
-  { en: "acquisition", he: "רכישה" },
-  { en: "act", he: "לפעול; מעשה" },
-  { en: "active", he: "פעיל" },
-  { en: "adapt", he: "להסתגל" },
-  { en: "adaptation", he: "הסתגלות" },
-  { en: "addition", he: "תוספת" },
-  { en: "additional", he: "נוסף" },
-  { en: "adequate", he: "מספיק; הולם" },
-  { en: "adjust", he: "להתאים" },
-  { en: "admirable", he: "נערץ" },
-  { en: "admiration", he: "הערצה" },
-  { en: "admire", he: "להעריץ" },
-  { en: "admit", he: "להודות; לאשר" },
-  { en: "admittance", he: "כניסה; אישור" },
-  { en: "admonish", he: "להזהיר; לנזוף" },
-  { en: "adopt", he: "לאמץ" },
-  { en: "adore", he: "לאהוב; להעריץ" },
-  { en: "adorn", he: "לקשט" },
-  { en: "adult", he: "מבוגר" },
-  { en: "advance", he: "להתקדם" },
-  { en: "advantage", he: "יתרון; תועלת" },
-  { en: "advise", he: "לייעץ" },
-  { en: "advocate", he: "לתמוך; סנגור" },
-  { en: "affect", he: "להשפיע" },
-  { en: "affiliation", he: "השתייכות" },
-  { en: "affirm", he: "לאשר" },
-  { en: "affluence", he: "שפע; עושר" },
-  { en: "affluent", he: "עשיר; שופע" },
-  { en: "against", he: "נגד" },
-  { en: "age", he: "גיל" },
-  { en: "agency", he: "סוכנות; משרד" },
-  { en: "aging", he: "הזדקנות" },
-  { en: "aid", he: "עזרה" },
-  { en: "aim", he: "לכוון; מטרה" },
-  { en: "alert", he: "ערני; דרוך" },
-  { en: "alien", he: "זר" },
-  { en: "alienate", he: "להרחיק" },
-  { en: "alienation", he: "ניכור" },
-  { en: "allow", he: "לאפשר" },
-  { en: "allowance", he: "קצבה" },
-  { en: "allure", he: "לפתות" },
-  { en: "allusion", he: "אזכור; רמז" },
-  { en: "alone", he: "לבד" },
-  { en: "also", he: "גם" },
-  { en: "alter", he: "לשנות" },
-  { en: "alteration", he: "שינוי" },
-  { en: "alternate between", he: "להחליף בין" },
-  { en: "although", he: "למרות" },
-  { en: "always", he: "תמיד" },
-  { en: "amaze", he: "להדהים" },
-  { en: "amazing", he: "מדהים" },
-  { en: "ambiguous", he: "דו־משמעי" },
-  { en: "ambition", he: "שאיפה" },
-  { en: "among", he: "בקרב" },
-  { en: "amusement", he: "שעשוע" },
-  { en: "amusing", he: "משעשע" },
-  { en: "analyze", he: "לנתח" },
-  { en: "ancient", he: "עתיק" },
-  { en: "angle", he: "זווית" },
-  { en: "animate", he: "להנפיש" },
-  { en: "animation", he: "אנימציה" },
-  { en: "announce", he: "להודיע" },
-  { en: "announcement", he: "הכרזה" },
-  { en: "annoy", he: "להרגיז" },
-  { en: "annual", he: "שנתי" },
-  { en: "another", he: "אחר; נוסף" },
-  { en: "answer", he: "תשובה" },
-  { en: "anticipate", he: "לצפות" },
-  { en: "antique", he: "עתיק; עתיקה" },
-  { en: "antiquity", he: "ימי קדם" },
-  { en: "anxiety", he: "חרדה" },
-  { en: "anxious", he: "חרד" },
-  { en: "apology", he: "התנצלות" },
-  { en: "apparatus", he: "מכשיר" },
-  { en: "apparent", he: "גלוי; נראה" },
-  { en: "appeal", he: "ערעור; פנייה" },
-  { en: "appealed to", he: "פנה אל" },
-  { en: "appear", he: "להופיע" },
-  { en: "application", he: "בקשה; יישום" },
-  { en: "apply for", he: "להגיש בקשה" },
-  { en: "appreciate", he: "להעריך" },
-  { en: "approach", he: "גישה; להתקרב" },
-  { en: "appropriate", he: "מתאים" },
-  { en: "approve", he: "לאשר" },
-  { en: "approximately", he: "בקירוב" },
-  { en: "area", he: "אזור" },
-  { en: "argue", he: "להתווכח" },
-  { en: "argument", he: "ויכוח; טיעון" },
-  { en: "arrangement", he: "סידור; הסכם" },
-  { en: "arrive", he: "להגיע" },
-  { en: "artificial", he: "מלאכותי" },
-  { en: "artificially", he: "באופן מלאכותי" },
-  { en: "ascend", he: "לעלות" },
-  { en: "ask", he: "לשאול; לבקש" },
-  { en: "aspect", he: "היבט" },
-  { en: "aspiration", he: "שאיפה" },
-  { en: "assemble", he: "לאסוף; להרכיב" },
-  { en: "assembly", he: "אספה; הרכבה" },
-  { en: "assert", he: "לטעון" },
-  { en: "asset", he: "נכס" },
-  { en: "assign", he: "להקצות" },
-  { en: "assignment", he: "משימה" },
-  { en: "assistance", he: "סיוע; עזרה" },
-  { en: "assume", he: "להניח" },
-  { en: "assumption", he: "הנחה" },
-  { en: "assure", he: "להבטיח" },
-  { en: "astound", he: "להדהים" },
-  { en: "atmosphere", he: "אווירה; אטמוספירה" },
-  { en: "attach", he: "לחבר" },
-  { en: "attack", he: "לתקוף" },
-  { en: "attain", he: "להשיג" },
-  { en: "attempt", he: "ניסיון" },
-  { en: "attend", he: "להשתתף" },
-  { en: "attendant", he: "מלווה" },
-  { en: "attire", he: "לבוש" },
-  { en: "attitude", he: "גישה; עמדה" },
-  { en: "attract", he: "למשוך" },
-  { en: "attraction", he: "משיכה" },
-  { en: "attractive", he: "מושך" },
-  { en: "attribute", he: "לייחס; תכונה" },
-  { en: "augment", he: "להגדיל" },
-  { en: "authentically", he: "באמת" },
-  { en: "authenticate", he: "לאמת" },
-  { en: "author", he: "סופר" },
-  { en: "authority", he: "רשות; סמכות" },
-  { en: "authorize", he: "לאשר" },
-  { en: "availability", he: "זמינות" },
-  { en: "average", he: "ממוצע" },
-  { en: "avert", he: "למנוע" },
-  { en: "avoid", he: "להימנע" },
-  { en: "aware", he: "להיות מודע" },
 
-  { en: "back", he: "גב; אחורי" },
-  { en: "backward", he: "לאחור" },
-  { en: "balance", he: "איזון" },
-  { en: "ban", he: "לאסור" },
-  { en: "banish", he: "לגרש" },
-  { en: "bare", he: "חשוף" },
-  { en: "barely", he: "בקושי" },
-  { en: "barrier", he: "מחסום" },
-  { en: "barter", he: "סחר חליפין" },
-  { en: "base", he: "בסיס" },
-  { en: "bashful", he: "ביישן" },
-  { en: "beat", he: "להכות" },
-  { en: "because", he: "כי" },
-  { en: "become", he: "להפוך ל־" },
-  { en: "before", he: "לפני" },
-  { en: "begin", he: "להתחיל" },
-  { en: "beginning", he: "התחלה" },
-  { en: "behave", he: "להתנהג" },
-  { en: "behavior", he: "התנהגות" },
-  { en: "belief", he: "אמונה" },
-  { en: "believe", he: "להאמין" },
-  { en: "bend", he: "לכופף" },
-  { en: "bend over", he: "להתכופף" },
-  { en: "beneath", he: "מתחת ל־" },
-  { en: "benefactor", he: "תורם" },
-  { en: "benefit", he: "תועלת; רווח" },
-  { en: "bent", he: "כפוף" },
-  { en: "bequeath", he: "להוריש" },
-  { en: "besides", he: "חוץ מ־" },
-  { en: "best", he: "הכי טוב" },
-  { en: "between", he: "בין" },
-  { en: "bewilder", he: "לבלבל" },
-  { en: "bewilderment", he: "בלבול" },
-  { en: "blame", he: "להאשים" },
-  { en: "blaze", he: "להבה" },
-  { en: "bleed", he: "לדמם" },
-  { en: "blind", he: "עיוור" },
-  { en: "blindly", he: "בעיוורון" },
-  { en: "blood", he: "דם" },
-  { en: "blouse", he: "חולצה" },
-  { en: "blow", he: "לנשוף; מכה" },
-  { en: "blunt", he: "קהה" },
-  { en: "bond", he: "קשר" },
-  { en: "bone", he: "עצם" },
-  { en: "boost", he: "לחזק" },
-  { en: "border", he: "גבול" },
-  { en: "bore", he: "לשעמם" },
-  { en: "boring", he: "משעמם" },
-  { en: "borrow", he: "ללוות" },
-  { en: "boundary", he: "תחום; גבול" },
-  { en: "brake", he: "בלם" },
-  { en: "branch", he: "ענף" },
-  { en: "brave", he: "אמיץ" },
-  { en: "break", he: "לשבור" },
-  { en: "breakdown", he: "התמוטטות" },
-  { en: "brief", he: "קצר" },
-  { en: "bright", he: "בהיר" },
-  { en: "broad", he: "רחב" },
-  { en: "broadly", he: "באופן רחב" },
-  { en: "budget", he: "תקציב" },
-  { en: "bulky", he: "מגושם" },
-  { en: "burden", he: "נטל" },
-  { en: "bury", he: "לקבור" },
-  { en: "buy", he: "לקנות" },
+  <!-- עמוד חדש -->
 
-  { en: "calculate", he: "לחשב" },
-  { en: "calmly", he: "ברוגע" },
-  { en: "campaign", he: "מסע פרסום" },
-  { en: "cancel", he: "לבטל" },
-  { en: "candid", he: "כן; גלוי לב" },
-  { en: "candidate", he: "מועמד" },
-  { en: "capability", he: "יכולת" },
-  { en: "capable", he: "מסוגל" },
-  { en: "capacity", he: "קיבולת" },
-  { en: "capital", he: "הון; עיר בירה" },
-  { en: "capitalize", he: "להפיק תועלת" },
-  { en: "carefully", he: "בזהירות" },
-  { en: "cargo", he: "מטען" },
-  { en: "case", he: "מקרה" },
-  { en: "casual", he: "מזדמן" },
-  { en: "casualty", he: "נפגע" },
-  { en: "cause", he: "גורם" },
-  { en: "cave", he: "מערה" },
-  { en: "cease", he: "להפסיק" },
-  { en: "cease fire", he: "הפסקת אש" },
-  { en: "celebrate", he: "לחגוג" },
-  { en: "celebration", he: "חגיגה" },
-  { en: "century", he: "מאה" },
-  { en: "ceremony", he: "טקס" },
-  { en: "certain", he: "בטוח" },
-  { en: "certainty", he: "ודאות" },
-  { en: "certificate", he: "תעודה" },
-  { en: "certify", he: "לאשר" },
-  { en: "challenge", he: "אתגר" },
-  { en: "change", he: "לשנות" },
-  { en: "chant", he: "שירה" },
-  { en: "chapter", he: "פרק" },
-  { en: "character", he: "אופי; דמות" },
-  { en: "characteristic", he: "מאפיין" },
-  { en: "characterize", he: "לאפיין" },
-  { en: "charge", he: "לחייב; להאשים" },
-  { en: "cheer", he: "לעודד" },
-  { en: "chronic", he: "כרוני" },
-  { en: "chronicle", he: "כרוניקה" },
-  { en: "chronology", he: "כרונולוגיה" },
-  { en: "circuit", he: "מעגל" },
-  { en: "circular", he: "מעגלי" },
-  { en: "citizen", he: "אזרח" },
-  { en: "claim", he: "טענה" },
-  { en: "clarify", he: "להבהיר" },
-  { en: "clarity", he: "בהירות" },
-  { en: "classification", he: "סיווג" },
-  { en: "classify", he: "לסווג" },
-  { en: "clean", he: "נקי" },
-  { en: "clear", he: "ברור" },
-  { en: "clever", he: "חכם" },
-  { en: "cleverly", he: "בחכמה" },
-  { en: "climate", he: "אקלים" },
-  { en: "close", he: "קרוב" },
-  { en: "coarse", he: "גס" },
-  { en: "coast", he: "חוף" },
-  { en: "coax", he: "לפתות" },
-  { en: "coerce", he: "לאלץ" },
-  { en: "coexist", he: "להתקיים יחד" },
-  { en: "collect", he: "לאסוף" },
-  { en: "collective", he: "קולקטיבי" },
-  { en: "collectively", he: "באופן קולקטיבי" },
-  { en: "collide", he: "להתנגש" },
-  { en: "collision", he: "התנגשות" },
-  { en: "column", he: "עמוד" },
-  { en: "comfort", he: "נוחות" },
-  { en: "comfortable", he: "נוח" },
-  { en: "comfortably", he: "בנוחות" },
-  { en: "commend", he: "לשבח" },
-  { en: "commerce", he: "מסחר" },
-  { en: "commercial", he: "מסחרי" },
-  { en: "commission", he: "עמלה; ועדה" },
-  { en: "commissioner", he: "נציב" },
-  { en: "common", he: "משותף" },
-  { en: "communal", he: "קהילתי" },
-  { en: "commune", he: "קומונה" },
-  { en: "communication", he: "תקשורת" },
-  { en: "companion", he: "בן לוויה" },
-  { en: "compare", he: "להשוות" },
-  { en: "compatible", he: "מתאימים" },
-  { en: "compensate", he: "לפצות" },
-  { en: "compensation", he: "פיצוי" },
-  { en: "compete", he: "להתחרות" },
-  { en: "competent", he: "בעל יכולת" },
-  { en: "competition", he: "תחרות" },
-  { en: "complain", he: "להתלונן" },
-  { en: "complete", he: "שלם; להשלים" },
-  { en: "completely", he: "לחלוטין" },
-  { en: "complex", he: "מורכב" },
-  { en: "complicate", he: "לסבך" },
-  { en: "complicated", he: "מסובך" },
-  { en: "complication", he: "סיבוך" },
-  { en: "compliment", he: "מחמאה" },
-  { en: "component", he: "רכיב" },
-  { en: "compose", he: "לחבר" },
-  { en: "composition", he: "יצירה; חיבור" },
-  { en: "comprehend", he: "להבין" },
-  { en: "comprise", he: "לכלול" },
-  { en: "compromise", he: "פשרה" },
-  { en: "concern", he: "דאגה" },
-  { en: "concur", he: "להסכים" },
-  { en: "condensation", he: "התעבות" },
-  { en: "condense", he: "לעבות" },
-  { en: "condition", he: "תנאי" },
-  { en: "conditional", he: "מותנה" },
-  { en: "condone", he: "למחול" },
-  { en: "confer", he: "להתייעץ" },
-  { en: "conference", he: "ועידה" },
-  { en: "confide", he: "לספר בסוד" },
-  { en: "confiscate", he: "להחרים" },
-  { en: "conformity", he: "ציות" },
-  { en: "confront", he: "להתעמת" },
+{ en: "abduct", he: "לחטוף" },
 
-  { en: "confusing", he: "מבלבל" },
-  { en: "confusion", he: "בלבול; מבוכה" },
-  { en: "conscious", he: "מודע; בהכרה" },
-  { en: "consciousness", he: "מודעות; הכרה" },
-  { en: "consider", he: "לחשוב; להביא בחשבון" },
-  { en: "considerable", he: "ניכר" },
-  { en: "consideration", he: "התחשבות; שיקול; תשומת לב" },
-  { en: "consistency", he: "עקביות; יציבות" },
-  { en: "consistent", he: "עקבי" },
-  { en: "consistent with", he: "עולה בקנה אחד עם" },
-  { en: "consists of", he: "מורכב מ־" },
-  { en: "constitute", he: "להרכיב; להוות" },
-  { en: "construct", he: "לבנות; להקים; מבנה" },
-  { en: "construction", he: "בנייה" },
-  { en: "consume", he: "לצרוך; לעכל" },
-  { en: "consumer", he: "צרכן" },
-  { en: "contact", he: "ליצור קשר; מגע" },
-  { en: "contain", he: "להכיל" },
-  { en: "container", he: "מיכל" },
-  { en: "contaminate", he: "לזהם" },
-  { en: "contemporary", he: "עכשווי; בן זמננו" },
-  { en: "contend", he: "להתחרות; להתמודד; לטעון" },
-  { en: "content", he: "תוכן; מרוצה" },
-  { en: "contest", he: "להתחרות; תחרות" },
-  { en: "continent", he: "יבשת" },
-  { en: "continuity", he: "המשכיות" },
-  { en: "continuous", he: "מתמשך; רציף" },
-  { en: "contract", he: "חוזה; להסכים" },
-  { en: "contradict", he: "לסתור" },
-  { en: "contradictory", he: "סותר" },
-  { en: "contrary", he: "בניגוד ל־; הפך" },
-  { en: "contribute", he: "לתרום ל־" },
-  { en: "control", he: "שליטה; בקרה" },
-  { en: "controversial", he: "שנוי במחלוקת" },
-  { en: "controversy", he: "מחלוקת" },
-  { en: "convene", he: "לכנס" },
-  { en: "convenience", he: "נוחות" },
-  { en: "convenient", he: "נוח" },
-  { en: "conveniently", he: "באופן נוח" },
-  { en: "convention", he: "כנס; מוסכמה" },
-  { en: "conventional", he: "מקובל; קונבנציונלי" },
-  { en: "convert", he: "להמיר" },
-  { en: "convey", he: "למסור; להעביר" },
-  { en: "core", he: "ליבה; מרכז" },
-  { en: "correct", he: "לתקן; מדויק; נכון" },
-  { en: "correspond", he: "להתאים; להתכתב" },
-  { en: "correspondence", he: "התכתבות; התאמה" },
-  { en: "cost", he: "עלות; מחיר" },
-  { en: "costly", he: "יקר" },
-  { en: "counteract", he: "לנטרל; תגובה נגדית" },
-  { en: "counterpart", he: "עמית; מקביל" },
-  { en: "courage", he: "אומץ" },
-  { en: "courageous", he: "אמיץ" },
-  { en: "courteous", he: "אדיב" },
-  { en: "courtesy", he: "אדיבות; נימוס" },
-  { en: "create", he: "ליצור" },
-  { en: "creative", he: "יצירתי" },
-  { en: "creature", he: "יצור" },
-  { en: "crime", he: "פשע; עבירה" },
-  { en: "criminal", he: "פושע; עבריין" },
-  { en: "crisis", he: "משבר" },
-  { en: "critic", he: "מבקר" },
-  { en: "critical", he: "ביקורתי; קריטי" },
-  { en: "criticize", he: "לבקר" },
-  { en: "crop", he: "יבול; לקצור" },
-  { en: "cross", he: "לחצות; צלב" },
-  { en: "crudely", he: "בגסות" },
-  { en: "cruel", he: "אכזרי" },
-  { en: "cultivate", he: "לעבד" },
-  { en: "cultivation", he: "עיבוד; טיפוח" },
-  { en: "cultural", he: "תרבותי" },
-  { en: "culture", he: "תרבות" },
-  { en: "cure", he: "לרפא; רפואה" },
-  { en: "currency", he: "מטבע; מחזור" },
-  { en: "current", he: "זרם; נוכחי" },
-  { en: "currently", he: "כרגע" },
-  { en: "curse", he: "קללה; לקלל" },
-  { en: "custom", he: "מנהג" },
+{ en: "abduction", he: "חטיפה" },
 
-  { en: "damage", he: "להזיק; נזק" },
-  { en: "damp", he: "לח; מעופש" },
-  { en: "danger", he: "סכנה" },
-  { en: "dangerous", he: "מסוכן" },
-  { en: "data", he: "מידע" },
-  { en: "deal", he: "עסקה; להתמודד" },
-  { en: "debate", he: "ויכוח; לדון" },
-  { en: "debt", he: "חוב" },
-  { en: "decay", he: "ריקבון; התנוונות" },
-  { en: "deceased", he: "נפטר" },
-  { en: "deceive", he: "לרמות" },
-  { en: "decent", he: "הגון" },
-  { en: "decide", he: "להחליט" },
-  { en: "decision", he: "החלטה" },
-  { en: "decisive", he: "החלטי" },
-  { en: "declaration", he: "הצהרה" },
-  { en: "declare", he: "להצהיר" },
-  { en: "decline", he: "לסרב; ירידה" },
-  { en: "decrease", he: "להקטין; הפחתה" },
-  { en: "deem", he: "להעריך; לסבור" },
-  { en: "deep", he: "עמוק" },
-  { en: "defeat", he: "להביס; תבוסה" },
-  { en: "defend", he: "להגן" },
-  { en: "defense", he: "הגנה" },
-  { en: "defer", he: "לדחות" },
-  { en: "deficiency", he: "מחסור; פגם" },
-  { en: "deficit", he: "גירעון" },
-  { en: "defied", he: "שהופר" },
-  { en: "define", he: "להגדיר" },
-  { en: "definition", he: "הגדרה" },
-  { en: "defy", he: "להתריס; להתנגד" },
-  { en: "delay", he: "דחייה; לעכב" },
-  { en: "delegate", he: "להאציל סמכויות" },
-  { en: "delegation", he: "משלחת" },
-  { en: "delete", he: "למחוק" },
-  { en: "deliberate", he: "מכוון" },
-  { en: "deliberation", he: "דיון; שקילה" },
-  { en: "delight", he: "תענוג; אושר" },
-  { en: "deliver", he: "למסור; לשחרר" },
-  { en: "delivery", he: "משלוח" },
-  { en: "demand", he: "לדרוש" },
-  { en: "demonstrate", he: "להדגים; להפגין" },
-  { en: "denial", he: "הכחשה" },
-  { en: "denounce", he: "להוקיע; להאשים" },
-  { en: "deny", he: "להכחיש" },
-  { en: "depend", he: "תלוי" },
-  { en: "dependence", he: "תלות" },
-  { en: "depict", he: "לתאר" },
-  { en: "deplete", he: "לכלות" },
-  { en: "deprivation", he: "קיפוח; מחסור" },
-  { en: "deprive", he: "לשלול" },
-  { en: "depth", he: "עומק" },
-  { en: "derive (from)", he: "לנבוע מ־" },
-  { en: "descend", he: "לרדת" },
-  { en: "descendant", he: "צאצא" },
-  { en: "describe", he: "לתאר" },
-  { en: "description", he: "תיאור" },
-  { en: "desert", he: "לנטוש; מדבר" },
-  { en: "design", he: "לעצב; עיצוב" },
-  { en: "despite", he: "למרות" },
-  { en: "destination", he: "יעד" },
-  { en: "destined for", he: "מיועד ל־" },
-  { en: "destroy", he: "להרוס" },
-  { en: "destruction", he: "הרס" },
-  { en: "detach", he: "להפריד" },
-  { en: "detain", he: "לעצור" },
-  { en: "deter", he: "להרתיע" },
-  { en: "deteriorate", he: "להידרדר" },
-  { en: "determination", he: "נחישות; החלטיות" },
-  { en: "determine", he: "לקבוע" },
-  { en: "determined", he: "נחוש" },
-  { en: "devastate", he: "להרוס לחלוטין" },
-  { en: "develop", he: "לפתח" },
-  { en: "developed", he: "מפותח" },
-  { en: "development", he: "פיתוח" },
-  { en: "devise", he: "לתכנן" },
-  { en: "devote", he: "להקדיש" },
-  { en: "devoted", he: "מסור; נאמן" },
-  { en: "dexterity", he: "מיומנות" },
-  { en: "diagram", he: "דיאגרמה" },
-  { en: "die", he: "למות" },
+{ en: "abide", he: "לציית; להישאר; להתגורר" },
 
-  { en: "die out", he: "לד" }
+{ en: "ability", he: "יכולת" },
+
+{ en: "able", he: "יכול" },
+
+{ en: "abolish", he: "לבטל" },
+
+{ en: "above", he: "מעל; יותר ממשהו" },
+
+{ en: "abrupt", he: "פתאומי" },
+
+{ en: "absence", he: "היעדר; חוסר" },
+
+{ en: "absent", he: "נעדר" },
+
+{ en: "absolute", he: "מוחלט" },
+
+{ en: "absolutely", he: "לחלוטין" },
+
+{ en: "abundant", he: "שופע; מלא" },
+
+{ en: "abuse", he: "לנצל; לפגוע; שימוש לרעה" },
+
+{ en: "accept", he: "לקבל" },
+
+{ en: "access", he: "גישה; כניסה" },
+
+{ en: "accident", he: "תאונה" },
+
+{ en: "acclaim", he: "לשבח; תשואות" },
+
+{ en: "accommodation", he: "מגורים; דיור" },
+
+{ en: "accomplice", he: "שותף לעבירה" },
+
+{ en: "accomplish", he: "להשלים; לבצע" },
+
+{ en: "accomplished", he: "מושלם; גמור" },
+
+{ en: "accordance", he: "התאמה; תיאום" },
+
+{ en: "according to", he: "לפי" },
+
+{ en: "accordingly", he: "בהתאם" },
+
+{ en: "account for", he: "להסביר; לשאת באחריות; להוות סיבה" },
+
+{ en: "accumulate", he: "לצבור; לאגור" },
+
+{ en: "accurate", he: "מדויק" },
+
+{ en: "accurately", he: "במדויק" },
+
+<!-- עמוד חדש -->
+
+{ en: "accusation", he: "האשמה" },
+
+{ en: "achieve", he: "להשיג" },
+
+{ en: "acid", he: "חומצה" },
+
+{ en: "acquisition", he: "רכישה" },
+
+{ en: "act", he: "לפעול; מעשה" },
+
+{ en: "active", he: "פעיל" },
+
+{ en: "adapt", he: "להתאים; לעבד" },
+
+{ en: "adaptation", he: "הסתגלות; עיבוד" },
+
+{ en: "addition", he: "תוספת" },
+
+{ en: "additional", he: "נוסף" },
+
+{ en: "adequate", he: "מספיק; הולם" },
+
+{ en: "adjust", he: "להתאים; להסתגל" },
+
+{ en: "admirable", he: "נערץ" },
+
+{ en: "admiration", he: "הערצה" },
+
+{ en: "admire", he: "להעריץ; להתפעל" },
+
+{ en: "admit", he: "להודות; לאפשר" },
+
+{ en: "admittance", he: "כניסה; הרשאה" },
+
+{ en: "admonish", he: "להזהיר; לנזוף" },
+
+{ en: "adopt", he: "לאמץ; לקבל" },
+
+{ en: "adore", he: "לאהוב; להעריץ" },
+
+{ en: "adorn", he: "לקשט; לעטר" },
+
+{ en: "adult", he: "מבוגר" },
+
+{ en: "advance", he: "להתקדם; קידום" },
+
+{ en: "advantage", he: "יתרון; תועלת" },
+
+{ en: "advise", he: "לייעץ; להמליץ" },
+
+{ en: "advocate", he: "לתמוך; סנגור; חסיד" },
+
+{ en: "affect", he: "להשפיע; לגעת" },
+
+{ en: "affiliation", he: "הצטרפות; השתייכות" },
+
+{ en: "affirm", he: "לאשר; להצהיר" },
+
+{ en: "affluence", he: "שפע; עושר" },
+
+{ en: "affluent", he: "עשיר; שופע" },
+
+{ en: "against", he: "נגד; אל מול" },
+
+{ en: "age", he: "גיל; תקופה" },
+
+{ en: "agency", he: "סוכנות; משרד" },
+
+<!-- עמוד חדש -->
+
+{ en: "aging", he: "הזדקנות" },
+
+{ en: "aid", he: "לעזור; עזרה; תמיכה" },
+
+{ en: "aim", he: "לכוון; לשאוף; יעד" },
+
+{ en: "alert", he: "דרוך; אזהרה; להזהיר" },
+
+{ en: "alien", he: "זר; חייזר" },
+
+{ en: "alienate", he: "להרחיק; לנכר" },
+
+{ en: "alienation", he: "ניכור; זרות" },
+
+{ en: "allow", he: "לאפשר; להרשות" },
+
+{ en: "allowance", he: "קצבה; דמי כיס" },
+
+{ en: "allure", he: "לפתות; כוח פיתוי" },
+
+{ en: "allusion", he: "רמז; אזכור עקיף" },
+
+{ en: "alone", he: "לבד; בודד" },
+
+{ en: "also", he: "גם" },
+
+{ en: "alter", he: "לשנות; לתקן" },
+
+{ en: "alteration", he: "שינוי" },
+
+{ en: "alternate between", he: "להחליף בין אפשרויות" },
+
+{ en: "although", he: "למרות" },
+
+{ en: "always", he: "תמיד" },
+
+{ en: "amaze", he: "להדהים" },
+
+{ en: "amazing", he: "מדהים" },
+
+{ en: "ambiguous", he: "דו-משמעי; מעורפל" },
+
+{ en: "ambition", he: "שאיפה; אמביציה" },
+
+{ en: "among", he: "בקרב" },
+
+{ en: "amusement", he: "שעשוע; בידור" },
+
+{ en: "amusing", he: "משעשע" },
+
+{ en: "analyze", he: "לנתח; לבצע הערכה" },
+
+{ en: "ancient", he: "עתיק" },
+
+{ en: "angle", he: "זווית; פן" },
+
+{ en: "animate", he: "להנפיש; לעודד" },
+
+{ en: "animation", he: "אנימציה; תנועה" },
+
+{ en: "announce", he: "להכריז; להודיע" },
+
+{ en: "announcement", he: "הכרזה" },
+
+{ en: "annoy", he: "להציק; להרגיז" },
+
+{ en: "annual", he: "שנתי" },
+
+<!-- עמוד חדש -->
+
+{ en: "another", he: "אחר; נוסף" },
+
+{ en: "answer", he: "לענות; תשובה" },
+
+{ en: "anticipate", he: "לצפות; לצפות מראש" },
+
+{ en: "antique", he: "עתיק; עתיקה" },
+
+{ en: "antiquity", he: "ימי קדם" },
+
+{ en: "anxiety", he: "חרדה" },
+
+{ en: "anxious", he: "חרד; מודאג" },
+
+{ en: "apology", he: "התנצלות" },
+
+{ en: "apparatus", he: "מנגנון; מכשיר" },
+
+{ en: "apparent", he: "גלוי; נראה" },
+
+{ en: "appeal", he: "ערעור; משיכה; לפנות" },
+
+{ en: "appealed to", he: "משך; פנה אל" },
+
+{ en: "appear", he: "להיראות; להופיע" },
+
+{ en: "application", he: "בקשה; יישום; אפליקציה" },
+
+{ en: "apply for", he: "להגיש בקשה" },
+
+{ en: "appreciate", he: "להעריך; להוקיר" },
+
+{ en: "approach", he: "להתקרב; גישה" },
+
+{ en: "appropriate", he: "מתאים" },
+
+{ en: "approve", he: "לאשר; להסכים" },
+
+{ en: "approximately", he: "בקירוב" },
+
+{ en: "area", he: "אזור" },
+
+{ en: "argue", he: "להתווכח; לטעון" },
+
+{ en: "argument", he: "ויכוח; טיעון" },
+
+{ en: "arrangement", he: "סידור; הסכם" },
+
+{ en: "arrive", he: "להגיע" },
+
+{ en: "artificial", he: "מלאכותי" },
+
+{ en: "artificially", he: "באופן מלאכותי" },
+
+{ en: "ascend", he: "לעלות; לטפס" },
+
+{ en: "ask", he: "לשאול; לבקש" },
+
+{ en: "aspect", he: "פן; היבט" },
+
+{ en: "aspiration", he: "שאיפה" },
+
+{ en: "assemble", he: "לאסוף; להרכיב" },
+
+{ en: "assembly", he: "אספה; התכנסות" },
+
+{ en: "assert", he: "לטעון" },
+
+<!-- עמוד חדש -->
+
+{ en: "asset", he: "נכס; יתרון" },
+
+{ en: "assign", he: "להקצות" },
+
+{ en: "assignment", he: "משימה" },
+
+{ en: "assistance", he: "סיוע; עזרה" },
+
+{ en: "assume", he: "להניח; לקבל; להתיימר" },
+
+{ en: "assumption", he: "הנחה" },
+
+{ en: "assure", he: "להבטיח" },
+
+{ en: "astound", he: "להדהים" },
+
+{ en: "atmosphere", he: "אווירה; אטמוספירה" },
+
+{ en: "attach", he: "לחבר" },
+
+{ en: "attack", he: "לתקוף; התקפה" },
+
+{ en: "attain", he: "להשיג; להגיע" },
+
+{ en: "attempt", he: "לנסות; ניסיון" },
+
+{ en: "attend", he: "להשתתף; לטפל" },
+
+{ en: "attendant", he: "מלווה; סדרן; משרת" },
+
+{ en: "attire", he: "לבוש" },
+
+{ en: "attitude", he: "גישה; עמדה; מצב רוח" },
+
+{ en: "attract", he: "למשוך" },
+
+{ en: "attraction", he: "משיכה" },
+
+{ en: "attractive", he: "מושך" },
+
+{ en: "attribute", he: "לייחס; תכונה" },
+
+{ en: "augment", he: "להגדיל; להרחיב" },
+
+{ en: "authentically", he: "באמת" },
+
+{ en: "authenticate", he: "לאשר; לאמת" },
+
+{ en: "author", he: "סופר; כותב" },
+
+{ en: "authority", he: "רשות; סמכות" },
+
+{ en: "authorize", he: "לאשר; להסמיך" },
+
+{ en: "availability", he: "זמינות" },
+
+{ en: "average", he: "ממוצע" },
+
+{ en: "avert", he: "למנוע; להסיט" },
+
+{ en: "avoid", he: "להימנע" },
+
+{ en: "aware", he: "להיות מודע" },
+
+<!-- עמוד חדש -->
+
+{ en: "back", he: "גב; אחורי; בחזרה" },
+
+{ en: "backward", he: "לאחור" },
+
+{ en: "balance", he: "איזון; לאזן" },
+
+{ en: "ban", he: "לאסור; חרם; איסור" },
+
+{ en: "banish", he: "לגרש; להגלות" },
+
+{ en: "bare", he: "חשוף; גלוי" },
+
+{ en: "barely", he: "בקושי" },
+
+{ en: "barrier", he: "מחסום; מגבלה" },
+
+{ en: "barter", he: "סחר חליפין" },
+
+{ en: "base", he: "בסיס; לבסס" },
+
+{ en: "bashful", he: "ביישן" },
+
+{ en: "beat", he: "להכות; להביס; קצב" },
+
+{ en: "because", he: "כי; מכיוון ש-" },
+
+{ en: "become", he: "להפוך ל-" },
+
+{ en: "before", he: "לפני; קודם" },
+
+{ en: "begin", he: "להתחיל" },
+
+{ en: "beginning", he: "התחלה; ראשית" },
+
+{ en: "behave", he: "להתנהג" },
+
+{ en: "behavior", he: "התנהגות" },
+
+{ en: "belief", he: "אמונה" },
+
+{ en: "believe", he: "להאמין" },
+
+{ en: "bend", he: "לכופף; עיקול" },
+
+{ en: "bend over", he: "להתכופף" },
+
+{ en: "beneath", he: "מתחת ל-" },
+
+{ en: "benefactor", he: "תורם; נדבן" },
+
+{ en: "benefit", he: "תועלת; רווח" },
+
+{ en: "bent", he: "עקום; נוטה" },
+
+{ en: "bequeath", he: "להוריש" },
+
+{ en: "besides", he: "חוץ מ-; בנוסף" },
+
+{ en: "best", he: "הטוב ביותר" },
+
+{ en: "between", he: "בין" },
+
+{ en: "bewilder", he: "לבלבל" },
+
+{ en: "bewilderment", he: "בלבול" },
+
+<!-- עמוד חדש -->
+
+{ en: "blame", he: "להאשים; אשמה" },
+
+{ en: "blaze", he: "להבה; להתלקח" },
+
+{ en: "bleed", he: "לדמם" },
+
+{ en: "blind", he: "עיוור; עיוורון" },
+
+{ en: "blindly", he: "באופן עיוור" },
+
+{ en: "blood", he: "דם" },
+
+{ en: "blouse", he: "חולצה" },
+
+{ en: "blow", he: "לנשוב; מכה; פיצוץ" },
+
+{ en: "blunt", he: "קהה; בוטה" },
+
+{ en: "bond", he: "קשר; איגרת חוב" },
+
+{ en: "bone", he: "עצם" },
+
+{ en: "boost", he: "לדחוף; להמריץ" },
+
+{ en: "border", he: "גבול; קצה" },
+
+{ en: "bore", he: "לשעמם; לקדוח" },
+
+{ en: "boring", he: "משעמם" },
+
+{ en: "borrow", he: "ללוות" },
+
+{ en: "boundary", he: "גבול; תחום" },
+
+{ en: "brake", he: "בלם; לבלום" },
+
+{ en: "branch", he: "ענף; סניף" },
+
+{ en: "brave", he: "אמיץ" },
+
+{ en: "break", he: "לשבור" },
+
+{ en: "breakdown", he: "התמוטטות" },
+
+{ en: "brief", he: "קצר; תקציר" },
+
+{ en: "bright", he: "בהיר; מבריק; חכם" },
+
+{ en: "broad", he: "רחב" },
+
+{ en: "broadly", he: "באופן רחב" },
+
+{ en: "budget", he: "תקציב" },
+
+{ en: "bulky", he: "גדול; נפוח" },
+
+{ en: "burden", he: "נטל; משא" },
+
+{ en: "bury", he: "לקבור" },
+
+{ en: "buy", he: "לקנות; לרכוש" },
+
+<!-- עמוד חדש -->
+
+{ en: "calculate", he: "לחשב" },
+
+{ en: "calmly", he: "ברוגע; בנחת" },
+
+{ en: "campaign", he: "מסע פרסום; קמפיין" },
+
+{ en: "cancel", he: "לבטל" },
+
+{ en: "candid", he: "כן; גלוי לב" },
+
+{ en: "candidate", he: "מועמד" },
+
+{ en: "capability", he: "יכולת; מיומנות" },
+
+{ en: "capable", he: "מסוגל; כשיר" },
+
+{ en: "capacity", he: "קיבולת; יכולת" },
+
+{ en: "capital", he: "הון; עיר בירה" },
+
+{ en: "capitalize", he: "להרוויח; לנצל" },
+
+{ en: "carefully", he: "בזהירות" },
+
+{ en: "cargo", he: "מטען" },
+
+{ en: "case", he: "מקרה; תיק" },
+
+{ en: "casual", he: "יומיומי; מקרי" },
+
+{ en: "casualty", he: "נפגע; אבידה" },
+
+{ en: "cause", he: "לגרום; גורם" },
+
+{ en: "cave", he: "מערה" },
+
+{ en: "cease", he: "לחדול; להפסיק" },
+
+{ en: "cease fire", he: "הפסקת אש" },
+
+{ en: "celebrate", he: "לחגוג" },
+
+{ en: "celebration", he: "חגיגה" },
+
+{ en: "century", he: "מאה" },
+
+{ en: "ceremony", he: "טקס" },
+
+{ en: "certain", he: "בטוח; מסוים" },
+
+{ en: "certainty", he: "ביטחון; ודאות" },
+
+{ en: "certificate", he: "תעודה; אישור" },
+
+{ en: "certify", he: "לאשר; להסמיך" },
+
+{ en: "challenge", he: "לאתגר; אתגר" },
+
+{ en: "change", he: "לשנות; שינוי" },
+
+{ en: "chant", he: "לשיר; מזמור" },
+
+{ en: "chapter", he: "פרק; תקופה" },
+
+{ en: "character", he: "אופי; דמות; אות" },
+
+{ en: "characteristic", he: "מאפיין" },
+
+{ en: "characterize", he: "לאפיין" },
+
+{ en: "charge", he: "לחייב; להאשים; מטען" },
+
+<!-- עמוד חדש -->
+
+{ en: "cheer", he: "לעודד; שמחה" },
+
+{ en: "chronic", he: "כרוני; מתמשך" },
+
+{ en: "chronicle", he: "כרוניקה; תיעוד" },
+
+{ en: "chronology", he: "רצף אירועים; כרונולוגיה" },
+
+{ en: "circuit", he: "מעגל; מסלול" },
+
+{ en: "circular", he: "עגול; מחזורי" },
+
+{ en: "citizen", he: "אזרח" },
+
+{ en: "claim", he: "לטעון; תביעה" },
+
+{ en: "clarify", he: "להבהיר" },
+
+{ en: "clarity", he: "בהירות" },
+
+{ en: "classification", he: "סיווג; מיון" },
+
+{ en: "classify", he: "לסווג; למיין" },
+
+{ en: "clean", he: "נקי; לנקות" },
+
+{ en: "clear", he: "ברור; לנקות; לפנות" },
+
+{ en: "clever", he: "חכם; פיקח" },
+
+{ en: "cleverly", he: "בחוכמה" },
+
+{ en: "climate", he: "אקלים" },
+
+{ en: "close", he: "קרוב; לסגור" },
+
+{ en: "coarse", he: "גס; מחוספס" },
+
+{ en: "coast", he: "חוף" },
+
+{ en: "coax", he: "לשדל; לפתות" },
+
+{ en: "coerce", he: "לאלץ; להכריח" },
+
+{ en: "coexist", he: "להתקיים יחד" },
+
+{ en: "collect", he: "לאסוף" },
+
+{ en: "collective", he: "קבוצתי; משותף" },
+
+{ en: "collectively", he: "ביחד; כקבוצה" },
+
+{ en: "collide", he: "להתנגש" },
+
+{ en: "collision", he: "התנגשות" },
+
+{ en: "column", he: "עמוד; טור" },
+
+{ en: "comfort", he: "לנחם; נוחות" },
+
+{ en: "comfortable", he: "נוח" },
+
+{ en: "comfortably", he: "בנוחות" },
+
+{ en: "commend", he: "לשבח; לפאר" },
+
+{ en: "commerce", he: "מסחר" },
+
+{ en: "commercial", he: "מסחרי; פרסומת" },
+
+{ en: "commission", he: "עמלה; ועדה" },
+
+{ en: "commissioner", he: "נציב; ממונה" },
+
+{ en: "common", he: "נפוץ; משותף" },
+
+<!-- עמוד חדש -->
+
+{ en: "communal", he: "קהילתי; שיתופי" },
+
+{ en: "commune", he: "לשתף; קהילה" },
+
+{ en: "communication", he: "תקשורת" },
+
+{ en: "companion", he: "בן לוויה; חבר" },
+
+{ en: "compare", he: "להשוות" },
+
+{ en: "compatible", he: "מתאים" },
+
+{ en: "compensate", he: "לפצות" },
+
+{ en: "compensation", he: "פיצוי" },
+
+{ en: "compete", he: "להתחרות" },
+
+{ en: "competent", he: "כשיר; בעל יכולת" },
+
+{ en: "competition", he: "תחרות" },
+
+{ en: "complain", he: "להתלונן" },
+
+{ en: "complete", he: "להשלים; שלם" },
+
+{ en: "completely", he: "לחלוטין" },
+
+{ en: "complex", he: "מורכב; מסובך" },
+
+{ en: "complicate", he: "לסבך" },
+
+{ en: "complicated", he: "מסובך" },
+
+{ en: "complication", he: "סיבוך" },
+
+{ en: "compliment", he: "מחמאה" },
+
+{ en: "component", he: "רכיב" },
+
+{ en: "compose", he: "להלחין; להרכיב" },
+
+{ en: "composition", he: "יצירה; הרכב" },
+
+{ en: "comprehend", he: "להבין; לתפוס" },
+
+{ en: "comprise", he: "לכלול; להכיל" },
+
+{ en: "compromise", he: "פשרה; להתפשר" },
+
+{ en: "concern", he: "דאגה; עניין" },
+
+{ en: "concur", he: "להסכים; להתרחש יחד" },
+
+{ en: "condensation", he: "עיבוי" },
+
+{ en: "condense", he: "לעבות; לדחוס" },
+
+{ en: "condition", he: "תנאי; מצב" },
+
+{ en: "conditional", he: "מותנה; בתנאי" },
+
+{ en: "condone", he: "למחול; להצדיק" },
+
+{ en: "confer", he: "להתייעץ; להעניק" },
+
+{ en: "conference", he: "ועידה" },
+
+{ en: "confide", he: "לספר בסוד" },
+
+{ en: "confiscate", he: "להחרים" },
+
+{ en: "conformity", he: "ציות; התאמה" },
+
+{ en: "confront", he: "לעמוד בפני; להתעמת" }
+
+<!-- עמוד חדש -->
+
+{ en: "confusing", he: "מבלבל" },
+
+{ en: "confusion", he: "בלבול; מהומה" },
+
+{ en: "conscious", he: "מודע; בהכרה" },
+
+{ en: "consciousness", he: "מודעות; הכרה" },
+
+{ en: "consider", he: "לשקול; להביא בחשבון" },
+
+{ en: "considerable", he: "ניכר" },
+
+{ en: "consideration", he: "התחשבות; שיקול; תשומת לב" },
+
+{ en: "consistency", he: "עקביות; רציפות" },
+
+{ en: "consistent", he: "עקבי" },
+
+{ en: "consistent with", he: "עולה בקנה אחד עם" },
+
+{ en: "consists of", he: "מורכב מ-" },
+
+{ en: "constitute", he: "להרכיב; להוות" },
+
+{ en: "construct", he: "לבנות; להקים; מבנה" },
+
+{ en: "construction", he: "בנייה; מבנה" },
+
+{ en: "consume", he: "לצרוך; לעכל" },
+
+{ en: "consumer", he: "צרכן" },
+
+{ en: "contact", he: "ליצור קשר; מגע" },
+
+{ en: "contain", he: "להכיל" },
+
+{ en: "container", he: "מיכל" },
+
+{ en: "contaminate", he: "לזהם" },
+
+{ en: "contemporary", he: "עכשווי; בן זמננו" },
+
+{ en: "contend", he: "לטעון; להתמודד" },
+
+{ en: "content", he: "תוכן; סיפוק; שביעות רצון" },
+
+{ en: "contest", he: "להתחרות; תחרות" },
+
+{ en: "continent", he: "יבשת" },
+
+{ en: "continuity", he: "המשכיות" },
+
+{ en: "continuous", he: "מתמשך; רציף" },
+
+{ en: "contract", he: "חוזה; להסכים; לצמצם" },
+
+{ en: "contradict", he: "לסתור" },
+
+{ en: "contradictory", he: "סותר" },
+
+{ en: "contrary", he: "בניגוד ל-; הפוך" },
+
+{ en: "contribute", he: "לתרום ל-" },
+
+{ en: "control", he: "שליטה; בקרה" },
+
+{ en: "controversial", he: "שנוי במחלוקת" },
+
+{ en: "controversy", he: "מחלוקת" },
+
+{ en: "convene", he: "לכנס" },
+
+{ en: "convenience", he: "נוחות" },
+
+{ en: "convenient", he: "נוח" },
+
+<!-- עמוד חדש -->
+
+{ en: "conveniently", he: "באופן נוח" },
+
+{ en: "convention", he: "כנס; מוסכמה; מנהג מקובל" },
+
+{ en: "conventional", he: "מקובל; קונבנציונלי" },
+
+{ en: "convert", he: "להמיר" },
+
+{ en: "convey", he: "למסור; להעביר" },
+
+{ en: "core", he: "ליבה; מרכז" },
+
+{ en: "correct", he: "לתקן; מדויק; נכון" },
+
+{ en: "correspond", he: "להתאים; להתכתב" },
+
+{ en: "correspondence", he: "התאמה; התכתבות" },
+
+{ en: "cost", he: "עלות; מחיר" },
+
+{ en: "costly", he: "יקר" },
+
+{ en: "counteract", he: "לבטל; לנטרל; תגובה נגדית" },
+
+{ en: "counterpart", he: "עמית; מקביל" },
+
+{ en: "courage", he: "אומץ; תעוזה" },
+
+{ en: "courageous", he: "אמיץ" },
+
+{ en: "courteous", he: "אדיב" },
+
+{ en: "courtesy", he: "נימוס; אדיבות" },
+
+{ en: "create", he: "ליצור" },
+
+{ en: "creative", he: "יצירתי" },
+
+{ en: "creature", he: "יצור" },
+
+{ en: "crime", he: "פשע; עבירה" },
+
+{ en: "criminal", he: "פושע; עבריין" },
+
+{ en: "crisis", he: "משבר" },
+
+{ en: "critic", he: "מבקר" },
+
+{ en: "critical", he: "ביקורתי; קריטי" },
+
+{ en: "criticize", he: "לבקר" },
+
+{ en: "crop", he: "יבול; לקצור" },
+
+{ en: "cross", he: "לחצות; צלב; להציב X" },
+
+{ en: "crudely", he: "באופן גס" },
+
+{ en: "cruel", he: "אכזרי" },
+
+{ en: "cultivate", he: "לעבד" },
+
+{ en: "cultivation", he: "עיבוד; טיפוח" },
+
+{ en: "cultural", he: "תרבותי" },
+
+{ en: "culture", he: "תרבות" },
+
+{ en: "cure", he: "לרפא; תרופה" },
+
+{ en: "currency", he: "מטבע; מחזור" },
+
+{ en: "current", he: "נוכחי; זרם" },
+
+{ en: "currently", he: "כרגע" },
+
+{ en: "curse", he: "קללה; לקלל" },
+
+{ en: "custom", he: "מנהג" },
+
+<!-- עמוד חדש -->
+
+{ en: "damage", he: "נזק; להזיק; אובדן" },
+
+{ en: "damp", he: "לח; מעופש; לא נעים" },
+
+{ en: "danger", he: "סכנה" },
+
+{ en: "dangerous", he: "מסוכן" },
+
+{ en: "data", he: "מידע" },
+
+{ en: "deal", he: "עסקה; להתמודד" },
+
+{ en: "debate", he: "דיון; להתדיין" },
+
+{ en: "debt", he: "חוב" },
+
+{ en: "decay", he: "ריקבון; התנוונות" },
+
+{ en: "deceased", he: "נפטר" },
+
+{ en: "deceive", he: "לרמות; להונות" },
+
+{ en: "decent", he: "הגון; מכובד" },
+
+{ en: "decide", he: "להחליט" },
+
+{ en: "decision", he: "החלטה" },
+
+{ en: "decisive", he: "החלטי" },
+
+{ en: "declaration", he: "הצהרה" },
+
+{ en: "declare", he: "להצהיר" },
+
+{ en: "decline", he: "לסרב; לרדת; ירידה" },
+
+{ en: "decrease", he: "להפחית; צמצום" },
+
+{ en: "deem", he: "לסבור; להעריך" },
+
+{ en: "deep", he: "עמוק" },
+
+{ en: "defeat", he: "להביס; תבוסה" },
+
+{ en: "defend", he: "להגן" },
+
+{ en: "defense", he: "הגנה" },
+
+{ en: "defer", he: "לעכב; לדחות" },
+
+{ en: "deficiency", he: "מחסור; פגם" },
+
+{ en: "deficit", he: "גירעון" },
+
+{ en: "define", he: "להגדיר" },
+
+{ en: "definition", he: "הגדרה" },
+
+{ en: "defy", he: "להתריס; להתנגד" },
+
+{ en: "delay", he: "לעכב; דחייה" },
+
+{ en: "delegate", he: "להאציל סמכויות; נציג" },
+
+{ en: "delegation", he: "משלחת" },
+
+{ en: "delete", he: "למחוק" },
+
+{ en: "deliberate", he: "לדון; מכוון" },
+
+<!-- עמוד חדש -->
+
+{ en: "deliberation", he: "דיון; שקילה" },
+
+{ en: "delight", he: "תענוג; אושר" },
+
+{ en: "deliver", he: "למסור; להעביר" },
+
+{ en: "delivery", he: "משלוח" },
+
+{ en: "demand", he: "דרישה; לדרוש" },
+
+{ en: "demonstrate", he: "להדגים; להפגין" },
+
+{ en: "denial", he: "הכחשה" },
+
+{ en: "denounce", he: "להוקיע; לגנות" },
+
+{ en: "deny", he: "להכחיש; לסרב" },
+
+{ en: "depend", he: "להיות תלוי" },
+
+{ en: "dependence", he: "תלות" },
+
+{ en: "depict", he: "לתאר" },
+
+{ en: "deplete", he: "לרוקן; לכלות" },
+
+{ en: "deprivation", he: "קיפוח; מחסור" },
+
+{ en: "deprive", he: "לשלול; למנוע" },
+
+{ en: "depth", he: "עומק" },
+
+{ en: "derive (from)", he: "לנבוע מ-" },
+
+{ en: "descend", he: "לרדת; להנמיך" },
+
+{ en: "descendant", he: "צאצא" },
+
+{ en: "describe", he: "לתאר" },
+
+{ en: "description", he: "תיאור" },
+
+{ en: "desert", he: "מדבר; לנטוש" },
+
+{ en: "design", he: "לעצב; עיצוב" },
+
+{ en: "despite", he: "למרות" },
+
+{ en: "destination", he: "יעד" },
+
+{ en: "destined for", he: "מיועד ל-" },
+
+{ en: "destroy", he: "להרוס" },
+
+{ en: "destruction", he: "הרס" },
+
+{ en: "detach", he: "להפריד; לנתק" },
+
+{ en: "detain", he: "לעצור; לכלוא" },
+
+{ en: "deter", he: "להרתיע" },
+
+{ en: "deteriorate", he: "להידרדר" },
+
+{ en: "determination", he: "נחישות; החלטיות" },
+
+{ en: "determine", he: "לקבוע; להחליט" },
+
+{ en: "determined", he: "נחוש; החלטי" },
+
+{ en: "devastate", he: "להרוס; להשחית" },
+
+{ en: "develop", he: "לפתח" },
+
+{ en: "developed", he: "מפותח" }
+
+<!-- עמוד חדש -->
+
+{ en: "development", he: "פיתוח; התפתחות" },
+
+{ en: "devise", he: "להמציא; לתכנן" },
+
+{ en: "devote", he: "להקדיש" },
+
+{ en: "devoted", he: "מסור; נאמן" },
+
+{ en: "dexterity", he: "מיומנות" },
+
+{ en: "diagram", he: "דיאגרמה; תרשים" },
+
+{ en: "die", he: "למות; להיהרג" },
+
+{ en: "die out", he: "לדעוך" },
+
+{ en: "differ", he: "להיות שונה; לחלוק על" },
+
+{ en: "difference", he: "הבדל; שינוי" },
+
+{ en: "different", he: "שונה" },
+
+{ en: "difficult", he: "קשה; מורכב" },
+
+{ en: "digest", he: "לעכל; תקציר" },
+
+{ en: "dim", he: "עמום; להחשיך" },
+
+{ en: "diminish", he: "להפחית" },
+
+{ en: "disadvantage", he: "חיסרון" },
+
+{ en: "disappear", he: "להיעלם" },
+
+{ en: "disappoint", he: "לאכזב" },
+
+{ en: "disaster", he: "אסון" },
+
+{ en: "disastrous", he: "הרסני" },
+
+{ en: "disciple", he: "תלמיד; חסיד" },
+
+{ en: "discipline", he: "משמעת; תחום לימוד" },
+
+{ en: "discord", he: "ריב; סכסוך" },
+
+{ en: "discourage", he: "לייאש" },
+
+{ en: "discrimination", he: "אפליה" },
+
+{ en: "discuss", he: "לדון" },
+
+{ en: "discussion", he: "דיון" },
+
+{ en: "disguise", he: "להתחפש; הסוואה" },
+
+{ en: "dislocated", he: "נקע; מנותק" },
+
+{ en: "dismiss", he: "לפטר; לשחרר" },
+
+{ en: "displacement", he: "עקירה; תזוזה" },
+
+{ en: "display", he: "להציג; תצוגה" },
+
+{ en: "dispose", he: "להיפטר" },
+
+{ en: "disposition", he: "נטייה; מזג; סידור" },
+
+{ en: "dispute", he: "ויכוח; מחלוקת" },
+
+{ en: "disrupt", he: "לשבש; להפריע" },
+
+{ en: "dissent", he: "להתנגד; אי־הסכמה" },
+
+{ en: "dissenter", he: "פורש; בדלן" },
+
+<!-- עמוד חדש -->
+
+{ en: "distance", he: "מרחק" },
+
+{ en: "distant", he: "רחוק" },
+
+{ en: "distinct", he: "ברור; נפרד" },
+
+{ en: "distinction", he: "הבחנה; ייחוד" },
+
+{ en: "distinguish", he: "להבחין; להבדיל" },
+
+{ en: "distort", he: "לעוות" },
+
+{ en: "distorted", he: "מעוות" },
+
+{ en: "distract", he: "להסיח" },
+
+{ en: "distraction", he: "הסחת דעת" },
+
+{ en: "distress", he: "מצוקה" },
+
+{ en: "distressingly", he: "באופן מטריד" },
+
+{ en: "diverse", he: "מגוון; שונה" },
+
+{ en: "diversity", he: "גיוון" },
+
+{ en: "docile", he: "צייתן" },
+
+{ en: "document", he: "מסמך; לתעד" },
+
+{ en: "domestic", he: "ביתי; מקומי" },
+
+{ en: "domesticated", he: "מבוית" },
+
+{ en: "dominate", he: "לשלוט" },
+
+{ en: "donor", he: "תורם" },
+
+{ en: "door", he: "דלת" },
+
+{ en: "doorsteps", he: "מפתן" },
+
+{ en: "doubt", he: "ספק; לפקפק" },
+
+{ en: "down", he: "למטה; מדוכא" },
+
+{ en: "downgrade", he: "להוריד דרגה" },
+
+{ en: "drastic", he: "קיצוני" },
+
+{ en: "draw", he: "לצייר; למשוך" },
+
+{ en: "draw upon", he: "להסתמך על" },
+
+{ en: "drift", he: "לסחוף; תזוזה" },
+
+{ en: "drink", he: "לשתות; משקה" },
+
+{ en: "drop", he: "ליפול; טיפה; להוריד" },
+
+{ en: "drop out", he: "לנשור" },
+
+{ en: "dump", he: "להשליך; זבל" },
+
+{ en: "duplicate", he: "לשכפל" },
+
+{ en: "durable", he: "עמיד" },
+
+{ en: "duration", he: "משך" },
+
+{ en: "dusty", he: "מאובק" },
+
+{ en: "dwell", he: "להתגורר" },
+
+{ en: "dwelling", he: "בית מגורים" },
+
+{ en: "dying", he: "גוסס" },
+
+<!-- עמוד חדש -->
+
+{ en: "ease", he: "להקל; נוחות" },
+
+{ en: "easily", he: "בקלות" },
+
+{ en: "eat", he: "לאכול" },
+
+{ en: "eccentric", he: "מוזר; חריג" },
+
+{ en: "economic", he: "כלכלי" },
+
+{ en: "economize", he: "לחסוך" },
+
+{ en: "economy", he: "כלכלה" },
+
+{ en: "edible", he: "אכיל" },
+
+{ en: "edit", he: "לערוך" },
+
+{ en: "edition", he: "מהדורה; גרסה" },
+
+{ en: "education", he: "חינוך" },
+
+{ en: "educational", he: "חינוכי" },
+
+{ en: "effect", he: "השפעה" },
+
+{ en: "effective", he: "יעיל; אפקטיבי" },
+
+{ en: "efficiency", he: "יעילות" },
+
+{ en: "efficient", he: "יעיל" },
+
+{ en: "effort", he: "מאמץ" },
+
+{ en: "either...or...", he: "או...או" },
+
+{ en: "elect", he: "לבחור" },
+
+{ en: "election", he: "בחירות" },
+
+{ en: "element", he: "רכיב; יסוד" },
+
+{ en: "eloquent", he: "רהוט" },
+
+{ en: "elude", he: "לחמוק" },
+
+{ en: "elusive", he: "חמקמק" },
+
+{ en: "embellish", he: "לקשט; לייפות" },
+
+{ en: "embrace", he: "לחבק; לאמץ" },
+
+{ en: "emerge", he: "לצוץ; להתגלות" },
+
+{ en: "eminent", he: "בולט; נכבד" },
+
+{ en: "emit", he: "לפלט; לשחרר" },
+
+{ en: "emphasize", he: "להדגיש" },
+
+{ en: "empire", he: "אימפריה" },
+
+{ en: "employ", he: "להעסיק; להפעיל" },
+
+{ en: "employment", he: "תעסוקה" },
+
+{ en: "empty", he: "ריק; לרוקן" },
+
+{ en: "enact", he: "לחוקק; לבצע" },
+
+{ en: "enchant", he: "לקסום" },
+
+<!-- עמוד חדש -->
+
+{ en: "enclose", he: "לצרף; לסגור" },
+
+{ en: "encompass", he: "להקיף; להכיל" },
+
+{ en: "encourage", he: "לעודד" },
+
+{ en: "end", he: "סוף; לסיים" },
+
+{ en: "endanger", he: "לסכן" },
+
+{ en: "endeavor", he: "ניסיון; מאמץ" },
+
+{ en: "endurable", he: "נסבל" },
+
+{ en: "endurance", he: "כוח סבל" },
+
+{ en: "endure", he: "לסבול; להחזיק מעמד" },
+
+{ en: "enforce", he: "לאכוף" },
+
+{ en: "enforcement", he: "אכיפה" },
+
+{ en: "engage in", he: "להתעסק ב-" },
+
+{ en: "engagement", he: "התחייבות; אירוסין" },
+
+{ en: "enhance", he: "לשפר; להעצים" },
+
+{ en: "enjoy", he: "ליהנות" },
+
+{ en: "enormous", he: "עצום" },
+
+{ en: "enough", he: "מספיק" },
+
+{ en: "enrage", he: "להרגיז" },
+
+{ en: "enrich", he: "להעשיר" },
+
+{ en: "enroll", he: "להירשם" },
+
+{ en: "enroll in", he: "להירשם ל-" },
+
+{ en: "ensure", he: "להבטיח" },
+
+{ en: "enter", he: "להיכנס" },
+
+{ en: "entertainment", he: "בידור" },
+
+{ en: "enthusiast", he: "נלהב" },
+
+{ en: "entire", he: "שלם; מלא" },
+
+{ en: "entitled", he: "זכאי" },
+
+{ en: "entrance", he: "כניסה" },
+
+{ en: "envelope", he: "מעטפה" },
+
+{ en: "environment", he: "סביבה" },
+
+{ en: "envy", he: "קנאה; לקנא" },
+
+{ en: "equal", he: "שווה" },
+
+{ en: "equalize", he: "לאזן" },
+
+{ en: "equate", he: "להשוות" },
+
+{ en: "equator", he: "קו המשווה" },
+
+{ en: "erase", he: "למחוק" },
+
+{ en: "erroneously", he: "בטעות" },
+
+{ en: "error", he: "טעות" },
+
+<!-- עמוד חדש -->
+
+{ en: "erupt", he: "להתפרץ" },
+
+{ en: "eruption", he: "התפרצות" },
+
+{ en: "escape", he: "לברוח; בריחה" },
+
+{ en: "essay", he: "מאמר; חיבור" },
+
+{ en: "essence", he: "מהות; תמצית" },
+
+{ en: "essential", he: "חיוני; הכרחי" },
+
+{ en: "establish", he: "להקים; לבסס" },
+
+{ en: "establishment", he: "מוסד; הקמה" },
+
+{ en: "esteem", he: "הערכה" },
+
+{ en: "estimate", he: "להעריך; הערכה" },
+
+{ en: "estimated", he: "משוער" },
+
+{ en: "evaluate", he: "להעריך" },
+
+{ en: "event", he: "אירוע; מקרה" },
+
+{ en: "eventual", he: "סופי" },
+
+{ en: "eventually", he: "לבסוף" },
+
+{ en: "evoke", he: "לעורר; לגרום" },
+
+{ en: "exaggerate", he: "להגזים" },
+
+{ en: "exaggeration", he: "הגזמה" },
+
+{ en: "examine", he: "לבחון" },
+
+{ en: "excavate", he: "לחפור" },
+
+{ en: "excel", he: "להצטיין" },
+
+{ en: "excellent", he: "מצוין" },
+
+{ en: "except", he: "חוץ מ-" },
+
+{ en: "excess", he: "עודף" },
+
+{ en: "excessive", he: "מוגזם" },
+
+{ en: "exchange", he: "להמיר; החלפה" },
+
+{ en: "exclude", he: "להוציא; למנוע" },
+
+{ en: "excluded", he: "מודר" },
+
+{ en: "exclusion", he: "הדרה; מניעה" },
+
+{ en: "exclusively", he: "בלעדית" },
+
+{ en: "excuse", he: "תירוץ; להצדיק" },
+
+{ en: "execute", he: "לבצע; להוציא להורג" },
+
+{ en: "exert", he: "להפעיל" },
+
+{ en: "exhale", he: "לנשוף" },
+
+{ en: "exhausting", he: "מתיש" },
+
+{ en: "exhaustion", he: "תשישות" },
+
+{ en: "exhibit", he: "להציג; מוצג" },
+
+{ en: "exhibition", he: "תערוכה" },
+
+<!-- עמוד חדש -->
+
+{ en: "exile", he: "גלות; לגרש" },
+
+{ en: "exist", he: "להתקיים" },
+
+{ en: "existence", he: "קיום" },
+
+{ en: "expand", he: "להתרחב; להרחיב" },
+
+{ en: "expect", he: "לצפות; לקוות" },
+
+{ en: "expel", he: "לגרש" },
+
+{ en: "experience", he: "ניסיון" },
+
+{ en: "expert", he: "מומחה" },
+
+{ en: "explain", he: "להסביר" },
+
+{ en: "explanation", he: "הסבר" },
+
+{ en: "explicit", he: "מפורש; ברור" },
+
+{ en: "explicitly", he: "במפורש" },
+
+{ en: "exploit", he: "לנצל" },
+
+{ en: "explorer", he: "חוקר" },
+
+{ en: "exploring", he: "עיסוק בחקר" },
+
+{ en: "explosive", he: "נפיץ; חומר נפץ" },
+
+{ en: "export", he: "לייצא" },
+
+{ en: "expose", he: "לחשוף; להציג" },
+
+{ en: "exposed", he: "חשוף" },
+
+{ en: "exposure", he: "חשיפה; גילוי" },
+
+{ en: "express", he: "לבטא; להביע" },
+
+{ en: "expression", he: "ביטוי" },
+
+{ en: "expulsion", he: "גירוש; סילוק" },
+
+{ en: "extend", he: "להאריך; להרחיב" },
+
+{ en: "extension", he: "הרחבה; שלוחה" },
+
+{ en: "extensive", he: "רחב; מקיף" },
+
+{ en: "extent", he: "מידה; תחום" },
+
+{ en: "external", he: "חיצוני" },
+
+{ en: "extinct", he: "נכחד" },
+
+{ en: "extinction", he: "הכחדה" },
+
+{ en: "extract", he: "להפיק; תמצית" },
+
+{ en: "extreme", he: "קיצוני" },
+
+{ en: "extremist", he: "קיצוני; אדם קיצוני" }
+
+
+{ en: "face", he: "פנים; לעמוד פנים אל פנים; לפנות (לכיוון מסוים)" },
+
+{ en: "facial", he: "של הפנים" },
+
+{ en: "fact", he: "עובדה" },
+
+{ en: "factory", he: "מפעל" },
+
+{ en: "failure", he: "כישלון" },
+
+{ en: "fair", he: "הוגן; צודק; יפה" },
+
+{ en: "fairly", he: "בהגינות; למדי" },
+
+{ en: "faithful to", he: "נאמן ל־" },
+
+{ en: "fall", he: "ליפול; נפילה; קריסה; דעיכה; סתיו" },
+
+{ en: "falsely", he: "בצורה שאינה נכונה" },
+
+{ en: "falsify", he: "לזייף; להפריך" },
+
+{ en: "familiar with", he: "מכיר את; בקיא ב־" },
+
+{ en: "famous", he: "מפורסם" },
+
+{ en: "fascinate", he: "לרתק; לסקרן" },
+
+{ en: "fascinating", he: "מרתק" },
+
+{ en: "fascination", he: "קסם; משיכה" },
+
+{ en: "fast", he: "מהיר; לצום; צום" },
+
+{ en: "fatal", he: "קטלני" },
+
+{ en: "fate", he: "גורל" },
+
+{ en: "fault", he: "אשמה; מגרעת; חיסרון; טעות; שגיאה" },
+
+{ en: "faultlessly", he: "ללא רבב; בצורה מושלמת" },
+
+{ en: "favor", he: "טובה; חסד" },
+
+{ en: "feasible", he: "בר עשייה; מעשי" },
+
+{ en: "feature", he: "להציג; לאפיין; תכונה; מאפיין" },
+
+{ en: "fee", he: "שכר; גמול; אגרה" },
+
+{ en: "feed", he: "להאכיל; לספק" },
+
+{ en: "feel", he: "להרגיש; לחוש; למשש" },
+
+{ en: "feelings", he: "תחושות; רגשות" },
+
+{ en: "female", he: "נקבה; אישה" },
+
+{ en: "ferment", he: "לתסוס; תסיסה; שמרים" },
+
+{ en: "fertile", he: "פורה; שופע" },
+
+{ en: "fertility", he: "פוריות" },
+
+<!-- עמוד חדש -->
+
+{ en: "fertilize", he: "להפרות" },
+
+{ en: "festivity", he: "חגיגיות" },
+
+{ en: "feud", he: "סכסוך; שנאה" },
+
+{ en: "fictional", he: "בדיוני" },
+
+{ en: "figure", he: "דמות; צורה; לחשב; להבין" },
+
+{ en: "figure out", he: "להבין" },
+
+{ en: "final", he: "סופי; אחרון" },
+
+{ en: "finally", he: "לבסוף" },
+
+{ en: "finance", he: "לממן; מימון; כספים" },
+
+{ en: "financial", he: "כספי; פיננסי" },
+
+{ en: "find", he: "למצוא" },
+
+{ en: "findings", he: "ממצאים" },
+
+{ en: "firm", he: "מוצק; קשה; תקיף; חברה" },
+
+{ en: "firmly", he: "בתקיפות; בנחישות" },
+
+{ en: "fission", he: "בקע" },
+
+{ en: "fit", he: "להתאים; מתאים; כשר" },
+
+{ en: "flame", he: "להצית; להבעיר; בעירה" },
+
+{ en: "flexible", he: "גמיש" },
+
+{ en: "fling", he: "להשליך; להעיף; זריקה" },
+
+{ en: "flood", he: "שטפון; הצפה" },
+
+{ en: "floor", he: "קומה; רצפה" },
+
+{ en: "flow", he: "לזרום; זרם; שפע; נזילה" },
+
+{ en: "fluctuate", he: "לעלות ולרדת; להתנדנד" },
+
+{ en: "fluent", he: "רהוט; שוטף" },
+
+{ en: "fly", he: "לעוף; לטוס" },
+
+{ en: "fool", he: "טיפש; שוטה" },
+
+{ en: "forbid", he: "לאסור; למנוע" },
+
+{ en: "forbidden", he: "אסור" },
+
+{ en: "force", he: "להכריח; לאלץ; כוח; אלימות; כוח צבאי" },
+
+{ en: "forceful", he: "חזק; משכנע; יעיל" },
+
+{ en: "foreign", he: "זר; חוץ" },
+
+{ en: "foresight", he: "ראיית הנולד" },
+
+{ en: "forget", he: "לשכוח" },
+
+<!-- עמוד חדש -->
+
+{ en: "forgive", he: "לסלוח" },
+
+{ en: "form", he: "ליצור; טופס; צורה" },
+
+{ en: "former", he: "קודם; לשעבר" },
+
+{ en: "formerly", he: "בעבר; מקודם" },
+
+{ en: "fortunate", he: "בר מזל" },
+
+{ en: "fortune", he: "מזל; הון; עושר" },
+
+{ en: "found", he: "לייסד; צורת העבר של find" },
+
+{ en: "foundation", he: "יסוד; קרן" },
+
+{ en: "fragile", he: "שביר" },
+
+{ en: "fragrance", he: "ניחוח; ריח" },
+
+{ en: "fragrant", he: "מבושם; נעים" },
+
+{ en: "frequency", he: "תדירות" },
+
+{ en: "frequent", he: "תדיר" },
+
+{ en: "frequently", he: "לעיתים קרובות" },
+
+{ en: "friendly", he: "חברותי" },
+
+{ en: "front", he: "קדמי; חזית" },
+
+{ en: "fruit", he: "פרי" },
+
+{ en: "fruitless", he: "חסר פרי; עקר" },
+
+{ en: "frustrated", he: "מתוסכל; מיואש" },
+
+{ en: "frustration", he: "תסכול" },
+
+{ en: "fuel", he: "לתדלק; דלק" },
+
+{ en: "function", he: "לתפקד; שימוש; תפקוד; פונקציה" },
+
+{ en: "fund", he: "לממן; הון; קרן" },
+
+{ en: "fundamentally", he: "ביסודו; בעיקרו" },
+
+{ en: "furthermore", he: "יתר על כן" },
+
+{ en: "futile", he: "חסר תועלת; עקר" },
+
+<!-- עמוד חדש -->
+
+{ en: "gain", he: "להרוויח; רווח" },
+
+{ en: "game", he: "משחק; ציד" },
+
+{ en: "gap", he: "פער; רווח" },
+
+{ en: "garbage", he: "אשפה; זבל" },
+
+{ en: "garment", he: "בגד" },
+
+{ en: "gather", he: "לאסוף; לקבץ" },
+
+{ en: "gathering", he: "אסיפה; מפגש" },
+
+{ en: "general", he: "כללי" },
+
+{ en: "generalize", he: "להכליל" },
+
+{ en: "generate", he: "לייצר; לחולל" },
+
+{ en: "generation", he: "דור; ייצור; הולדה" },
+
+{ en: "generators", he: "מחוללים; יצרנים; גנרטורים" },
+
+{ en: "generous", he: "נדיב" },
+
+{ en: "genetics", he: "גנטיקה; חקר התורשה" },
+
+{ en: "gesture", he: "תנועה; מחווה" },
+
+{ en: "gift", he: "מתנה" },
+
+{ en: "give rise", he: "לעורר; לגרום" },
+
+{ en: "glare", he: "מבט חודר; נוקב; ברק" },
+
+{ en: "globe", he: "גלובוס; כדור הארץ" },
+
+{ en: "gloom", he: "חשכה; עגמומיות" },
+
+{ en: "glory", he: "פאר; תהילה" },
+
+{ en: "glow", he: "להאיר; זוהר" },
+
+{ en: "goal", he: "יעד; מטרה; שער" },
+
+{ en: "good", he: "טוב" },
+
+{ en: "goods", he: "סחורה" },
+
+{ en: "government", he: "ממשלה" },
+
+{ en: "governor", he: "מושל" },
+
+{ en: "grace", he: "לעשות חסד עם מישהו; חן; ברכה" },
+
+{ en: "gracious", he: "חינני; אדיב" },
+
+{ en: "graciously", he: "באדיבות" },
+
+{ en: "grade", he: "לדרג; לתת ציון; שלב; כיתה" },
+
+{ en: "gradual", he: "הדרגתי" },
+
+{ en: "grant", he: "להעניק; מענק" },
+
+<!-- עמוד חדש -->
+
+{ en: "grasp", he: "לתפוס; להבין" },
+
+{ en: "gratify", he: "לספק; לרצות" },
+
+{ en: "grave", he: "קבר; חמור; רציני" },
+
+{ en: "gravitation", he: "כוח המשיכה" },
+
+{ en: "greet", he: "לברך לשלום" },
+
+{ en: "grime", he: "לכלוך; זוהמה" },
+
+{ en: "gross", he: "ברוטו; גס; מגעיל" },
+
+{ en: "grow", he: "לגדול; לצמוח" },
+
+{ en: "growl", he: "לנהום; לרטון" },
+
+{ en: "growth", he: "צמיחה; גדילה" },
+
+{ en: "guarantee", he: "להתחייב; אחריות; ערובה" },
+
+{ en: "guess", he: "לנחש; ניחוש" },
+
+{ en: "guidance", he: "הדרכה; הנחיה; הובלה" },
+
+{ en: "guide", he: "להדריך; להוביל; מורה דרך" },
+
+<!-- עמוד חדש -->
+
+{ en: "habitat", he: "אזור מחיה" },
+
+{ en: "hail", he: "לברך לשלום; ברד" },
+
+{ en: "halt", he: "לעצור; עצירה; מנוחה" },
+
+{ en: "hard", he: "קשה" },
+
+{ en: "harden", he: "להתקשות" },
+
+{ en: "hardly", he: "בקושי" },
+
+{ en: "harm", he: "להזיק; לפגוע; נזק; פגיעה" },
+
+{ en: "harmful", he: "מזיק" },
+
+{ en: "harmless", he: "בלתי מזיק" },
+
+{ en: "harsh", he: "נוקשה" },
+
+{ en: "harvest", he: "לקצור; קציר" },
+
+{ en: "hasty", he: "מהיר; חפוז; עצבני" },
+
+{ en: "haul", he: "לגרור; למשוך" },
+
+{ en: "haze", he: "ערפל; אבך" },
+
+{ en: "headache", he: "כאב ראש" },
+
+{ en: "headgear", he: "כיסוי ראש; כובע" },
+
+
+
+<!-- עמוד חדש -->
+
+{ en: "heal", he: "לרפא; להבריא" },
+
+{ en: "health", he: "בריאות" },
+
+{ en: "healthy", he: "בריא" },
+
+{ en: "hear", he: "לשמוע" },
+
+{ en: "hectic", he: "עמוס; קדחתני; מלא רעש" },
+
+{ en: "heir", he: "יורש" },
+
+{ en: "hence", he: "לפיכך" },
+
+{ en: "herd", he: "לאסוף; לכנס; עדר" },
+
+{ en: "hereditary", he: "תורשתי" },
+
+{ en: "hesitate", he: "להסס" },
+
+{ en: "hibernate", he: "להיות בתרדמת חורף" },
+
+{ en: "hibernation", he: "תרדמת חורף" },
+
+{ en: "hide from", he: "להסתתר מ־" },
+
+{ en: "high", he: "גבוה" },
+
+{ en: "hinder", he: "למנוע; לעכב" },
+
+{ en: "hint", he: "לרמוז; רמז" },
+
+{ en: "hive", he: "כוורת" },
+
+{ en: "hobby", he: "תחביב" },
+
+{ en: "hold", he: "להחזיק; להכיל; להאמין; אחיזה" },
+
+{ en: "honesty", he: "הגינות; יושר" },
+
+{ en: "hope", he: "לקוות; תקווה" },
+
+{ en: "horrify", he: "לזעזע; להחריד" },
+
+{ en: "horror", he: "אימה; זוועה" },
+
+{ en: "hostile", he: "עוין" },
+
+{ en: "hostility", he: "עוינות" },
+
+{ en: "hypocrisy", he: "צביעות" },
+
+{ en: "hypocrite", he: "צבוע" },
+
+<!-- עמוד חדש -->
+
+{ en: "icicle", he: "נטיף קרח" },
+
+{ en: "ignorance", he: "בורות" },
+
+{ en: "ignorant", he: "בור; טיפש" },
+
+{ en: "ignore", he: "להתעלם" },
+
+{ en: "ill", he: "חולה" },
+
+{ en: "illegal", he: "בלתי חוקי" },
+
+{ en: "illiteracy", he: "חוסר יכולת לקרוא ולכתוב" },
+
+{ en: "illiterate", he: "אנאלפבית; בור" },
+
+{ en: "illness", he: "חולי; מחלה" },
+
+{ en: "illusion", he: "אשליה" },
+
+{ en: "illusive", he: "מתעתע" },
+
+{ en: "illustrate", he: "לאייר; לתאר; להמחיש" },
+
+{ en: "illustration", he: "איור" },
+
+{ en: "image", he: "דמות; תמונה; תדמית" },
+
+{ en: "imaginary", he: "דמיוני" },
+
+{ en: "imaginative", he: "בעל דמיון" },
+
+{ en: "imagine", he: "לדמיין" },
+
+{ en: "imitate", he: "לחקות" },
+
+{ en: "imitation", he: "חיקוי; שחזור" },
+
+{ en: "immediate", he: "מיידי; דחוף" },
+
+{ en: "immediately", he: "מייד" },
+
+{ en: "immodest", he: "חסר בושה; חצוף" },
+
+{ en: "immortal", he: "בן אלמוות" },
+
+{ en: "immune", he: "חסין; מחוסן" },
+
+{ en: "immunity", he: "חסינות" },
+
+{ en: "impact", he: "להשפיע; להתנגש; השפעה; התנגשות" },
+
+{ en: "impair", he: "לפגוע; להחליש" },
+
+{ en: "impartial", he: "חסר פניות; בלתי משוחד" },
+
+{ en: "impartially", he: "בצורה הוגנת" },
+
+{ en: "implausible", he: "בלתי סביר" },
+
+{ en: "implication", he: "רמז; השלכה" },
+
+{ en: "implicit", he: "מרומז; משתמע; עקיף" },
+
+{ en: "implore", he: "להפציר; להתחנן" },
+
+{ en: "imply", he: "לרמוז" },
+
+{ en: "import", he: "לייבא" },
+
+{ en: "importance", he: "חשיבות" },
+
+{ en: "important", he: "חשוב" },
+
+{ en: "impose", he: "לכפות; להציב" },
+
+<!-- עמוד חדש -->
+
+{ en: "impression", he: "רושם; חוות דעת; חיקוי" },
+
+{ en: "impressive", he: "מרשים" },
+
+{ en: "imprint", he: "הטבעה; חותם" },
+
+{ en: "imprisonment", he: "כליאה" },
+
+{ en: "improve", he: "לשפר" },
+
+{ en: "improvise", he: "לאלתר" },
+
+{ en: "in addition", he: "בנוסף" },
+
+{ en: "in agreement with", he: "בהסכמה עם" },
+
+{ en: "in case of", he: "במקרה של" },
+
+{ en: "in vain", he: "לשווא" },
+
+{ en: "inaccessible", he: "לא נגיש" },
+
+{ en: "inadequate", he: "בלתי מתאים; לקוי" },
+
+{ en: "inanimate", he: "דומם" },
+
+{ en: "inaudible", he: "שלא ניתן לשמוע" },
+
+{ en: "incentive", he: "תמריץ" },
+
+{ en: "incidence", he: "מידה; כמות; היקף; שכיחות" },
+
+{ en: "incite", he: "להסית; לשלהב" },
+
+{ en: "incline", he: "לנטות; שיפוע; מדרון" },
+
+{ en: "include", he: "לכלול" },
+
+{ en: "inconsiderate", he: "לא מתחשב; חסר רגישות" },
+
+{ en: "indefinite", he: "שאינו קבוע או מוגדר; לא מוגבל" },
+
+{ en: "independent", he: "עצמאי; בלתי תלוי" },
+
+{ en: "indicate", he: "להצביע; לציין" },
+
+{ en: "indication", he: "אות; סימן" },
+
+{ en: "indifferent", he: "אדיש" },
+
+{ en: "indignant", he: "אינו מרוצה כתוצאה מחוסר צדק" },
+
+{ en: "individual", he: "פרט; יחיד; אינדיבידואל" },
+
+{ en: "induce", he: "לגרום; לשכנע" },
+
+{ en: "indulge", he: "לפנק; להרשות לעצמו" },
+
+{ en: "indulgence", he: "סיפוק; התמכרות; פינוק" },
+
+{ en: "industrialization", he: "תיעוש" },
+
+{ en: "industrious", he: "חרוץ; שקדן" },
+
+{ en: "industriously", he: "בשקדנות" },
+
+{ en: "industry", he: "תעשייה" },
+
+{ en: "inert", he: "אדיש" },
+
+{ en: "inevitable", he: "בלתי נמנע" },
+
+{ en: "infamous", he: "ידוע לשמצה; מגונה" },
+
+{ en: "infer", he: "להסיק" },
+
+{ en: "infiltrate", he: "להסתנן; לחדור" },
+
+{ en: "infinite", he: "אינסופי" },
+
+<!-- עמוד חדש -->
+
+{ en: "inflammation", he: "התלקחות; דלקת" },
+
+{ en: "inflict", he: "לגרום; להסב (נזק)" },
+
+{ en: "influence", he: "להשפיע; השפעה" },
+
+{ en: "inform", he: "ליידע; לעדכן" },
+
+{ en: "information", he: "מידע" },
+
+{ en: "ingredient", he: "מרכיב" },
+
+{ en: "inhabit", he: "לאכלס; ליישב" },
+
+{ en: "inhabitants", he: "תושבים" },
+
+{ en: "inhale", he: "לשאוף (אוויר)" },
+
+{ en: "inherent", he: "טבוע; פנימי" },
+
+{ en: "inherit", he: "לקבל בירושה" },
+
+{ en: "inhibit", he: "לרסן; לבלום; לאסור" },
+
+{ en: "inhibition", he: "עכבה; מעצור נפשי" },
+
+{ en: "initial", he: "התחלתי; ראשוני" },
+
+{ en: "initially", he: "בהתחלה" },
+
+{ en: "initials", he: "ראשי תיבות; האות הראשונה של כל מילה" },
+
+{ en: "initiate", he: "ליזום" },
+
+{ en: "injection", he: "זריקה" },
+
+{ en: "injure", he: "לפצוע; לפגוע" },
+
+{ en: "injury", he: "פציעה" },
+
+{ en: "innovate", he: "לחדש; להמציא" },
+
+{ en: "inoffensive", he: "שאינו פוגעני או מעליב" },
+
+{ en: "inquiry", he: "חקירה" },
+
+{ en: "insensitive", he: "לא מתחשב; לא רגיש" },
+
+{ en: "insert", he: "להחדיר; לשבץ" },
+
+{ en: "inside", he: "בפנים; פנימי" },
+
+{ en: "insight", he: "תובנה" },
+
+{ en: "insist", he: "לעמוד על דעתו; להתעקש" },
+
+{ en: "insistence", he: "התעקשות" },
+
+{ en: "inspection", he: "בדיקה; ביקורת" },
+
+{ en: "inspiration", he: "השראה" },
+
+{ en: "inspire", he: "לעורר השראה" },
+
+{ en: "installation", he: "התקנה; התקן" },
+
+{ en: "instead", he: "במקום" },
+
+{ en: "institute", he: "להקים; לייסד; מוסד; ארגון" },
+
+{ en: "instrument", he: "כלי (נגינה)" },
+
+{ en: "insulation", he: "בידוד" },
+
+{ en: "insult", he: "להעליב; עלבון" },
+
+{ en: "intellectual", he: "מלומד; אינטלקטואל" },
+
+{ en: "intensify", he: "להגביר; להעצים" },
+
+<!-- עמוד חדש -->
+
+{ en: "intensity", he: "עוצמה" },
+
+{ en: "intent", he: "כוונה; מרוכז; נחוש" },
+
+{ en: "intention", he: "כוונה; מטרה" },
+
+{ en: "interaction", he: "אינטראקציה; פעולה גומלין" },
+
+{ en: "interest", he: "עניין; ריבית" },
+
+{ en: "interesting", he: "מעניין" },
+
+{ en: "interject", he: "להכניס בין דברים; להתפרץ לדברים" },
+
+{ en: "internal", he: "פנימי" },
+
+{ en: "interpret", he: "לפרש" },
+
+{ en: "interpretation", he: "פרשנות" },
+
+{ en: "interrogate", he: "לחקור" },
+
+{ en: "interrogation", he: "חקירה" },
+
+{ en: "interrupt", he: "להפריע; לקטוע" },
+
+{ en: "intersection", he: "צומת; הצטלבות" },
+
+{ en: "intervene", he: "להתערב" },
+
+{ en: "intervention", he: "התערבות" },
+
+{ en: "intricacy", he: "מורכבות" },
+
+{ en: "intrigue", he: "לסקרן; לעניין" },
+
+{ en: "introduce", he: "להציג" },
+
+{ en: "introduction", he: "מבוא; הצגה; היכרות" },
+
+{ en: "intrude", he: "להפריע; להתפרץ" },
+
+{ en: "invade", he: "לפלוש" },
+
+{ en: "invent", he: "להמציא" },
+
+{ en: "invention", he: "המצאה" },
+
+{ en: "inventor", he: "ממציא" },
+
+{ en: "inventory", he: "רשימת מלאי; מלאי" },
+
+{ en: "invest", he: "להשקיע" },
+
+{ en: "investigate", he: "לחקור" },
+
+{ en: "investigation", he: "חקירה" },
+
+{ en: "investment", he: "השקעה" },
+
+{ en: "invisible", he: "בלתי נראה" },
+
+{ en: "invisibly", he: "באופן לא גלוי" },
+
+{ en: "invite", he: "להזמין" },
+
+{ en: "involve", he: "לערב" },
+
+{ en: "irregular", he: "לא סדיר; חריג" },
+
+{ en: "irrigation", he: "השקיה" },
+
+{ en: "isolate", he: "לבודד" },
+
+{ en: "issue", he: "להגיש; לפרסם; להציג; מהדורה; נושא; סוגיה" },
+
+{ en: "jag", he: "השאר קצוות משוננים; חריץ" },
+
+{ en: "jagged", he: "משונן" },
+
+{ en: "jealousy", he: "קנאה" },
+
+{ en: "job", he: "עבודה" },
+
+{ en: "join", he: "להצטרף" },
+
+{ en: "joy", he: "שמחה" },
+
+{ en: "judge", he: "לשפוט; שופט" },
+
+{ en: "judgment", he: "שיפוט" },
+
+{ en: "just", he: "צודק; הוגן; רק; כרגע; זה עתה" },
+
+{ en: "justification", he: "הצדקה" },
+
+{ en: "justified", he: "מוצדק" },
+
+{ en: "justify", he: "להצדיק" },
+
+<!-- עמוד חדש -->
+
+{ en: "kit", he: "ערכה" },
+
+{ en: "knot", he: "קשר; לקשור" },
+
+{ en: "know", he: "לדעת" },
+
+{ en: "knowledge", he: "ידע" },
+
+{ en: "known", he: "ידוע" },
+
+<!-- עמוד חדש -->
+
+{ en: "labor", he: "לעבוד; להתאמץ; לידה; עבודה" },
+
+{ en: "lack", he: "חסר" },
+
+{ en: "lame", he: "נכה; חלש; עלוב (סלנג)" },
+
+{ en: "lament", he: "להתאבל; להצטער; קינה" },
+
+{ en: "land", he: "לנחות; להגיע לקרקע; אדמה; שטח" },
+
+{ en: "landscape", he: "נוף" },
+
+{ en: "language", he: "שפה" },
+
+{ en: "large", he: "גדול" },
+
+{ en: "largely", he: "באופן כללי; בעיקר" },
+
+{ en: "late", he: "מאוחר; מנוח" },
+
+{ en: "lately", he: "לאחרונה" },
+
+{ en: "latter", he: "השני; האחרון" },
+
+{ en: "launch", he: "לשגר; להשיק" },
+
+<!-- עמוד חדש -->
+
+{ en: "law", he: "חוק; משפט; תורה" },
+
+{ en: "layer", he: "שכבה" },
+
+{ en: "lead to", he: "להוביל ל־" },
+
+{ en: "lean", he: "להישען; רזה; כחוש" },
+
+{ en: "learn", he: "ללמוד" },
+
+{ en: "leave", he: "לעזוב" },
+
+{ en: "legacy", he: "מורשת; נחלה; ירושה" },
+
+{ en: "legal", he: "חוקי" },
+
+{ en: "legend", he: "אגדה" },
+
+{ en: "legible", he: "קריא; ברור" },
+
+{ en: "legislate", he: "לחוקק" },
+
+{ en: "legislation", he: "חקיקה" },
+
+{ en: "legislative", he: "חקיקתי" },
+
+{ en: "legislator", he: "מחוקק" },
+
+{ en: "leisure", he: "פנאי" },
+
+{ en: "length", he: "אורך" },
+
+{ en: "less", he: "פחות" },
+
+{ en: "lesson", he: "שיעור" },
+
+{ en: "lethargic", he: "עייף; לאה; רדום; ישן" },
+
+{ en: "liability", he: "התחייבות; מעמסה; אחריות" },
+
+{ en: "liberally", he: "בנדיבות; באופן חופשי" },
+
+{ en: "liberate", he: "לשחרר" },
+
+{ en: "liberation", he: "שחרור" },
+
+{ en: "lie", he: "לשכב; לשקר; שקר" },
+
+{ en: "life span", he: "תוחלת חיים" },
+
+{ en: "light", he: "להדליק; קל; בהיר; אור" },
+
+{ en: "light bulb", he: "נורה" },
+
+{ en: "lightly", he: "בקלות" },
+
+{ en: "likewise", he: "באופן דומה; כמו כן" },
+
+{ en: "limb", he: "איבר" },
+
+{ en: "limber", he: "גמיש; זריז" },
+
+{ en: "limit", he: "להגביל; הגבלה; קצה; תחום" },
+
+{ en: "linger", he: "להתמהמה" },
+
+{ en: "link", he: "לחבר; חוליה; קשר" },
+
+{ en: "linked with", he: "קשור ל־" },
+
+{ en: "literate", he: "משכיל; יודע קרוא וכתוב" },
+
+<!-- עמוד חדש -->
+
+{ en: "literature", he: "ספרות" },
+
+{ en: "load", he: "להעמיס; משא; מטען" },
+
+{ en: "loathe", he: "לתעב" },
+
+{ en: "local", he: "מקומי" },
+
+{ en: "location", he: "מיקום" },
+
+{ en: "logic", he: "היגיון" },
+
+{ en: "lone", he: "בודד; יחיד" },
+
+{ en: "loom", he: "להופיע במעורפל; לארוג; מכונת אריגה" },
+
+{ en: "lose", he: "לאבד; להפסיד" },
+
+{ en: "lost", he: "אבוד; מבולבל" },
+
+{ en: "loud", he: "קולני; רועש" },
+
+{ en: "loudly", he: "בקול רם" },
+
+{ en: "lucrative", he: "רווחי; משתלם" },
+
+{ en: "luminous", he: "מואר" },
+
+{ en: "lure", he: "לפתות; למשוך; פיתיון" },
+
+{ en: "luring", he: "מפתה" },
+
+<!-- עמוד חדש -->
+
+{ en: "machinery", he: "מכונות; מערכת מכונות; מנגנון" },
+
+{ en: "magical", he: "קסום" },
+
+{ en: "main", he: "עיקרי; ראשי" },
+
+{ en: "mainly", he: "בעיקר" },
+
+{ en: "maintain that", he: "גורס כי; טוען ש־" },
+
+{ en: "maize", he: "תירס" },
+
+{ en: "major", he: "מרכזי; עיקרי" },
+
+{ en: "majority", he: "רוב" },
+
+{ en: "male", he: "זכר" },
+
+{ en: "malfunction", he: "תפקוד לקוי; כשל בתפקוד" },
+
+{ en: "malnutrition", he: "תת־תזונה" },
+
+{ en: "manage", he: "לנהל; להסתדר" },
+
+{ en: "manager", he: "מנהל; אמרגן; סוכן" },
+
+{ en: "manual", he: "ידני; מדריך; ספר הוראות" },
+
+{ en: "manufacture", he: "לייצר" },
+
+{ en: "margin", he: "שוליים" },
+
+{ en: "mark", he: "לסמן; אות; חותם" },
+
+{ en: "market", he: "לשווק; שוק" },
+
+{ en: "master", he: "להתמחות; מומחה; אדון" },
+
+{ en: "masterpiece", he: "יצירת מופת" },
+
+{ en: "match", he: "להתאים; גפרור; משחק; תחרות" },
+
+<!-- עמוד חדש -->
+
+{ en: "material", he: "חומר" },
+
+{ en: "materialize", he: "להתממש; להפוך לממשי" },
+
+{ en: "matter", he: "חומר; עניין" },
+
+{ en: "mature", he: "בוגר" },
+
+{ en: "maturity", he: "בגרות; בשלות; מועד לבשלות" },
+
+{ en: "maze", he: "מבוך" },
+
+{ en: "mean", he: "להתכוון; ממוצע; אכזרי" },
+
+{ en: "meaning", he: "משמעות" },
+
+{ en: "means", he: "אמצעים; משאבים" },
+
+{ en: "measure", he: "למדוד; מידה; אמצעי" },
+
+{ en: "measurement", he: "מדידה" },
+
+{ en: "mediate", he: "לתווך" },
+
+{ en: "mediator", he: "מתווך" },
+
+{ en: "medication", he: "טיפול תרופתי; תרופה" },
+
+{ en: "medicine", he: "רפואה; תרופה" },
+
+{ en: "medieval", he: "של ימי הביניים" },
+
+{ en: "mediterranean", he: "ים תיכוני" },
+
+{ en: "medium", he: "בינוני; אמצעי; מדיום" },
+
+{ en: "meet", he: "להיפגש" },
+
+{ en: "meeting", he: "פגישה" },
+
+{ en: "melt", he: "להמיס; להינמס; נמס" },
+
+{ en: "memorization", he: "שינון" },
+
+{ en: "memorize", he: "לשנן" },
+
+{ en: "mental", he: "נפשי" },
+
+{ en: "mention", he: "לציין" },
+
+{ en: "mercifully", he: "ברחמים" },
+
+{ en: "mercy", he: "רחמים" },
+
+{ en: "merely", he: "רק" },
+
+{ en: "merge", he: "למזג; להתמזג" },
+
+{ en: "method", he: "שיטה" },
+
+{ en: "meticulous", he: "קפדני; מדויק" },
+
+{ en: "migration", he: "נדידה" },
+
+{ en: "mild", he: "מתון; עדין; בעל עוצמה נמוכה" },
+
+{ en: "milestone", he: "אבן דרך" },
+
+{ en: "mimic", he: "לחקות; חיקוי" },
+
+{ en: "mingle", he: "לערבב; למזג; להסתובב ולשוחח" },
+
+{ en: "minor", he: "פחות; קטן; חסר משמעות" },
+
+{ en: "minority", he: "מיעוט" },
+
+<!-- עמוד חדש -->
+
+{ en: "minute", he: "דקה; זעיר; מיניאטורי" },
+
+{ en: "misconception", he: "תפיסה מוטעית" },
+
+{ en: "misery", he: "סבל; אומללות" },
+
+{ en: "misinterpreted", he: "שלא פורש כראוי" },
+
+{ en: "mislead", he: "להטעות; להוליך שולל" },
+
+{ en: "mistake", he: "לטעות; טעות" },
+
+{ en: "mistaken", he: "מוטעה" },
+
+{ en: "mistakenly", he: "בטעות; בשוגג" },
+
+{ en: "misunderstood", he: "שהבינו אותו לא נכון" },
+
+{ en: "mobile", he: "נייד" },
+
+{ en: "mock", he: "ללעוג; חיקוי" },
+
+{ en: "moderate", he: "מתון" },
+
+{ en: "moderation", he: "מתינות; איפוק" },
+
+{ en: "modest", he: "צנוע; מועט" },
+
+{ en: "modify", he: "לשנות; להתאים" },
+
+{ en: "modulation", he: "ויסות; כיוון" },
+
+{ en: "molecule", he: "מולקולה" },
+
+{ en: "monetary", he: "כספי" },
+
+{ en: "monitor", he: "להשגיח; משגיח; צג" },
+
+{ en: "moratorium", he: "דחייה (לרוב לגבי תשלום)" },
+
+{ en: "more", he: "יותר" },
+
+{ en: "mortal", he: "בן אנוש; קטלני" },
+
+{ en: "mortality", he: "תמותה" },
+
+{ en: "moth", he: "עש" },
+
+{ en: "motif", he: "רעיון מרכזי; מוטיב" },
+
+{ en: "motion", he: "תנועה" },
+
+{ en: "motivation", he: "מוטיבציה; הנעה" },
+
+{ en: "mourn", he: "להתאבל" },
+
+{ en: "move", he: "לזוז; לרגש" },
+
+{ en: "mundane", he: "יומיומי; שגרתי; ארצי" },
+
+{ en: "mural", he: "ציור קיר" },
+
+{ en: "mutiny", he: "מרד" },
+
+{ en: "mutual", he: "הדדי" },
+
+{ en: "mysterious", he: "מסתורי; שאינו ידוע" },
+
+{ en: "mystery", he: "תעלומה; שאלה; חידה" },
+
+<!-- עמוד חדש -->
+
+{ en: "naive", he: "נאיבי; תמים" },
+
+{ en: "name", he: "לכנות בשם; שם" },
+
+{ en: "namely", he: "כלומר" },
+
+{ en: "narration", he: "סיפור; נרטיב; קריינות" },
+
+{ en: "narrow", he: "לצמצם; צר" },
+
+{ en: "nasal", he: "חוטמי; שקשור לאף" },
+
+{ en: "native", he: "מקומי; טבעי; שמקורו לאדם מלידה" },
+
+{ en: "natural", he: "טבעי" },
+
+{ en: "navigate", he: "לנווט; להדריך" },
+
+{ en: "navigation", he: "ניווט; תכנון מסלול" },
+
+{ en: "near", he: "קרוב; ליד" },
+
+{ en: "nearby", he: "קרוב" },
+
+{ en: "nearly", he: "כמעט; בקירוב" },
+
+{ en: "necessary", he: "הכרחי; חיוני; נחוץ" },
+
+{ en: "necessity", he: "צורך; נחיצות" },
+
+{ en: "need", he: "להזדקק למשהו; צורך; מצוקה" },
+
+{ en: "negative", he: "שלילי; השלילי (של סרט צילום)" },
+
+{ en: "neglect", he: "להזניח; הזנחה" },
+
+{ en: "negligence", he: "רשלנות; הזנחה" },
+
+{ en: "negotiation", he: "משא ומתן" },
+
+{ en: "neighboring", he: "שכן; מגורר בשכנות; סמוך" },
+
+{ en: "neither", he: "אף לא אחד מהשניים" },
+
+{ en: "never", he: "אף פעם; מעולם לא" },
+
+{ en: "nobility", he: "ייחוס; אצולה; התנהגות מכובדת ואצילית" },
+
+{ en: "nocturnal", he: "לילי" },
+
+{ en: "nomination", he: "מינוי; הגשת מועמדות" },
+
+{ en: "nominee", he: "מועמד" },
+
+{ en: "nonetheless", he: "אף על פי כן" },
+
+{ en: "not only... (but also)", he: "לא רק… (אלא גם)" },
+
+{ en: "notably", he: "באופן בולט; במיוחד" },
+
+{ en: "note", he: "לציין; להבחין; פתק; הערה" },
+
+{ en: "notebook", he: "מחברת" },
+
+{ en: "notice", he: "לשים לב; להבחין; הודעה; תזכורת" },
+
+{ en: "notion", he: "מושג; רעיון" },
+
+{ en: "novel", he: "רומן; חדש" },
+
+{ en: "novelty", he: "חידוש; קישוט קטן" },
+
+{ en: "nuisance", he: "מטרד" },
+
+{ en: "number", he: "מספר" },
+
+{ en: "numerous", he: "מספר רב" },
+
+{ en: "nutrition", he: "תזונה" },
+
+{ en: "obedience", he: "ציות" },
+
+{ en: "obey", he: "לציית; להישמע" },
+
+{ en: "object", he: "להתנגד; אובייקט; פריט" },
+
+{ en: "objection", he: "התנגדות" },
+
+{ en: "objective", he: "מטרה; תכלית; אובייקטיבי" },
+
+{ en: "obscene", he: "מגונה" },
+
+{ en: "obscure", he: "להסתיר; מעורפל; לא ברור; קודר" },
+
+{ en: "observe", he: "להתבונן; להבחין; לציין" },
+
+{ en: "obstacle", he: "מכשול" },
+
+{ en: "obstinate", he: "עקשן; נוקשה" },
+
+{ en: "obstruct", he: "להפריע; לחסום; למנוע" },
+
+{ en: "obtain", he: "להשיג; לקבל" },
+
+{ en: "obvious", he: "ברור; מובן מאליו" },
+
+{ en: "obviously", he: "ללא ספק; ודאי" },
+
+{ en: "occasion", he: "מקרה; אירוע" },
+
+{ en: "occasional", he: "מקרי; אקראי" },
+
+{ en: "occasionally", he: "מדי פעם; לפעמים" },
+
+{ en: "occupation", he: "עיסוק; מקצוע; כיבוש" },
+
+{ en: "occupy", he: "לכבוש; לעסוק; לאכלס" },
+
+{ en: "occur", he: "להתרחש; לעלות על הדעת" },
+
+{ en: "occurrence", he: "התרחשות; מאורע; מקרה" },
+
+{ en: "odor", he: "ריח" },
+
+{ en: "offend", he: "לפגוע; להעליב" },
+
+{ en: "offensive", he: "מעליב; פוגעני; התקפה" },
+
+{ en: "offer", he: "להציע; הצעה" },
+
+{ en: "official", he: "רשמי; פקיד ציבור" },
+
+{ en: "often", he: "בדרך כלל; לעיתים קרובות" },
+
+{ en: "omission", he: "השמטה" },
+
+{ en: "omit", he: "להשמיט" },
+
+{ en: "once", he: "פעם; פעם אחת" },
+
+{ en: "onset", he: "התחלה; פתיחה; התקפה" },
+
+{ en: "opaque", he: "אטום; עמום" },
+
+{ en: "open", he: "לפתוח; פתוח" },
+
+{ en: "operate", he: "לפעול; לנתח" },
+
+<!-- עמוד חדש -->
+
+{ en: "operative", he: "ביצועי; ניתוחי" },
+
+{ en: "opinion", he: "דעה" },
+
+{ en: "opponent", he: "יריב" },
+
+{ en: "opposing", he: "מתנגד" },
+
+{ en: "opposite", he: "הפוך; נגד; ממול" },
+
+{ en: "opposition", he: "התנגדות; אופוזיציה" },
+
+{ en: "oppress", he: "לדכא; ללחוץ" },
+
+{ en: "oppression", he: "דיכוי" },
+
+{ en: "optimism", he: "אופטימיות; אמונה שדברים טובים יקרו" },
+
+{ en: "option", he: "אפשרות; אופציה" },
+
+{ en: "ordain", he: "להסמיך; לפקוד; למנות" },
+
+{ en: "order", he: "לתת פקודה; להזמין; סדר; פקודה" },
+
+{ en: "ordinarily", he: "בדרך כלל" },
+
+{ en: "ordinary", he: "רגיל" },
+
+{ en: "organization", he: "ארגון" },
+
+{ en: "organize", he: "לארגן; לסדר" },
+
+{ en: "orientation", he: "מגמה; כיוון; אוריינטציה; התמצאות" },
+
+{ en: "origin", he: "מקור" },
+
+{ en: "original", he: "מקורי" },
+
+{ en: "originality", he: "מקוריות" },
+
+{ en: "originate", he: "לנבוע מ־; להתהוות" },
+
+{ en: "ornament", he: "קישוט" },
+
+{ en: "ornamental", he: "עיטורי; קישוטי" },
+
+{ en: "other", he: "אחר; שונה" },
+
+{ en: "outbreak", he: "התפרצות" },
+
+{ en: "outline", he: "לתאר בכללות; קו־מתאר" },
+
+{ en: "outstanding", he: "יוצא מהכלל; יוצא דופן" },
+
+{ en: "over", he: "מעל; יותר מדי; נגמר; הסתיים; במהלך" },
+
+{ en: "overcome", he: "להתגבר" },
+
+{ en: "overdo", he: "לעשות יתר על המידה" },
+
+{ en: "overestimated", he: "הוערך יתר על המידה" },
+
+{ en: "overlook", he: "לצפות; להשקיף; להתעלם; להעלים עין" },
+
+{ en: "oversee", he: "לפקח; להשגיח" },
+
+{ en: "overwhelm", he: "להמם; להציף; להכריע" },
+
+{ en: "owing to", he: "בגלל" },
+
+<!-- עמוד חדש -->
+
+{ en: "pace", he: "קצב; צעד; לקבוע קצב; לצעוד" },
+
+{ en: "pamper", he: "לפנק; לטפח" },
+
+{ en: "paradoxically", he: "באופן סותר" },
+
+{ en: "parallel", he: "מקביל; להקביל" },
+
+{ en: "pardon", he: "לסלוח; סליחה; חנינה" },
+
+{ en: "part", he: "להפריד; חלק; תפקיד" },
+
+{ en: "partial", he: "חלקי; משוחד" },
+
+{ en: "participation", he: "השתתפות" },
+
+{ en: "particular", he: "מיוחד; מסוים; פרטי" },
+
+{ en: "particularly", he: "במיוחד; בפרט" },
+
+{ en: "pass", he: "לעבור; לחלוף; מעבר" },
+
+{ en: "passage", he: "מעבר; קטע קריאה" },
+
+{ en: "passion", he: "תשוקה" },
+
+{ en: "passionate", he: "נלהב; מלא תשוקה" },
+
+{ en: "path", he: "נתיב; דרך; מסלול" },
+
+{ en: "patient", he: "סבלני; מטופל" },
+
+{ en: "pause", he: "להפסיק; הפסקה" },
+
+{ en: "pay attention", he: "לשים לב; להיות מרוכז" },
+
+{ en: "payment", he: "תשלום" },
+
+{ en: "peak", he: "להגיע לשיא; פסגה; שיא" },
+
+{ en: "peculiar", he: "מוזר; מיוחד" },
+
+{ en: "peculiarly", he: "באופן מוזר; חריג" },
+
+{ en: "peer", he: "עמית; שווה מעמד" },
+
+{ en: "pen", he: "לכתוב; כליאה; עט; דיר" },
+
+{ en: "penal", he: "פלילי; של עונש" },
+
+{ en: "penalize", he: "להעניש" },
+
+{ en: "penalty", he: "עונש; קנס" },
+
+{ en: "penitence", he: "חרטה; תשובה" },
+
+{ en: "people", he: "אנשים; עם" },
+
+{ en: "perceive", he: "לתפוס; להבחין" },
+
+{ en: "perfect", he: "לשכלל; לשפר; מושלם" },
+
+{ en: "perform", he: "להופיע; לבצע" },
+
+<!-- עמוד חדש -->
+
+{ en: "performance", he: "ביצוע; הופעה" },
+
+{ en: "performer", he: "מבצע; אמן" },
+
+{ en: "period", he: "תקופה; עידן; נקודה; וסת" },
+
+{ en: "permanent", he: "קבוע" },
+
+{ en: "permanently", he: "באופן קבוע; לצמיתות" },
+
+{ en: "permission", he: "רשות" },
+
+{ en: "permit", he: "להרשות; היתר" },
+
+{ en: "perplexing", he: "מבלבל" },
+
+{ en: "persecution", he: "רדיפה" },
+
+{ en: "persist", he: "להתמיד" },
+
+{ en: "persistent", he: "עקשן; מתמיד" },
+
+{ en: "personal", he: "אישי" },
+
+{ en: "personality", he: "אישיות" },
+
+{ en: "persuade", he: "לשכנע" },
+
+{ en: "persuasion", he: "שכנוע; אמונה; כת" },
+
+{ en: "persuasively", he: "באופן משכנע" },
+
+{ en: "pest", he: "מטרד" },
+
+{ en: "pet", he: "ללטף; חיית מחמד" },
+
+{ en: "petition", he: "עצומה; עתירה" },
+
+{ en: "pharmaceuticals", he: "תרופות" },
+
+{ en: "phase", he: "שלב; לתכנן או להציג בשלבים" },
+
+{ en: "phenomena", he: "תופעות; דבר יוצא דופן" },
+
+{ en: "phenomenon", he: "תופעה" },
+
+{ en: "pick", he: "לבחור; לקטוף" },
+
+{ en: "pinch", he: "לצבוט; ללחוץ; צביטה; מחסור" },
+
+{ en: "pipe", he: "צינור; מקטרת" },
+
+{ en: "pit", he: "בור" },
+
+{ en: "pitch", he: "להטות; להקים; למרוח בזפת; גובה צליל; זווית שיפוע" },
+
+{ en: "place", he: "למקם; לשים; מקום" },
+
+{ en: "plan", he: "לתכנן; תכנית" },
+
+{ en: "plant", he: "לשתול; צמח; מפעל" },
+
+{ en: "plantation", he: "מטע" },
+
+{ en: "plausible", he: "מתקבל על הדעת; סביר" },
+
+
+{ en: "pledge", he: "להתחייב; הבטחה; התחייבות" },
+
+{ en: "plot", he: "לזמום; תרשים; מזימה; עלילה; חלקת אדמה" },
+
+{ en: "poem", he: "שיר" },
+
+{ en: "poet", he: "משורר" },
+
+{ en: "poetry", he: "שירה" },
+
+{ en: "polar", he: "קוטבי" },
+
+{ en: "polarize", he: "לקטב; להנגיד" },
+
+{ en: "policy", he: "מדיניות" },
+
+{ en: "polite", he: "מנומס" },
+
+{ en: "politely", he: "בנימוס" },
+
+{ en: "political", he: "פוליטי" },
+
+{ en: "politics", he: "פוליטיקה" },
+
+{ en: "pollute", he: "לזהם" },
+
+{ en: "pollution", he: "זיהום" },
+
+{ en: "pool", he: "בריכת שחייה; מאגר" },
+
+{ en: "poor", he: "עני; עלוב; דל" },
+
+{ en: "poorly", he: "בצורה גרועה" },
+
+{ en: "population", he: "אוכלוסייה" },
+
+{ en: "populous", he: "מאוכלס (בצפיפות)" },
+
+{ en: "porous", he: "נקבובי; מחורר" },
+
+{ en: "portion", he: "חלק; מנה" },
+
+{ en: "pose", he: "להעמיד פנים; תנוחה; בועה" },
+
+{ en: "position", he: "עמדה; תפקיד" },
+
+{ en: "positive", he: "חיובי; בטוח" },
+
+{ en: "possess", he: "לכבוש; להשתלט; להיות בעלים של" },
+
+{ en: "possession", he: "בעלות; חזקה" },
+
+{ en: "possibility", he: "אפשרות" },
+
+{ en: "possible", he: "אפשרי" },
+
+{ en: "possibly", he: "ייתכן" },
+
+{ en: "postpone", he: "לדחות למועד אחר" },
+
+{ en: "potter", he: "קדר" },
+
+{ en: "pottery", he: "קדרות" },
+
+{ en: "pour", he: "לשפוך; למזוג" },
+
+<!-- עמוד חדש -->
+
+{ en: "poverty", he: "עוני; דלות" },
+
+{ en: "power", he: "כוח" },
+
+{ en: "powerful", he: "חזק" },
+
+{ en: "practice", he: "אימון; תרגול; לתרגל" },
+
+{ en: "praise", he: "להלל; לשבח; שבח" },
+
+{ en: "precede", he: "להקדים; לבוא לפני" },
+
+{ en: "preceding", he: "קודם" },
+
+{ en: "precipitate", he: "להאיץ; להטיל; לזרז; משקע" },
+
+{ en: "precise", he: "מדויק" },
+
+{ en: "precision", he: "דיוק" },
+
+{ en: "predator", he: "טורף" },
+
+{ en: "predict", he: "לחזות; לנבא" },
+
+{ en: "predictable", he: "צפוי" },
+
+{ en: "prediction", he: "תחזית; נבואה; ניבוי" },
+
+{ en: "predominate", he: "לשלוט; להתבלט" },
+
+{ en: "preferable", he: "מועדף" },
+
+{ en: "prejudice", he: "דעה קדומה" },
+
+{ en: "premature", he: "מוקדם מדי; לפני זמנו" },
+
+{ en: "preparation", he: "הכנה" },
+
+{ en: "prerequisite", he: "שדרוש מראש" },
+
+{ en: "prescribe", he: "לרשום מרשם (רופא)" },
+
+{ en: "prescription", he: "מרשם" },
+
+{ en: "present", he: "להציג; מתנה; הווה" },
+
+{ en: "presently", he: "כעת; בקרוב" },
+
+{ en: "press", he: "ללחוץ; עיתונות" },
+
+{ en: "prestigious", he: "יוקרתי" },
+
+{ en: "pretend", he: "להעמיד פנים" },
+
+{ en: "prevail", he: "לשרוד; לגבור" },
+
+{ en: "prevent", he: "למנוע" },
+
+{ en: "previous", he: "הקודם" },
+
+{ en: "previously", he: "קודם לכן; לפני כן" },
+
+{ en: "prey", he: "טרף" },
+
+{ en: "pride", he: "גאווה; יהירות" },
+
+<!-- עמוד חדש -->
+
+{ en: "primarily", he: "בעיקר; בראש ובראשונה" },
+
+{ en: "primary", he: "ראשוני; עיקרי" },
+
+{ en: "principal", he: "עיקרי; ראשי; מנהל בית ספר; הון" },
+
+{ en: "principle", he: "עיקרון" },
+
+{ en: "print", he: "להדפיס; טקסט כתוב; דפוס" },
+
+{ en: "prior", he: "קודם" },
+
+{ en: "priority", he: "עדיפות" },
+
+{ en: "private", he: "פרטי; טוראי (דרגה)" },
+
+{ en: "privilege", he: "זכות יתר; פריבילגיה" },
+
+{ en: "prize", he: "פרס; להעריך" },
+
+{ en: "probable", he: "סביר; הגיוני" },
+
+{ en: "probably", he: "קרוב לוודאי" },
+
+{ en: "proceed", he: "להמשיך; להתקדם" },
+
+{ en: "process", he: "לעבד; תהליך" },
+
+{ en: "procure", he: "לרכוש; להשיג" },
+
+{ en: "produce", he: "לייצר; תוצרת" },
+
+{ en: "profession", he: "מקצוע; הצהרה" },
+
+{ en: "proficient", he: "מקצועי; מיומן" },
+
+{ en: "profit", he: "רווח; להרוויח" },
+
+{ en: "profitable", he: "רווחי; משתלם" },
+
+{ en: "profound", he: "עמוק; נרחב" },
+
+{ en: "profoundly", he: "באופן עמוק; מעומק הלב" },
+
+{ en: "progress", he: "להתקדם; התקדמות; קדמה" },
+
+{ en: "progressive", he: "מתקדם; מדורג" },
+
+{ en: "prohibit", he: "לאסור על פי חוק" },
+
+{ en: "prohibition", he: "איסור; שלילה; מניעה" },
+
+{ en: "projection", he: "השלכה; הקרנה" },
+
+{ en: "prominence", he: "חשיבות; התבלטות" },
+
+{ en: "prominent", he: "בולט; חשוב" },
+
+{ en: "promise", he: "להבטיח; הבטחה" },
+
+{ en: "promote", he: "לקדם; להעלות" },
+
+{ en: "promotion", he: "קידום" },
+
+{ en: "prompt", he: "לעורר; להמריץ; מיידי" },
+
+<!-- עמוד חדש -->
+
+{ en: "promptly", he: "מיידית; ללא דיחוי" },
+
+{ en: "proof", he: "הוכחה" },
+
+{ en: "proper", he: "הולם; מתאים; תקין" },
+
+{ en: "properly", he: "כראוי; היטב" },
+
+{ en: "property", he: "רכוש; מאפיין; תכונה" },
+
+{ en: "prophecy", he: "נבואה; חזון" },
+
+{ en: "prophet", he: "נביא" },
+
+{ en: "propose", he: "להציע" },
+
+{ en: "proscribe", he: "לאסור; להוקיע; להוציא מחוץ לחוק" },
+
+{ en: "prosper", he: "לשגשג" },
+
+{ en: "prosperity", he: "שגשוג" },
+
+{ en: "prosperous", he: "משגשג; מצליח" },
+
+{ en: "protect", he: "להגן" },
+
+{ en: "protection", he: "הגנה" },
+
+{ en: "protective", he: "מגן; הגנתי" },
+
+{ en: "protest", he: "להפגין; מחאה; הפגנה" },
+
+{ en: "prove", he: "להוכיח" },
+
+{ en: "provide", he: "לספק; לכלכל" },
+
+{ en: "provided that", he: "בתנאי ש־" },
+
+{ en: "provincial", he: "פרובינציאלי; קרתני; אזורי" },
+
+{ en: "provisions", he: "אספקה; הוראות" },
+
+{ en: "provoke", he: "לעורר; להתגרות; להסית" },
+
+{ en: "public", he: "ציבורי" },
+
+{ en: "publish", he: "לפרסם" },
+
+{ en: "punish", he: "להעניש" },
+
+{ en: "punishment", he: "עונש" },
+
+{ en: "purchase", he: "לרכוש; רכישה" },
+
+{ en: "pure", he: "טהור" },
+
+{ en: "purification", he: "טיהור" },
+
+{ en: "purpose", he: "מטרה" },
+
+{ en: "pursue", he: "לרדוף אחר; לשאוף; לרדוף" },
+
+{ en: "push", he: "לדחוף; דחיפה; להמריץ" },
+
+<!-- עמוד חדש -->
+
+{ en: "quake", he: "רעידה; להרעיד" },
+
+{ en: "qualifications", he: "כישורים" },
+
+{ en: "quality", he: "איכות; תכונה; מאפיין" },
+
+{ en: "quantify", he: "לכמת" },
+
+{ en: "quantity", he: "כמות; מידה" },
+
+{ en: "quarrel", he: "להתווכח; ריב; מריבה" },
+
+{ en: "quasar", he: "גוף שמימי דמוי כוכב" },
+
+{ en: "question", he: "לשאול; לפקפק; שאלה" },
+
+{ en: "questioned", he: "מוטל בספק; נשאל; התערער" },
+
+{ en: "quick", he: "מהיר; זריז; חפוז" },
+
+{ en: "quickly", he: "בזריזות" },
+
+{ en: "quit", he: "להפסיק; לעזוב; לצאת; לוותר; להתפטר" },
+
+{ en: "quite", he: "למדי; לחלוטין" },
+
+{ en: "quote", he: "לצטט; ציטוט" },
+
+<!-- עמוד חדש -->
+
+{ en: "race", he: "תחרות; מרוץ; גזע; מין" },
+
+{ en: "racial", he: "גזעי" },
+
+{ en: "racing", he: "מתחרה" },
+
+{ en: "racism", he: "גזענות" },
+
+{ en: "radiant", he: "קורן; זוהר" },
+
+{ en: "radiation", he: "קרינה" },
+
+{ en: "rage", he: "לזעום; כעס" },
+
+{ en: "raid", he: "לפשוט על; פשיטה" },
+
+{ en: "rail", he: "מסילה; מעקה" },
+
+{ en: "rain", he: "גשם" },
+
+{ en: "raise", he: "להעלות; העלאה" },
+
+{ en: "random", he: "אקראי" },
+
+{ en: "randomly", he: "באופן אקראי" },
+
+{ en: "range", he: "טווח" },
+
+{ en: "rapid", he: "מהיר" },
+
+{ en: "rapidly", he: "במהירות" },
+
+{ en: "rare", he: "נדיר; נא" },
+
+{ en: "rarely", he: "לעיתים רחוקות" },
+
+{ en: "rate", he: "להעריך; לדרג; קצב" },
+
+<!-- עמוד חדש -->
+
+{ en: "reach", he: "להגיע; להשיג; יד" },
+
+{ en: "reap", he: "לקצור" },
+
+{ en: "reason", he: "היגיון; סיבה" },
+
+{ en: "reasonable", he: "הגיוני" },
+
+{ en: "reassurance", he: "הרגעה; עידוד" },
+
+{ en: "rebel", he: "למרוד; מורד" },
+
+{ en: "rebellious", he: "מרדן" },
+
+{ en: "recall", he: "להיזכר; להחזיר" },
+
+{ en: "receive", he: "לקבל" },
+
+{ en: "recent", he: "חדש; שהתרחש לאחרונה" },
+
+{ en: "recently", he: "לאחרונה" },
+
+{ en: "receptive", he: "מסוגל להבין; לקלוט; פתוח לרעיונות חדשים" },
+
+{ en: "recipe", he: "מתכון; מרשם" },
+
+{ en: "recipient", he: "מקבל; נמען" },
+
+{ en: "reciprocal", he: "הדדי; הופכי" },
+
+{ en: "recline", he: "לנוח; להישען" },
+
+{ en: "recognize", he: "להכיר; לזהות" },
+
+{ en: "recommend", he: "להמליץ" },
+
+{ en: "recover", he: "להתאושש; להחלים; לקבל בחזרה" },
+
+{ en: "recruit", he: "לגייס" },
+
+{ en: "recruitment", he: "גיוס" },
+
+{ en: "reduce", he: "לצמצם; להפחית" },
+
+{ en: "reef", he: "שונית; ריף" },
+
+{ en: "refer", he: "להפנות ל־; להתייחס ל־" },
+
+{ en: "reference", he: "הפניה; המלצה" },
+
+{ en: "reflect", he: "לשקף; להרהר" },
+
+{ en: "reflection", he: "השתקפות; הרהור" },
+
+{ en: "reform", he: "לתקן; להחזיר למוטב; רפורמה" },
+
+{ en: "refuge", he: "מקלט; מפלט" },
+
+{ en: "refugee", he: "פליט" },
+
+{ en: "refund", he: "החזר כספי" },
+
+{ en: "refuse", he: "לסרב" },
+
+{ en: "regain", he: "לזכות מחדש" },
+
+{ en: "regal", he: "מלכותי; נפלא" },
+
+{ en: "regard", he: "להתבונן; להתחשב; להתייחס" },
+
+{ en: "regardless", he: "ללא התחשבות; למרות" },
+
+{ en: "regime", he: "משטר" },
+
+{ en: "region", he: "אזור" },
+
+<!-- עמוד חדש -->
+
+{ en: "regional", he: "אזורי" },
+
+{ en: "regret", he: "להתחרט; חרטה" },
+
+{ en: "regrettable", he: "מצער" },
+
+{ en: "regular", he: "רגיל; סדיר" },
+
+{ en: "regulate", he: "לווסת; להסדיר" },
+
+{ en: "rehabilitation", he: "שיקום" },
+
+{ en: "rehearsal", he: "חזרה; תרגול" },
+
+{ en: "rein", he: "לרסן; לבלום; מושכות" },
+
+{ en: "reject", he: "לדחות; משהו דחוי" },
+
+{ en: "rejoice", he: "לשמוח; לעלוז" },
+
+{ en: "relate", he: "לספר; לתאר; להתייחס" },
+
+{ en: "relations", he: "יחסים" },
+
+{ en: "relationship", he: "קשר; יחסים; מערכת יחסים" },
+
+{ en: "relative", he: "קרוב משפחה; יחסי" },
+
+{ en: "relatively", he: "באופן יחסי" },
+
+{ en: "release", he: "לשחרר; לפרסם; להוציא לאור" },
+
+{ en: "reliable", he: "אמין; מהימן" },
+
+{ en: "reliance", he: "ביטחון; תלות" },
+
+{ en: "relief", he: "הקלה" },
+
+{ en: "relieve", he: "להקל; לסייע; להרגיע" },
+
+{ en: "reluctant", he: "חסר חשק; חסר רצון; מסויג" },
+
+{ en: "remark", he: "להבחין; להעיר; הערה" },
+
+{ en: "remarkable", he: "ראוי לציון; יוצא דופן" },
+
+{ en: "remedy", he: "תרופה; לרפא" },
+
+{ en: "renowned", he: "ידוע; מפורסם" },
+
+{ en: "repetition", he: "חזרה" },
+
+{ en: "reply", he: "להשיב" },
+
+{ en: "report", he: "לדווח; דיווח" },
+
+{ en: "represent", he: "לייצג" },
+
+{ en: "repression", he: "הדחקה; דיכוי" },
+
+{ en: "repressive", he: "מדכא" },
+
+{ en: "reproduce", he: "להתרבות; לשכפל" },
+
+{ en: "request", he: "לבקש; בקשה" },
+
+{ en: "research", he: "לחקור; מחקר" },
+
+{ en: "resemble", he: "להידמות" },
+
+{ en: "reside", he: "להתגורר" },
+
+{ en: "residence", he: "מגורים" },
+
+{ en: "resident", he: "תושב" },
+
+<!-- עמוד חדש -->
+
+{ en: "resolution", he: "החלטה; רזולוציה; כושר הפרדה" },
+
+{ en: "resolve", he: "לפתור; להתיישב; החלטיות" },
+
+{ en: "respect", he: "לכבד; יחס; כבוד" },
+
+{ en: "respond", he: "להגיב" },
+
+{ en: "response", he: "תגובה" },
+
+{ en: "restore", he: "לשחזר; להשיב על כנו" },
+
+{ en: "restrict", he: "להגביל; לאסור על" },
+
+{ en: "restriction", he: "מגבלה" },
+
+{ en: "result", he: "תוצאה" },
+
+{ en: "retire", he: "לפרוש" },
+
+{ en: "retirement", he: "פרישה" },
+
+{ en: "review", he: "לסקור; סקירה; לבחון ביקורתית" },
+
+{ en: "revise", he: "לתקן; לשפר" },
+
+{ en: "revision", he: "בדיקה מחדש" },
+
+{ en: "revolution", he: "מהפכה" },
+
+{ en: "revolutionize", he: "לחולל מהפך" },
+
+{ en: "ridicule", he: "ללעוג" },
+
+{ en: "ridiculous", he: "מגוחך" },
+
+{ en: "rigorous", he: "קפדני; מדוקדק" },
+
+{ en: "rise", he: "להתרומם; להזדקף; עלייה" },
+
+{ en: "ritual", he: "פולחן" },
+
+{ en: "rival", he: "יריב; מתחרה" },
+
+{ en: "rivalry", he: "יריבות" },
+
+{ en: "roam", he: "לשוטט; שוטטות" },
+
+{ en: "role", he: "תפקיד" },
+
+{ en: "root", he: "שורש; לעקור מהשורש" },
+
+{ en: "round", he: "עגול; מעגל; סיבוב" },
+
+{ en: "route", he: "דרך; נתיב" },
+
+{ en: "routine", he: "שגרה; שגרתי" },
+
+{ en: "rude", he: "חצוף" },
+
+{ en: "rudely", he: "בחוצפה" },
+{ en: "ruin", he: "להרוס" },
+
+{ en: "ruins", he: "הריסות; עתיקות" },
+
+{ en: "rumor", he: "שמועה" },
+
+{ en: "rural", he: "כפרי" },
+
+
+<!-- עמוד חדש -->
+
+
+{ en: "sacred", he: "מקודש; קדוש" },
+
+{ en: "safe", he: "בטוח; כספת" },
+
+{ en: "sage", he: "חכם; משכיל" },
+
+{ en: "sail", he: "להפליג; מפרש" },
+
+{ en: "salary", he: "משכורת" },
+
+{ en: "sample", he: "לדגום; דוגמה; מדגם" },
+
+{ en: "say", he: "להגיד; אמירה" },
+
+{ en: "scale", he: "סולם; קנה מידה; משקל; מאוזניים; קשקשים; להעלות; להפעיל; לשקול; למדוד" },
+
+{ en: "scarce", he: "נדיר" },
+
+{ en: "scatter", he: "לפזר" },
+
+{ en: "scene", he: "סצנה; מערכה; זירת התרחשות; נוף" },
+
+{ en: "scenery", he: "נוף; תפאורה" },
+
+{ en: "schedule", he: "לקבוע; לוח זמנים" },
+
+{ en: "science", he: "מדע" },
+
+{ en: "scientific", he: "מדעי" },
+
+{ en: "scientist", he: "מדען" },
+
+{ en: "scold", he: "לנזוף" },
+
+{ en: "scope", he: "לבחון; להעריך; טווח; היקף" },
+
+{ en: "scorch", he: "לצרוב; צריבה" },
+
+{ en: "scrutinize", he: "לבחון היטב" },
+
+{ en: "search", he: "לחפש; חיפוש" },
+
+{ en: "season", he: "לתבל; עונה" },
+
+{ en: "seat", he: "להושיב; מושב; כיסא" },
+
+{ en: "seduction", he: "פיתוי" },
+
+{ en: "seed", he: "לזרוע; גרעין" },
+
+{ en: "seek", he: "לחפש" },
+
+{ en: "seem", he: "נראה; נדמה" },
+
+{ en: "seize", he: "לתפוס; ללכוד; לאחוז" },
+
+{ en: "select", he: "לבחור" },
+
+{ en: "send", he: "לשלוח" },
+
+{ en: "sense", he: "להרגיש; חוש; תחושה; היגיון" },
+
+{ en: "sensible", he: "הגיוני" },
+
+{ en: "sensitive", he: "רגיש" },
+
+{ en: "sequel", he: "תוצאה; המשך" },
+
+
+<!-- עמוד חדש -->
+
+
+{ en: "sequence", he: "רצף; המשכיות" },
+
+{ en: "serious", he: "רציני; חמור" },
+
+{ en: "serum", he: "סרום; נסיוב" },
+
+{ en: "service", he: "שירות; טקס; דרשה" },
+
+{ en: "session", he: "ישיבה; מפגש; זמן קיום של פעילות כלשהי" },
+
+{ en: "settle", he: "ליישב" },
+
+{ en: "several", he: "כמה; אחדים" },
+
+{ en: "severe", he: "חמור; מחמיר" },
+
+{ en: "severely", he: "בצורה חמורה; אנושות" },
+
+{ en: "shape", he: "לעצב; צורה; כושר" },
+
+{ en: "share", he: "לחלוק; לשתף; מניה; חלק" },
+
+{ en: "shed", he: "להשיל; להסיר; לשפוך; צריף" },
+
+{ en: "shelter", he: "להגן; לִנוּת; מחסה" },
+
+{ en: "shield", he: "להגן; מגן" },
+
+{ en: "shortage", he: "מחסור" },
+
+{ en: "shortcoming", he: "מגרעת; חיסרון" },
+
+{ en: "show", he: "להראות; להציג; הצגה" },
+
+{ en: "shrink", he: "להתכווץ; להקטין; לסגת" },
+
+{ en: "shy", he: "ביישן" },
+
+{ en: "sign", he: "לחתום; סימן; שלט" },
+
+{ en: "signal", he: "לסמן; לאותת; סימן" },
+
+{ en: "significance", he: "חשיבות" },
+
+{ en: "significant", he: "משמעותי; חשוב" },
+
+{ en: "silence", he: "להשתיק; שקט; דממה" },
+
+{ en: "silencing", he: "משתיק; משתק" },
+
+{ en: "silent", he: "דומם; חרישי" },
+
+{ en: "similar", he: "דומה" },
+
+{ en: "simple", he: "פשוט; טיפש" },
+
+{ en: "simplicity", he: "פשטות" },
+
+{ en: "simplify", he: "לפשט" },
+
+{ en: "sincerely", he: "בכנות" },
+
+{ en: "single", he: "בודד; אחד; יחיד; רווק" },
+
+{ en: "sink", he: "לשקוע; לטבוע; להטביע; כיור" },
+
+{ en: "site", he: "לאתר; למקם; אתר; מקום" },
+
+{ en: "skill", he: "מיומנות" },
+
+
+
+{ en: "skin", he: "עור" },
+
+{ en: "sky", he: "שמיים" },
+
+{ en: "slander", he: "להשמיץ; להכפיש" },
+
+{ en: "slant", he: "נטייה; שיפוע; קו נטוי; דעה קדומה" },
+
+{ en: "slavery", he: "עבדות" },
+
+{ en: "slip", he: "למעוד; להחליק; מעידה" },
+
+{ en: "slow", he: "איטי; להאט" },
+
+{ en: "smooth", he: "חלק; עדין; שטוח; להחליק; להרגיע" },
+
+{ en: "sober", he: "פכח; צלול; רגוע" },
+
+{ en: "soft", he: "רך" },
+
+{ en: "softly", he: "ברכות" },
+
+{ en: "soil", he: "אדמה; קרקע; ללכלך" },
+
+{ en: "sole", he: "יחיד" },
+
+{ en: "solely", he: "רק; בלבד" },
+
+{ en: "solve", he: "לפתור" },
+
+{ en: "sophisticated", he: "מתוחכם" },
+
+{ en: "sophistication", he: "מורכבות; תחכום" },
+
+{ en: "source", he: "מקור; מוצא; להשיג ממקור מסוים" },
+
+{ en: "space", he: "מרחב; מקום; רווח; החלל החיצון; לרווח" },
+
+{ en: "spacecraft", he: "חללית" },
+
+{ en: "special", he: "מיוחד" },
+
+{ en: "specialize", he: "להתמחות; להתמקצע" },
+
+{ en: "species", he: "מין; זן" },
+
+{ en: "spend", he: "לבזבז; להעביר (זמן)" },
+
+{ en: "spill", he: "לשפוך; להטות; דליפה" },
+
+{ en: "split", he: "לפצל; להתפצל; פיצול" },
+
+{ en: "spontaneously", he: "באופן ספונטני; לא מתוכנן" },
+
+{ en: "spread", he: "להפיץ; להתפשט; פיזור" },
+
+{ en: "stabilize", he: "לייצב" },
+
+{ en: "stable", he: "יציב; אורווה" },
+
+{ en: "stack", he: "לערימה; לאסוף; ערימה" },
+
+{ en: "staff", he: "צוות; סגל; מטה" },
+
+{ en: "stage", he: "שלב; במה; לביים" },
+
+{ en: "stale", he: "מעופש; יבש; לא טרי" },
+
+{ en: "state", he: "מדינה; מצב; להצהיר" },
+
+
+<!-- עמוד חדש -->
+
+
+{ en: "station", he: "תחנה; למקם; להציב" },
+
+{ en: "stem from", he: "לנבוע מ־" },
+
+{ en: "step", he: "צעד; מדרגה; לצעוד" },
+
+{ en: "stiff", he: "נוקשה; קשיח" },
+
+{ en: "stimulate", he: "להמריץ" },
+
+{ en: "sting", he: "לעקוץ; עוקץ; עקיצה" },
+
+{ en: "stone", he: "אבן; לסקול" },
+
+{ en: "strain", he: "מאמץ; לאמץ; נקע; סיב" },
+
+{ en: "straw", he: "קש" },
+
+{ en: "stress", he: "לחץ; דגש; להלחיץ; להדגיש" },
+
+{ en: "strict", he: "קפדן; נוקשה; מוחלט" },
+
+{ en: "strictly", he: "בקפידה; בדיוק; בפירוש" },
+
+{ en: "stride", he: "לצעוד; פסיעה; צעד" },
+
+{ en: "strike", he: "להכות; לתקוף; לשבות; שביתה" },
+
+{ en: "strive", he: "לשאוף; להתאמץ" },
+
+{ en: "structure", he: "מבנה" },
+
+{ en: "struggle", he: "מאבק; להיאבק" },
+
+{ en: "stubborn", he: "עקשן" },
+
+{ en: "stun", he: "להמם; שוק; הלם" },
+
+{ en: "stunned", he: "המום" },
+
+{ en: "stunning", he: "מהמם" },
+
+{ en: "subject", he: "נושא; נתין; אזרח; להגיש; לחשוף; להכניע" },
+
+{ en: "subjective", he: "אישי; סובייקטיבי" },
+
+{ en: "submerge", he: "להטביע; לכסות; לקבור; להחביא" },
+
+{ en: "submit", he: "להגיש; למסור; להיכנע; לקבל מרות" },
+
+{ en: "subsequent", he: "עוקב" },
+
+{ en: "substance", he: "חומר" },
+
+{ en: "substitute", he: "להחליף; תחליף" },
+
+{ en: "subtle", he: "מעודן; דק; שנון; מתוחכם" },
+
+{ en: "success", he: "הצלחה" },
+
+{ en: "successor", he: "יורש; ממשיך דרכו" },
+
+{ en: "sudden", he: "פתאומי" },
+
+{ en: "suffer", he: "לסבול" },
+
+{ en: "suffering", he: "סבל; ייסורים" },
+
+{ en: "sufficient", he: "מספיק; כמות מספקת" },
+
+
+<!-- עמוד חדש -->
+
+
+{ en: "summarize", he: "לסכם" },
+
+{ en: "summary", he: "תקציר; סיכום" },
+
+{ en: "summit", he: "פסגה" },
+
+{ en: "superficial", he: "שטחי" },
+
+{ en: "superfluous", he: "מיותר; עודף" },
+
+{ en: "superior", he: "עליון" },
+
+{ en: "supplant", he: "להחליף; לתפוס מקום של אחר; להדיח" },
+
+{ en: "supply", he: "אספקה; לספק" },
+
+{ en: "support", he: "תמיכה; לתמוך" },
+
+{ en: "supposedly", he: "לכאורה" },
+
+{ en: "suppress", he: "להסיק; למנוע; להדחיק" },
+
+{ en: "surcharge", he: "תשלום נוסף; מטען עודף" },
+
+{ en: "surface", he: "משטח; לעלות; להופיע" },
+
+{ en: "surgery", he: "ניתוח" },
+
+{ en: "surmount", he: "להתגבר על; לגבור" },
+
+{ en: "surpass", he: "להתעלות מעל" },
+
+{ en: "surprise", he: "להפתיע; הפתעה" },
+
+{ en: "surrender", he: "להיכנע" },
+
+{ en: "surround", he: "להקיף; לכתר" },
+
+{ en: "surveillance", he: "מעקב; פיקוח" },
+
+{ en: "survey", he: "לסקר; סקר" },
+
+{ en: "survive", he: "לשרוד" },
+
+{ en: "suspect", he: "לחשוד; חשוד" },
+
+{ en: "suspicion", he: "חשד" },
+
+{ en: "sustain", he: "לתמוך; לסבול; לשאת; להמשיך" },
+
+{ en: "sustainability", he: "קיימות" },
+
+{ en: "sustainable", he: "בר קיימא; שמסוגל לקיים את עצמו" },
+
+{ en: "syllable", he: "הברה" },
+
+{ en: "symmetry", he: "סימטריה" },
+
+{ en: "sympathy", he: "אהדה; סימפתיה" },
+
+{ en: "syndrome", he: "תסמונת; סינדרום" },
+
+{ en: "synonym", he: "מילה נרדפת" },
+
+{ en: "system", he: "שיטה; מערכת" },
+
+{ en: "systematic", he: "מערכתי; שיטתי" }
+
 ];
 
 /* ========= לוגיקה ========= */
@@ -639,5 +3949,6 @@ loadWord();
 </script>
 </body>
 </html>
+
 
 
