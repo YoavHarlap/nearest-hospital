@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vocabulary Trainer</title>
+  <style>
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .app {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.10);
+    }
+    .status { font-size: 14px; color: #555; margin-bottom: 8px; }
+    .word { font-size: 38px; font-weight: 700; margin: 20px 0; direction: ltr; text-align: center; }
+    .meaning { font-size: 22px; min-height: 32px; margin-bottom: 16px; }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 5px 0;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    .show { background: #e0e0e0; }
+    .know { background: #4CAF50; color: #fff; }
+    .dont { background: #f44336; color: #fff; }
+    .ni { background: #ff9800; color: #fff; }
+    .mode { background: #2196F3; color: #fff; }
+    .undo { background: #673ab7; color: #fff; }
+    .csv { background: #009688; color: #fff; }
+    .reset { background: #9e9e9e; color: #fff; }
+    .small { font-size: 12px; opacity: .85; margin-top: 6px; }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <div class="status" id="status"></div>
+    <div class="word" id="word"></div>
+    <div class="meaning" id="meaning"></div>
+
+    <button class="show" onclick="showMeaning()">הצג פירוש</button>
+    <button class="know" onclick="markKnown()">ידעתי</button>
+    <button class="dont" onclick="markUnknown()">לא ידעתי</button>
+    <button class="ni" onclick="markNotInteresting()">לא מעניין</button>
+
+    <button class="undo" onclick="undoLast()" id="undoBtn" disabled>Undo (חזור אחורה)</button>
+
+    <button class="mode" onclick="switchMode()" id="modeBtn"></button>
+    <button class="csv" onclick="downloadCSV()">הורד CSV (רק נצפו)</button>
+    <button class="reset" onclick="resetAll()">איפוס כל הרשימות</button>
+
+    <div class="small">
+      קיצורי מקלדת: רווח = פירוש · K = ידעתי · U = לא ידעתי · I = לא מעניין · Z = Undo
+    </div>
+  </div>
+
+<script>
+/* ========= מאגר מילים =========
+   שים פה את כל הרשימה שלך. אפשר להוסיף כמה שרוצים. */
+const WORDS = [
+  { en: "abduct", he: "לחטוף" },
+  { en: "abduction", he: "חטיפה" },
+  { en: "abide", he: "לציית; להישאר; להתגורר" },
+  { en: "ability", he: "יכולת" },
+  { en: "able", he: "יכול" },
+  { en: "abolish", he: "לבטל" },
+  { en: "above", he: "מעל; יותר ממשהו" },
+  { en: "abrupt", he: "פתאומי" },
+  { en: "absence", he: "היעדר; חוסר" },
+  { en: "absent", he: "נעדר" },
+  // ... המשך הרשימה שלך ...
+];
+
+/* ========= LocalStorage keys ========= */
+const LS = {
+  seen: "SEEN",
+  known: "KNOWN",
+  unknown: "UNKNOWN",
+  notInteresting: "NOTINTERESTING",
+  stats: "STATS",
+  undo: "UNDO_LAST" // נשמור snapshot אחרון
+};
+
+/* ========= State ========= */
+let mode = "unseen"; // unseen | unknown | known | notInteresting
+let current = null;
+
+/* ========= helpers ========= */
+function getSet(k){
+  try { return new Set(JSON.parse(localStorage.getItem(k) || "[]")); }
+  catch { return new Set(); }
+}
+function setSet(k, v){
+  localStorage.setItem(k, JSON.stringify([...v]));
+}
+
+function getStats(){
+  try { return JSON.parse(localStorage.getItem(LS.stats) || "{}"); }
+  catch { return {}; }
+}
+function setStats(stats){
+  localStorage.setItem(LS.stats, JSON.stringify(stats));
+}
+function incStat(en, field){
+  const stats = getStats();
+  if(!stats[en]) stats[en] = { knew:0, didnt:0, ni:0 };
+  stats[en][field] = (stats[en][field] || 0) + 1;
+  setStats(stats);
+}
+
+/* ========= Undo snapshot =========
+   נשמור "לפני פעולה" את כל הסטים + המילה הנוכחית + המוד. */
+function saveUndoSnapshot(){
+  const snap = {
+    mode,
+    currentEn: current ? current.en : null,
+    seen: [...getSet(LS.seen)],
+    known: [...getSet(LS.known)],
+    unknown: [...getSet(LS.unknown)],
+    notInteresting: [...getSet(LS.notInteresting)],
+    stats: getStats()
+  };
+  localStorage.setItem(LS.undo, JSON.stringify(snap));
+  updateUndoBtn(true);
+}
+
+function updateUndoBtn(enabled){
+  const btn = document.getElementById("undoBtn");
+  btn.disabled = !enabled;
+}
+
+/* ========= Mode filtering ========= */
+function activeList(){
+  const seen = getSet(LS.seen);
+  const known = getSet(LS.known);
+  const unknown = getSet(LS.unknown);
+  const ni = getSet(LS.notInteresting);
+
+  // בסיס: כל המילים
+  if(mode === "unseen") return WORDS.filter(w => !seen.has(w.en) && !ni.has(w.en));
+  if(mode === "known") return WORDS.filter(w => known.has(w.en) && !ni.has(w.en));
+  if(mode === "unknown") return WORDS.filter(w => unknown.has(w.en) && !ni.has(w.en));
+
+  // מצב חדש: לא מעניין (רק אלה שסימנת)
+  return WORDS.filter(w => ni.has(w.en));
+}
+
+/* ========= UI ========= */
+function updateStatus(){
+  const seen = getSet(LS.seen);
+  const known = getSet(LS.known);
+  const unknown = getSet(LS.unknown);
+  const ni = getSet(LS.notInteresting);
+
+  const unseenCount = WORDS.filter(w => !seen.has(w.en) && !ni.has(w.en)).length;
+
+  const modeLabel =
+    mode === "unseen" ? "לא נצפו" :
+    mode === "unknown" ? "לא ידעתי" :
+    mode === "known" ? "ידעתי" :
+    "לא מעניין";
+
+  document.getElementById("status").textContent =
+    `מצב: ${modeLabel} | לא נצפו: ${unseenCount} | ידעתי: ${known.size} | לא ידעתי: ${unknown.size} | לא מעניין: ${ni.size}`;
+
+  // כפתור מצב — סבב 4 מצבים
+  const btn = document.getElementById("modeBtn");
+  btn.textContent =
+    mode === "unseen" ? "עבור ללא ידעתי" :
+    mode === "unknown" ? "עבור לידעתי" :
+    mode === "known" ? "עבור ללא מעניין" :
+    "עבור ללא נצפו";
+}
+
+function showMeaning(){
+  if(current) document.getElementById("meaning").textContent = current.he;
+}
+
+function loadWord(){
+  const list = activeList();
+
+  if(!list.length){
+    document.getElementById("word").textContent = "🎉 אין מילים במצב הזה!";
+    document.getElementById("meaning").textContent = "";
+    current = null;
+    updateStatus();
+    return;
+  }
+
+  current = list[Math.floor(Math.random() * list.length)];
+  document.getElementById("word").textContent = current.en;
+  document.getElementById("meaning").textContent = "";
+  updateStatus();
+}
+
+/* ========= Core actions =========
+   שים לב: אם מילה הייתה ב"לא מעניין" ואתה לוחץ ידעתי/לא ידעתי —
+   היא תוסר אוטומטית מ"לא מעניין" ותעבור לסטטוס החדש (כמו שביקשת). */
+function markKnown(){
+  if(!current) return;
+  saveUndoSnapshot();
+  showMeaning();
+
+  const s = getSet(LS.seen), k = getSet(LS.known), u = getSet(LS.unknown), ni = getSet(LS.notInteresting);
+  s.add(current.en);
+  k.add(current.en);
+  u.delete(current.en);
+  ni.delete(current.en); // ✅ חוזר אוטומטית מה"לא מעניין"
+
+  setSet(LS.seen, s); setSet(LS.known, k); setSet(LS.unknown, u); setSet(LS.notInteresting, ni);
+  incStat(current.en, "knew");
+
+  setTimeout(loadWord, 350);
+}
+
+function markUnknown(){
+  if(!current) return;
+  saveUndoSnapshot();
+  showMeaning();
+
+  const s = getSet(LS.seen), k = getSet(LS.known), u = getSet(LS.unknown), ni = getSet(LS.notInteresting);
+  s.add(current.en);
+  u.add(current.en);
+  k.delete(current.en);
+  ni.delete(current.en); // ✅ חוזר אוטומטית מה"לא מעניין"
+
+  setSet(LS.seen, s); setSet(LS.known, k); setSet(LS.unknown, u); setSet(LS.notInteresting, ni);
+  incStat(current.en, "didnt");
+
+  setTimeout(loadWord, 350);
+}
+
+function markNotInteresting(){
+  if(!current) return;
+  saveUndoSnapshot();
+  showMeaning();
+
+  const s = getSet(LS.seen), k = getSet(LS.known), u = getSet(LS.unknown), ni = getSet(LS.notInteresting);
+  s.add(current.en);
+  ni.add(current.en);
+
+  // כשמסמנים "לא מעניין" — לא נשאיר אותו גם בידעתי/לא ידעתי
+  k.delete(current.en);
+  u.delete(current.en);
+
+  setSet(LS.seen, s); setSet(LS.known, k); setSet(LS.unknown, u); setSet(LS.notInteresting, ni);
+  incStat(current.en, "ni");
+
+  setTimeout(loadWord, 350);
+}
+
+/* ========= Mode + Undo ========= */
+function switchMode(){
+  mode = (mode === "unseen") ? "unknown"
+       : (mode === "unknown") ? "known"
+       : (mode === "known") ? "notInteresting"
+       : "unseen";
+  loadWord();
+}
+
+function undoLast(){
+  const raw = localStorage.getItem(LS.undo);
+  if(!raw){
+    updateUndoBtn(false);
+    return;
+  }
+  let snap;
+  try { snap = JSON.parse(raw); } catch { return; }
+
+  mode = snap.mode || "unseen";
+
+  setSet(LS.seen, new Set(snap.seen || []));
+  setSet(LS.known, new Set(snap.known || []));
+  setSet(LS.unknown, new Set(snap.unknown || []));
+  setSet(LS.notInteresting, new Set(snap.notInteresting || []));
+  setStats(snap.stats || {});
+
+  // ננסה להחזיר את המילה שהייתה על המסך
+  if(snap.currentEn){
+    const found = WORDS.find(w => w.en === snap.currentEn);
+    if(found){
+      current = found;
+      document.getElementById("word").textContent = current.en;
+      document.getElementById("meaning").textContent = "";
+    } else {
+      current = null;
+      loadWord();
+    }
+  } else {
+    current = null;
+    loadWord();
+  }
+
+  // Undo חד-פעמי (למנוע בלבול). אם אתה רוצה multi-undo תגיד לי.
+  localStorage.removeItem(LS.undo);
+  updateUndoBtn(false);
+  updateStatus();
+}
+
+/* ========= Export CSV (seen only) ========= */
+function downloadCSV(){
+  const seen = getSet(LS.seen);
+  const stats = getStats();
+
+  const rows = [["en","he","knew_count","didntKnow_count","notInteresting_count"]];
+
+  for(const w of WORDS){
+    if(!seen.has(w.en)) continue; // רק נצפו
+    const st = stats[w.en] || { knew:0, didnt:0, ni:0 };
+    rows.push([w.en, w.he, st.knew||0, st.didnt||0, st.ni||0]);
+  }
+
+  const csv = rows.map(r => r.map(csvEscape).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "vocab_stats_seen_only.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function csvEscape(val){
+  const s = String(val ?? "");
+  if(/[",\n\r]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+  return s;
+}
+
+/* ========= Reset ========= */
+function resetAll(){
+  if(!confirm("לאפס הכל?")) return;
+  localStorage.removeItem(LS.seen);
+  localStorage.removeItem(LS.known);
+  localStorage.removeItem(LS.unknown);
+  localStorage.removeItem(LS.notInteresting);
+  localStorage.removeItem(LS.stats);
+  localStorage.removeItem(LS.undo);
+  mode = "unseen";
+  updateUndoBtn(false);
+  loadWord();
+}
+
+/* ========= Keyboard shortcuts ========= */
+document.addEventListener("keydown", (e) => {
+  // לא להפריע אם המשתמש בפוקוס במקום הקלדה (אם בעתיד תוסיף input/textarea)
+  const tag = (document.activeElement && document.activeElement.tagName || "").toLowerCase();
+  if(tag === "input" || tag === "textarea") return;
+
+  const k = e.key.toLowerCase();
+
+  if(e.key === " "){ e.preventDefault(); showMeaning(); return; }
+  if(k === "k"){ e.preventDefault(); markKnown(); return; }
+  if(k === "u"){ e.preventDefault(); markUnknown(); return; }
+  if(k === "i"){ e.preventDefault(); markNotInteresting(); return; }
+  if(k === "z"){ e.preventDefault(); undoLast(); return; }
+});
+
+/* ========= init ========= */
+(function init(){
+  // אם אין undo snapshot קיים — ננעל הכפתור
+  updateUndoBtn(!!localStorage.getItem(LS.undo));
+
+  // אם מישהו פתח פעם ראשונה בלי שום דבר
+  if(!localStorage.getItem(LS.seen)) setSet(LS.seen, new Set());
+  if(!localStorage.getItem(LS.known)) setSet(LS.known, new Set());
+  if(!localStorage.getItem(LS.unknown)) setSet(LS.unknown, new Set());
+  if(!localStorage.getItem(LS.notInteresting)) setSet(LS.notInteresting, new Set());
+  if(!localStorage.getItem(LS.stats)) setStats({});
+
+  loadWord();
+})();
+</script>
+</body>
+</html>
