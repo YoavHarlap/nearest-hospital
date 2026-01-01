@@ -3876,76 +3876,298 @@ const WORDS = [
 
 ];
 
-/* ========= לוגיקה ========= */
-const LS = { seen:"SEEN", known:"KNOWN", unknown:"UNKNOWN" };
-let mode = "unseen";
+
+/* ========= State ========= */
+let mode = "unseen"; // unseen | unknown | known | notInteresting
 let current = null;
 
-function get(k){ return new Set(JSON.parse(localStorage.getItem(k)||"[]")); }
-function set(k,v){ localStorage.setItem(k, JSON.stringify([...v])); }
+/* ========= helpers ========= */
+function getSet(k){
+  try { return new Set(JSON.parse(localStorage.getItem(k) || "[]")); }
+  catch { return new Set(); }
+}
+function setSet(k, v){
+  localStorage.setItem(k, JSON.stringify([...v]));
+}
 
+function getStats(){
+  try { return JSON.parse(localStorage.getItem(LS.stats) || "{}"); }
+  catch { return {}; }
+}
+function setStats(stats){
+  localStorage.setItem(LS.stats, JSON.stringify(stats));
+}
+function incStat(en, field){
+  const stats = getStats();
+  if(!stats[en]) stats[en] = { knew:0, didnt:0, ni:0 };
+  stats[en][field] = (stats[en][field] || 0) + 1;
+  setStats(stats);
+}
+
+/* ========= Undo snapshot =========
+   נשמור "לפני פעולה" את כל הסטים + המילה הנוכחית + המוד. */
+function saveUndoSnapshot(){
+  const snap = {
+    mode,
+    currentEn: current ? current.en : null,
+    seen: [...getSet(LS.seen)],
+    known: [...getSet(LS.known)],
+    unknown: [...getSet(LS.unknown)],
+    notInteresting: [...getSet(LS.notInteresting)],
+    stats: getStats()
+  };
+  localStorage.setItem(LS.undo, JSON.stringify(snap));
+  updateUndoBtn(true);
+}
+
+function updateUndoBtn(enabled){
+  const btn = document.getElementById("undoBtn");
+  btn.disabled = !enabled;
+}
+
+/* ========= Mode filtering ========= */
 function activeList(){
-  const seen=get(LS.seen), known=get(LS.known), unknown=get(LS.unknown);
-  if(mode==="unseen") return WORDS.filter(w=>!seen.has(w.en));
-  if(mode==="known") return WORDS.filter(w=>known.has(w.en));
-  return WORDS.filter(w=>unknown.has(w.en));
+  const seen = getSet(LS.seen);
+  const known = getSet(LS.known);
+  const unknown = getSet(LS.unknown);
+  const ni = getSet(LS.notInteresting);
+
+  // בסיס: כל המילים
+  if(mode === "unseen") return WORDS.filter(w => !seen.has(w.en) && !ni.has(w.en));
+  if(mode === "known") return WORDS.filter(w => known.has(w.en) && !ni.has(w.en));
+  if(mode === "unknown") return WORDS.filter(w => unknown.has(w.en) && !ni.has(w.en));
+
+  // מצב חדש: לא מעניין (רק אלה שסימנת)
+  return WORDS.filter(w => ni.has(w.en));
+}
+
+/* ========= UI ========= */
+function updateStatus(){
+  const seen = getSet(LS.seen);
+  const known = getSet(LS.known);
+  const unknown = getSet(LS.unknown);
+  const ni = getSet(LS.notInteresting);
+
+  const unseenCount = WORDS.filter(w => !seen.has(w.en) && !ni.has(w.en)).length;
+
+  const modeLabel =
+    mode === "unseen" ? "לא נצפו" :
+    mode === "unknown" ? "לא ידעתי" :
+    mode === "known" ? "ידעתי" :
+    "לא מעניין";
+
+  document.getElementById("status").textContent =
+    `מצב: ${modeLabel} | לא נצפו: ${unseenCount} | ידעתי: ${known.size} | לא ידעתי: ${unknown.size} | לא מעניין: ${ni.size}`;
+
+  // כפתור מצב — סבב 4 מצבים
+  const btn = document.getElementById("modeBtn");
+  btn.textContent =
+    mode === "unseen" ? "עבור ללא ידעתי" :
+    mode === "unknown" ? "עבור לידעתי" :
+    mode === "known" ? "עבור ללא מעניין" :
+    "עבור ללא נצפו";
+}
+
+function showMeaning(){
+  if(current) document.getElementById("meaning").textContent = current.he;
 }
 
 function loadWord(){
-  const list=activeList();
+  const list = activeList();
+
   if(!list.length){
-    document.getElementById("word").textContent="🎉 סיימת את כל הכרטיסיות!";
-    document.getElementById("meaning").textContent="";
+    document.getElementById("word").textContent = "🎉 אין מילים במצב הזה!";
+    document.getElementById("meaning").textContent = "";
+    current = null;
+    updateStatus();
     return;
   }
-  current=list[Math.floor(Math.random()*list.length)];
-  document.getElementById("word").textContent=current.en;
-  document.getElementById("meaning").textContent="";
+
+  current = list[Math.floor(Math.random() * list.length)];
+  document.getElementById("word").textContent = current.en;
+  document.getElementById("meaning").textContent = "";
   updateStatus();
 }
 
-function showMeaning(){ if(current) document.getElementById("meaning").textContent=current.he; }
-
+/* ========= Core actions =========
+   שים לב: אם מילה הייתה ב"לא מעניין" ואתה לוחץ ידעתי/לא ידעתי —
+   היא תוסר אוטומטית מ"לא מעניין" ותעבור לסטטוס החדש (כמו שביקשת). */
 function markKnown(){
+  if(!current) return;
+  saveUndoSnapshot();
   showMeaning();
-  const s=get(LS.seen), k=get(LS.known), u=get(LS.unknown);
-  s.add(current.en); k.add(current.en); u.delete(current.en);
-  set(LS.seen,s); set(LS.known,k); set(LS.unknown,u);
-  setTimeout(loadWord,400);
+
+  const s = getSet(LS.seen), k = getSet(LS.known), u = getSet(LS.unknown), ni = getSet(LS.notInteresting);
+  s.add(current.en);
+  k.add(current.en);
+  u.delete(current.en);
+  ni.delete(current.en); // ✅ חוזר אוטומטית מה"לא מעניין"
+
+  setSet(LS.seen, s); setSet(LS.known, k); setSet(LS.unknown, u); setSet(LS.notInteresting, ni);
+  incStat(current.en, "knew");
+
+  setTimeout(loadWord, 350);
 }
 
 function markUnknown(){
+  if(!current) return;
+  saveUndoSnapshot();
   showMeaning();
-  const s=get(LS.seen), k=get(LS.known), u=get(LS.unknown);
-  s.add(current.en); u.add(current.en); k.delete(current.en);
-  set(LS.seen,s); set(LS.known,k); set(LS.unknown,u);
-  setTimeout(loadWord,400);
+
+  const s = getSet(LS.seen), k = getSet(LS.known), u = getSet(LS.unknown), ni = getSet(LS.notInteresting);
+  s.add(current.en);
+  u.add(current.en);
+  k.delete(current.en);
+  ni.delete(current.en); // ✅ חוזר אוטומטית מה"לא מעניין"
+
+  setSet(LS.seen, s); setSet(LS.known, k); setSet(LS.unknown, u); setSet(LS.notInteresting, ni);
+  incStat(current.en, "didnt");
+
+  setTimeout(loadWord, 350);
 }
 
+function markNotInteresting(){
+  if(!current) return;
+  saveUndoSnapshot();
+  showMeaning();
+
+  const s = getSet(LS.seen), k = getSet(LS.known), u = getSet(LS.unknown), ni = getSet(LS.notInteresting);
+  s.add(current.en);
+  ni.add(current.en);
+
+  // כשמסמנים "לא מעניין" — לא נשאיר אותו גם בידעתי/לא ידעתי
+  k.delete(current.en);
+  u.delete(current.en);
+
+  setSet(LS.seen, s); setSet(LS.known, k); setSet(LS.unknown, u); setSet(LS.notInteresting, ni);
+  incStat(current.en, "ni");
+
+  setTimeout(loadWord, 350);
+}
+
+/* ========= Mode + Undo ========= */
 function switchMode(){
-  mode = mode==="unseen"?"unknown":mode==="unknown"?"known":"unseen";
+  mode = (mode === "unseen") ? "unknown"
+       : (mode === "unknown") ? "known"
+       : (mode === "known") ? "notInteresting"
+       : "unseen";
   loadWord();
 }
 
+function undoLast(){
+  const raw = localStorage.getItem(LS.undo);
+  if(!raw){
+    updateUndoBtn(false);
+    return;
+  }
+  let snap;
+  try { snap = JSON.parse(raw); } catch { return; }
+
+  mode = snap.mode || "unseen";
+
+  setSet(LS.seen, new Set(snap.seen || []));
+  setSet(LS.known, new Set(snap.known || []));
+  setSet(LS.unknown, new Set(snap.unknown || []));
+  setSet(LS.notInteresting, new Set(snap.notInteresting || []));
+  setStats(snap.stats || {});
+
+  // ננסה להחזיר את המילה שהייתה על המסך
+  if(snap.currentEn){
+    const found = WORDS.find(w => w.en === snap.currentEn);
+    if(found){
+      current = found;
+      document.getElementById("word").textContent = current.en;
+      document.getElementById("meaning").textContent = "";
+    } else {
+      current = null;
+      loadWord();
+    }
+  } else {
+    current = null;
+    loadWord();
+  }
+
+  // Undo חד-פעמי (למנוע בלבול). אם אתה רוצה multi-undo תגיד לי.
+  localStorage.removeItem(LS.undo);
+  updateUndoBtn(false);
+  updateStatus();
+}
+
+/* ========= Export CSV (seen only) ========= */
+function downloadCSV(){
+  const seen = getSet(LS.seen);
+  const stats = getStats();
+
+  const rows = [["en","he","knew_count","didntKnow_count","notInteresting_count"]];
+
+  for(const w of WORDS){
+    if(!seen.has(w.en)) continue; // רק נצפו
+    const st = stats[w.en] || { knew:0, didnt:0, ni:0 };
+    rows.push([w.en, w.he, st.knew||0, st.didnt||0, st.ni||0]);
+  }
+
+  const csv = rows.map(r => r.map(csvEscape).join(",")).join("\n");
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "vocab_stats_seen_only.csv";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function csvEscape(val){
+  const s = String(val ?? "");
+  if(/[",\n\r]/.test(s)) return `"${s.replace(/"/g,'""')}"`;
+  return s;
+}
+
+/* ========= Reset ========= */
 function resetAll(){
   if(!confirm("לאפס הכל?")) return;
-  localStorage.clear();
-  mode="unseen";
+  localStorage.removeItem(LS.seen);
+  localStorage.removeItem(LS.known);
+  localStorage.removeItem(LS.unknown);
+  localStorage.removeItem(LS.notInteresting);
+  localStorage.removeItem(LS.stats);
+  localStorage.removeItem(LS.undo);
+  mode = "unseen";
+  updateUndoBtn(false);
   loadWord();
 }
 
-function updateStatus(){
-  const s=get(LS.seen).size, k=get(LS.known).size, u=get(LS.unknown).size;
-  document.getElementById("status").textContent =
-    `מצב: ${mode} | לא נצפו: ${WORDS.length-s} | ידעתי: ${k} | לא ידעתי: ${u}`;
-  document.getElementById("modeBtn").textContent =
-    mode==="unseen"?"עבור ללא ידעתי":mode==="unknown"?"עבור לידעתי":"עבור ללא נצפו";
-}
+/* ========= Keyboard shortcuts ========= */
+document.addEventListener("keydown", (e) => {
+  // לא להפריע אם המשתמש בפוקוס במקום הקלדה (אם בעתיד תוסיף input/textarea)
+  const tag = (document.activeElement && document.activeElement.tagName || "").toLowerCase();
+  if(tag === "input" || tag === "textarea") return;
 
-loadWord();
+  const k = e.key.toLowerCase();
+
+  if(e.key === " "){ e.preventDefault(); showMeaning(); return; }
+  if(k === "k"){ e.preventDefault(); markKnown(); return; }
+  if(k === "u"){ e.preventDefault(); markUnknown(); return; }
+  if(k === "i"){ e.preventDefault(); markNotInteresting(); return; }
+  if(k === "z"){ e.preventDefault(); undoLast(); return; }
+});
+
+/* ========= init ========= */
+(function init(){
+  // אם אין undo snapshot קיים — ננעל הכפתור
+  updateUndoBtn(!!localStorage.getItem(LS.undo));
+
+  // אם מישהו פתח פעם ראשונה בלי שום דבר
+  if(!localStorage.getItem(LS.seen)) setSet(LS.seen, new Set());
+  if(!localStorage.getItem(LS.known)) setSet(LS.known, new Set());
+  if(!localStorage.getItem(LS.unknown)) setSet(LS.unknown, new Set());
+  if(!localStorage.getItem(LS.notInteresting)) setSet(LS.notInteresting, new Set());
+  if(!localStorage.getItem(LS.stats)) setStats({});
+
+  loadWord();
+})();
 </script>
 </body>
 </html>
-
-
-
