@@ -1,67 +1,87 @@
-<!DOCTYPE html>
-<html lang="he">
+<!doctype html>
+<html lang="he" dir="rtl">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Vocabulary Trainer</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vocabulary Trainer</title>
+  <!-- פונט עברי בטוח -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;700&display=swap" rel="stylesheet">
 
-<style>
-  body {
-    margin: 0;
-    background: #f2f2f2;
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-  }
-  .app {
-    width: 100%;
-    max-width: 420px;
-    background: #fff;
-    padding: 20px;
-    box-sizing: border-box;
-    text-align: center;
-  }
-  .status { font-size: 14px; color: #555; margin-bottom: 8px; }
-  .word { font-size: 38px; font-weight: 700; margin: 20px 0; }
-  .meaning { font-size: 22px; min-height: 32px; margin-bottom: 16px; }
-  button {
-    width: 100%;
-    padding: 14px;
-    margin: 5px 0;
-    font-size: 16px;
-    border-radius: 8px;
-    border: none;
-    cursor: pointer;
-  }
-  .show { background: #e0e0e0; }
-  .know { background: #4CAF50; color: #fff; }
-  .dont { background: #f44336; color: #fff; }
-  .mode { background: #2196F3; color: #fff; }
-  .reset { background: #9e9e9e; color: #fff; }
-</style>
+  <style>
+    body {
+      margin: 0;
+      background: #f2f2f2;
+      font-family: "Heebo",
+                   "Noto Sans Hebrew",
+                   "Arial Hebrew",
+                   "David",
+                   Arial,
+                   system-ui,
+                   sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .app {
+      width: 100%;
+      max-width: 420px;
+      background: #fff;
+      padding: 20px;
+      box-sizing: border-box;
+      text-align: center;
+      border-radius: 14px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.10);
+    }
+    .status { font-size: 14px; color: #555; margin-bottom: 8px; }
+    .word { font-size: 38px; font-weight: 700; margin: 20px 0; direction: ltr; text-align: center; }
+    .meaning { font-size: 22px; min-height: 32px; margin-bottom: 16px; }
+    button {
+      width: 100%;
+      padding: 14px;
+      margin: 5px 0;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+    }
+    .show { background: #e0e0e0; }
+    .know { background: #4CAF50; color: #fff; }
+    .dont { background: #f44336; color: #fff; }
+    .ni { background: #ff9800; color: #fff; }
+    .mode { background: #2196F3; color: #fff; }
+    .undo { background: #673ab7; color: #fff; }
+    .csv { background: #009688; color: #fff; }
+    .reset { background: #9e9e9e; color: #fff; }
+    .small { font-size: 12px; opacity: .85; margin-top: 6px; }
+  </style>
 </head>
 
 <body>
-<div class="app">
+  <div class="app">
+    <div class="status" id="status"></div>
+    <div class="word" id="word"></div>
+    <div class="meaning" id="meaning"></div>
 
-<div class="status" id="status"></div>
+    <button class="show" onclick="showMeaning()">הצג פירוש</button>
+    <button class="know" onclick="markKnown()">ידעתי</button>
+    <button class="dont" onclick="markUnknown()">לא ידעתי</button>
+    <button class="ni" onclick="markNotInteresting()">לא מעניין</button>
 
-<div class="word" id="word"></div>
-<div class="meaning" id="meaning"></div>
+    <button class="undo" onclick="undoLast()" id="undoBtn" disabled>Undo (חזור אחורה)</button>
 
-<button class="show" onclick="showMeaning()">הצג פירוש</button>
-<button class="know" onclick="markKnown()">ידעתי</button>
-<button class="dont" onclick="markUnknown()">לא ידעתי</button>
+    <button class="mode" onclick="switchMode()" id="modeBtn"></button>
+    <button class="csv" onclick="downloadCSV()">הורד CSV (רק נצפו)</button>
+    <button class="reset" onclick="resetAll()">איפוס כל הרשימות</button>
 
-<button class="mode" onclick="switchMode()" id="modeBtn"></button>
-<button class="reset" onclick="resetAll()">איפוס כל הרשימות</button>
-
-</div>
+    <div class="small">
+      קיצורי מקלדת: רווח = פירוש · K = ידעתי · U = לא ידעתי · I = לא מעניין · Z = Undo
+    </div>
+  </div>
 
 <script>
-/* ========= מאגר מילים (נקלט מהצ'אט הזה) ========= */
 const WORDS = [
 
    
@@ -4171,3 +4191,4 @@ document.addEventListener("keydown", (e) => {
 </script>
 </body>
 </html>
+
